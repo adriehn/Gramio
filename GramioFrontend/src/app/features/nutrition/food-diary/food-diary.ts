@@ -1,49 +1,27 @@
 
-import {
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal
-} from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-import {
-  EMPTY,
-  Observable,
-  Subject,
-  catchError,
-  distinctUntilChanged,
-  finalize,
-  of,
-  switchMap,
-  tap,
-  timer
-} from 'rxjs';
-
+import { EMPTY, Observable, Subject, catchError, distinctUntilChanged, finalize, of, switchMap, tap, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import {
-  FoodDiaryService,
-  DiaryEntry,
-  FoodItem,
-  MealGroup,
-  MealType
-} from '../../../core/services/food-diary.service';
+import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../../core/services/food-diary.service';
+import { RecipeCreatorModal } from './components/recipe-creator-modal/recipe-creator-modal';
+import { CreateRecipePayload } from '../../../core/models/recipe.model';
 
 @Component({
   selector: 'app-food-diary',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecipeCreatorModal],
   templateUrl: './food-diary.html',
   styleUrl: './food-diary.css'
 })
+
 export class FoodDiary {
+  
   readonly diary = inject(FoodDiaryService);
-
   private readonly destroyRef = inject(DestroyRef);
-
+  // 1. Agregá el signal para controlar la visibilidad del modal
+  readonly showRecipeModal = signal(false);
   // Búsqueda de alimentos
   readonly searchTerm = signal('');
   readonly searchResults = signal<FoodItem[]>([]);
@@ -79,9 +57,8 @@ export class FoodDiary {
   showFinishDayModal = signal(false);
   readonly trainingNote = signal('');
   readonly closingDay = signal(false);
-
   private readonly editSearchTerms$ = new Subject<string>();
-
+  
   readonly editNutrientPreview = computed(() => {
     const food = this.editSelectedFood();
     const grams = this.editGrams();
@@ -414,27 +391,27 @@ export class FoodDiary {
     this.showFinishDayModal.set(false);
   }
 
- confirmFinishDay(): void {
-  if (this.closingDay() || !this.diary.session()) return;
+  confirmFinishDay(): void {
+    if (this.closingDay() || !this.diary.session()) return;
 
-  this.localError.set(null);
-  this.closingDay.set(true);
+    this.localError.set(null);
+    this.closingDay.set(true);
 
-  this.diary.closeSession(this.trainingNote().trim()).pipe(
-    takeUntilDestroyed(this.destroyRef),
-    finalize(() => this.closingDay.set(false))
-  ).subscribe({
-    next: () => {
-      this.showFinishDayModal.set(false);
-      this.trainingNote.set('');
-    },
-    error: (error: unknown) => {
-      this.localError.set(
-        this.getErrorMessage(error, 'No se pudo cerrar la jornada.')
-      );
-    }
-  });
-}
+    this.diary.closeSession(this.trainingNote().trim()).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.closingDay.set(false))
+    ).subscribe({
+      next: () => {
+        this.showFinishDayModal.set(false);
+        this.trainingNote.set('');
+      },
+      error: (error: unknown) => {
+        this.localError.set(
+          this.getErrorMessage(error, 'No se pudo cerrar la jornada.')
+        );
+      }
+    });
+  }
 
 
 
@@ -785,6 +762,19 @@ export class FoodDiary {
     }
 
     return fallback;
+  }
+  openRecipeModal(): void {
+    this.localError.set(null);
+    this.showRecipeModal.set(true);
+  }
+
+  onRecipeCreated(food: FoodItem): void {
+    this.showRecipeModal.set(false);
+    this.selectedFood.set(food);
+    this.searchTerm.set(food.name);
+    this.searchResults.set([]);
+    this.grams.set(100);
+    this.localError.set(null);
   }
 
 

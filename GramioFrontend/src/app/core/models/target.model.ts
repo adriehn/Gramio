@@ -1,4 +1,4 @@
-import { BmrFormula, FatMode, FiberMode, GoalType } from './nutrition.model';
+import { BmrFormula, FatMode, FiberMode, GoalType, ProteinMode } from './nutrition.model';
 
 export interface MetabolicTargetRecord {
   id?: string;
@@ -12,7 +12,9 @@ export interface MetabolicTargetRecord {
   bmr_formula: BmrFormula;
   goal_type: GoalType;
   kcal_adjustment: number;
-  protein_per_kg: number;
+  protein_mode?: ProteinMode;   
+  protein_value?: number;      
+  protein_per_kg: number;       
   fat_mode: FatMode;
   fat_value: number;
   fiber_mode: FiberMode;

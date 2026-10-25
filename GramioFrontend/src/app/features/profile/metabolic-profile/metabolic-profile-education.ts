@@ -61,19 +61,25 @@ export const EDUCATION_CONTENT: Record<EducationTopic, EducationContent> = {
       'Usá las calorías como una referencia útil junto con la saciedad, la calidad de los alimentos, la recuperación y el rendimiento.'
   },
 
+
   activity: {
-    title: '¿Cómo influye la actividad?',
+    title: 'Cómo elegir tu nivel de actividad',
     intro:
-      'El factor de actividad permite estimar el gasto total a partir del metabolismo basal.',
+      'El factor de actividad estima cuánto aumenta tu gasto energético total respecto del metabolismo basal. Elegí la categoría que mejor represente tu rutina habitual, no solamente tus entrenamientos.',
     points: [
-      'Considerá tanto el entrenamiento como el movimiento fuera del gimnasio: caminar, trabajar, trasladarte y las tareas cotidianas.',
-      'Entrenar varios días no garantiza por sí solo que el gasto total corresponda a una categoría determinada.',
-      'El ejercicio, el descanso y la actividad espontánea pueden variar entre semanas.',
-      'Conviene revisar el valor si la estimación no se corresponde con la evolución observada.'
+      'Sedentaria (1,20): pasás gran parte del día sentado, caminás poco y realizás poco movimiento fuera de las tareas básicas.',
+      'Ligera (1,375): caminás algo durante el día y realizás actividad física ligera u ocasional.',
+      'Ligera-moderada (1,45): entrenás varias veces por semana y tenés algo de movimiento cotidiano, pero no mantenés una actividad alta durante todo el día.',
+      'Moderada (1,55): combinás entrenamiento regular con un nivel general de movimiento moderado.',
+      'Alta (1,725): entrenás intensamente y con frecuencia, o tu trabajo requiere bastante esfuerzo físico.',
+      'Muy alta (1,90): combinás un volumen de entrenamiento muy elevado con una rutina físicamente exigente.',
+      'No existe una equivalencia exacta entre días de gimnasio y factor de actividad. Dos personas que entrenan lo mismo pueden tener gastos diarios diferentes.',
+      'Los factores son estimaciones. La evolución del peso, la ingesta registrada y el rendimiento durante varias semanas ayudan a evaluar si el valor elegido es adecuado.'
     ],
     takeaway:
-      'Elegí la categoría que mejor describa tu rutina completa, no solamente la intensidad de tus entrenamientos.'
+      'Si dudás entre dos categorías, empezá por la que mejor describa tu actividad cotidiana completa. Después contrastá el gasto estimado con tu evolución real y ajustá gradualmente.'
   },
+
 
   formula: {
     title: '¿Por qué hay distintas fórmulas?',

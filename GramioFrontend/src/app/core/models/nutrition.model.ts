@@ -3,6 +3,7 @@ export type BmrFormula = 'mifflin' | 'harris' | 'katch';
 export type GoalType = 'maintain' | 'deficit' | 'surplus';
 export type FatMode = 'per_kg' | 'pct_kcal' | 'fixed_g';
 export type FiberMode = 'per_1000kcal' | 'fixed';
+export type ProteinMode = 'per_kg' | 'percent_kcal'; 
 
 export interface MetabolicInput {
   sex: Sex;
@@ -14,7 +15,8 @@ export interface MetabolicInput {
   formula: BmrFormula;
   goalType: GoalType;
   kcalAdjustment: number;
-  proteinRatioPerKg: number;
+  proteinMode: ProteinMode;     
+  proteinValue: number;        
   fatMode: FatMode;
   fatValue: number;
   fiberMode: FiberMode;

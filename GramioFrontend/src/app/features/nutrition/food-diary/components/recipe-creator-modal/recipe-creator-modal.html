@@ -1,0 +1,332 @@
+
+<div class="recipe-backdrop" >
+  <section
+    class="recipe-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="recipe-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="recipe-header">
+      <div>
+        <span class="recipe-kicker">GRAMIO · TU ALIMENTACIÓN</span>
+        <h2 id="recipe-title">Crear receta propia</h2>
+        <p>Combiná alimentos y calculá sus nutrientes por cada 100 g.</p>
+      </div>
+
+      <button
+        type="button"
+        class="recipe-close"
+        aria-label="Cerrar modal"
+        [disabled]="saving()"
+        (click)="requestClose()"
+      >
+        ×
+      </button>
+    </header>
+
+    <div class="recipe-body">
+      <div class="recipe-field">
+        <label for="recipe-name">Nombre de la receta</label>
+        <input
+          id="recipe-name"
+          type="text"
+          [ngModel]="name()"
+          (ngModelChange)="name.set($event)"
+          maxlength="120"
+          placeholder="Ej. Yogur proteico casero"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="recipe-tabs" aria-label="Tipo de ingrediente">
+        <button
+          type="button"
+          [class.active]="mode() === 'database'"
+          [attr.aria-pressed]="mode() === 'database'"
+          (click)="setMode('database')"
+        >
+          Buscar alimento
+        </button>
+
+        <button
+          type="button"
+          [class.active]="mode() === 'manual'"
+          [attr.aria-pressed]="mode() === 'manual'"
+          (click)="setMode('manual')"
+        >
+          Cargar etiqueta
+        </button>
+      </div>
+
+      @if (mode() === 'database') {
+        <section class="recipe-section">
+          <div class="recipe-field">
+            <label for="recipe-search">Buscar en alimentos disponibles</label>
+            <input
+              id="recipe-search"
+              type="search"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearch($event)"
+              placeholder="Escribí al menos 2 letras..."
+              autocomplete="off"
+            />
+          </div>
+
+          @if (searchLoading()) {
+            <p class="recipe-hint" role="status">Buscando alimentos...</p>
+          }
+
+          @if (searchError()) {
+            <p class="recipe-error" role="alert">{{ searchError() }}</p>
+          }
+
+          @if (!searchLoading() && searchTerm().trim().length >= 2 && results().length === 0 && !searchError()) {
+            <p class="recipe-hint">No se encontraron alimentos para esa búsqueda.</p>
+          }
+
+          @if (results().length > 0) {
+            <div class="recipe-results" aria-label="Resultados de búsqueda">
+              @for (food of results(); track food.id) {
+                <button
+                  type="button"
+                  class="recipe-result"
+                  (click)="addFood(food)"
+                >
+                  <span class="recipe-result-info">
+                    <strong>{{ food.name }}</strong>
+                    <small>
+                      {{ format(food.kcal_100) }} kcal ·
+                      P {{ format(food.protein_100) }} g ·
+                      C {{ format(food.carbs_100) }} g por 100 g
+                    </small>
+                  </span>
+                  <span class="recipe-add-icon" aria-hidden="true">＋</span>
+                </button>
+              }
+            </div>
+          }
+
+          <p class="recipe-hint">
+            La búsqueda incluye los alimentos disponibles para tu cuenta.
+          </p>
+        </section>
+      }
+
+      @if (mode() === 'manual') {
+        <section class="recipe-section">
+          <div class="recipe-field">
+            <label for="manual-name">Nombre del producto</label>
+            <input
+              id="manual-name"
+              type="text"
+              [ngModel]="manualName()"
+              (ngModelChange)="manualName.set($event)"
+              maxlength="120"
+              placeholder="Ej. Harina integral marca X"
+            />
+          </div>
+
+          <div class="recipe-field">
+            <label for="manual-quantity">Cantidad usada en la receta (g)</label>
+            <input
+              id="manual-quantity"
+              type="number"
+              min="0.1"
+              step="0.1"
+              [ngModel]="manualQuantity()"
+              (ngModelChange)="manualQuantity.set(toNumber($event))"
+            />
+          </div>
+
+          <p class="recipe-hint">
+            Ingresá los nutrientes que indica la etiqueta por cada 100 g del producto.
+          </p>
+
+          <div class="recipe-macro-inputs">
+            <div class="recipe-field">
+              <label for="manual-kcal">Calorías (kcal)</label>
+              <input
+                id="manual-kcal"
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="manualKcal()"
+                (ngModelChange)="manualKcal.set(toNumber($event))"
+              />
+            </div>
+
+            <div class="recipe-field">
+              <label for="manual-protein">Proteínas (g)</label>
+              <input
+                id="manual-protein"
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="manualProtein()"
+                (ngModelChange)="manualProtein.set(toNumber($event))"
+              />
+            </div>
+
+            <div class="recipe-field">
+              <label for="manual-carbs">Carbohidratos (g)</label>
+              <input
+                id="manual-carbs"
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="manualCarbs()"
+                (ngModelChange)="manualCarbs.set(toNumber($event))"
+              />
+            </div>
+
+            <div class="recipe-field">
+              <label for="manual-fat">Grasas (g)</label>
+              <input
+                id="manual-fat"
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="manualFat()"
+                (ngModelChange)="manualFat.set(toNumber($event))"
+              />
+            </div>
+
+            <div class="recipe-field">
+              <label for="manual-fiber">Fibra (g)</label>
+              <input
+                id="manual-fiber"
+                type="number"
+                min="0"
+                step="0.1"
+                [ngModel]="manualFiber()"
+                (ngModelChange)="manualFiber.set(toNumber($event))"
+              />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="recipe-secondary"
+            (click)="addManualIngredient()"
+          >
+            Agregar ingrediente manual
+          </button>
+        </section>
+      }
+
+      <section class="recipe-section">
+        <h3>Ingredientes agregados</h3>
+
+        @if (lines().length === 0) {
+          <p class="recipe-empty">Todavía no agregaste ingredientes.</p>
+        }
+
+        @for (line of lines(); track line.key) {
+          <div class="recipe-line">
+            <div class="recipe-line-main">
+              <strong>{{ line.name }}</strong>
+              <small>
+                {{ line.source === 'manual' ? 'Etiqueta manual' : 'Alimento de la base' }}
+              </small>
+            </div>
+
+            <label class="recipe-quantity">
+              <span>Gramos</span>
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                [ngModel]="line.quantity_g"
+                (ngModelChange)="updateQuantity(line.key, toNumber($event))"
+                [attr.aria-label]="'Cantidad en gramos de ' + line.name"
+              />
+            </label>
+
+            <button
+              type="button"
+              class="recipe-remove"
+              [attr.aria-label]="'Quitar ' + line.name"
+              (click)="removeLine(line.key)"
+            >
+              Quitar
+            </button>
+          </div>
+        }
+      </section>
+
+      <section class="recipe-preview" aria-live="polite">
+        <div class="preview-heading">
+          <div>
+            <span>PESO TOTAL DE INGREDIENTES</span>
+            <strong>{{ format(totals().weight) }} g</strong>
+          </div>
+
+          <div>
+            <span>CALORÍAS / 100 g</span>
+            <strong>{{ format(totals().kcal) }} kcal</strong>
+          </div>
+        </div>
+
+        <h3>Valores calculados por 100 g</h3>
+
+        <div class="preview-macros">
+          <div>
+            <span>Proteínas</span>
+            <strong>{{ format(totals().protein) }} g</strong>
+          </div>
+          <div>
+            <span>Carbohidratos</span>
+            <strong>{{ format(totals().carbs) }} g</strong>
+          </div>
+          <div>
+            <span>Grasas</span>
+            <strong>{{ format(totals().fat) }} g</strong>
+          </div>
+          <div>
+            <span>Fibra</span>
+            <strong>{{ format(totals().fiber) }} g</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="recipe-cooking-mode">
+        <label class="recipe-checkbox-label">
+          <input
+            type="checkbox"
+            [ngModel]="isCooked()"
+            (ngModelChange)="isCooked.set($event)"
+          />
+          <span>La receta se cocina. Marcar esta opción guarda esa condición.</span>
+        </label>
+        <p class="recipe-hint">
+          El cálculo mostrado usa el peso total de los ingredientes ingresados. La pérdida de agua durante la cocción puede cambiar los valores por 100 g.
+        </p>
+      </section>
+
+      @if (error()) {
+        <p class="recipe-error" role="alert">{{ error() }}</p>
+      }
+    </div>
+
+    <footer class="recipe-footer">
+      <button
+        type="button"
+        class="recipe-cancel"
+        [disabled]="saving()"
+        (click)="requestClose()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="recipe-save"
+        [disabled]="saving() || !name().trim() || lines().length === 0"
+        (click)="save()"
+      >
+        {{ saving() ? 'Guardando...' : 'Guardar receta' }}
+      </button>
+    </footer>
+  </section>
+</div>

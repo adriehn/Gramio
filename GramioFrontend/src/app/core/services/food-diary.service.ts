@@ -2,6 +2,8 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, from, throwError } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
+import { environment } from '../../../environments/environment';
+import { CreateRecipePayload } from '../models/recipe.model';
 
 export type MealType =
     | 'breakfast'
@@ -86,12 +88,15 @@ export class FoodDiaryService {
     );
 
     // Buscar alimentos disponibles para registrar o editar.
+    // Buscar alimentos disponibles para registrar o editar.
     searchFoods(term: string): Observable<FoodItem[]> {
         const query = term.trim();
 
         if (query.length < 2) {
             return from([[] as FoodItem[]]);
         }
+
+        const lowerQuery = query.toLowerCase();
 
         return from(
             this.supabase.client
@@ -101,8 +106,9 @@ export class FoodDiaryService {
                 )
                 .eq('is_archived', false)
                 .ilike('name', `%${query}%`)
-                .order('name')
-                .limit(10)
+                // Quitamos el order() de la base de datos y ampliamos el límite
+                // para asegurarnos de capturar los que empiezan con la palabra
+                .limit(50)
         ).pipe(
             map(({ data, error }) => {
                 if (error) {
@@ -111,7 +117,27 @@ export class FoodDiaryService {
                     );
                 }
 
-                return (data ?? []) as FoodItem[];
+                const items = (data ?? []) as FoodItem[];
+
+                // Ordenamiento personalizado en el cliente
+                return items
+                    .sort((a, b) => {
+                        const aName = a.name.toLowerCase();
+                        const bName = b.name.toLowerCase();
+
+                        // 1. Verificamos si empiezan con el término exacto
+                        const aStarts = aName.startsWith(lowerQuery);
+                        const bStarts = bName.startsWith(lowerQuery);
+
+                        // 2. Si 'a' empieza con el término y 'b' no, 'a' va primero
+                        if (aStarts && !bStarts) return -1;
+                        if (!aStarts && bStarts) return 1;
+
+                        // 3. Si ambos cumplen (o ninguno), ordenamos alfabéticamente
+                        return aName.localeCompare(bName);
+                    })
+                    // Devolvemos solo los 10 resultados más relevantes para la UI
+                    .slice(0, 10);
             })
         );
     }
@@ -499,36 +525,82 @@ export class FoodDiaryService {
     }
 
     // Cerrar la jornada completa.
- 
-closeSession(trainingNote: string): Observable<void> {
-  const session = this.session();
 
-  if (!session) {
-    return throwError(() => new Error('No hay una jornada activa para cerrar.'));
-  }
+    closeSession(trainingNote: string): Observable<void> {
+        const session = this.session();
 
-  this.loading.set(true);
-  this.error.set(null);
+        if (!session) {
+            return throwError(() => new Error('No hay una jornada activa para cerrar.'));
+        }
 
-  return from(
-    this.supabase.client.rpc('close_diary_session_with_note', {
-      p_session_id: session.id,
-      p_training_note: trainingNote.trim() || null
-    })
-  ).pipe(
-    tap(({ error }) => {
-      if (error) throw error;
+        this.loading.set(true);
+        this.error.set(null);
 
-      this.session.set(null);
-      this.groups.set([]);
-      this.entries.set([]);
-    }),
-    map(() => undefined),
-    catchError(error => this.handleError(error)),
-    finalize(() => this.loading.set(false))
-  );
-}
+        return from(
+            this.supabase.client.rpc('close_diary_session_with_note', {
+                p_session_id: session.id,
+                p_training_note: trainingNote.trim() || null
+            })
+        ).pipe(
+            tap(({ error }) => {
+                if (error) throw error;
 
+                this.session.set(null);
+                this.groups.set([]);
+                this.entries.set([]);
+            }),
+            map(() => undefined),
+            catchError(error => this.handleError(error)),
+            finalize(() => this.loading.set(false))
+        );
+    }
+
+    createRecipe(payload: CreateRecipePayload): Observable<FoodItem> {
+        return from(this.supabase.client.auth.getSession()).pipe(
+            switchMap(({ data, error }) => {
+                const token = data.session?.access_token;
+
+                if (error || !token) {
+                    return throwError(
+                        () => new Error('Tu sesión expiró. Iniciá sesión nuevamente.')
+                    );
+                }
+
+                return from(
+                    fetch(`${environment.apiUrl}/api/nutrition/recipes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(async response => {
+                        const body = await response.json().catch(() => null);
+
+                        if (!response.ok || !body?.success || !body?.data) {
+                            throw new Error(
+                                body?.message || 'No se pudo guardar la receta.'
+                            );
+                        }
+
+                        const recipe = body.data;
+
+                        return {
+                            id: recipe.food_id,
+                            name: recipe.name,
+                            brand: null,
+                            category: 'Receta Propia',
+                            kcal_100: Number(recipe.kcal_100),
+                            protein_100: Number(recipe.protein_100),
+                            carbs_100: Number(recipe.carbs_100),
+                            fat_100: Number(recipe.fat_100),
+                            fiber_100: Number(recipe.fiber_100)
+                        } as FoodItem;
+                    })
+                );
+            })
+        );
+    }
 
     // Actualizar el nombre o tipo de un grupo.
     updateGroup(

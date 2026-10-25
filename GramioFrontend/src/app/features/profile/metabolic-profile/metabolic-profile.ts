@@ -13,7 +13,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-
+import { forkJoin } from 'rxjs';
 import {
   EMPTY,
   catchError,
@@ -34,7 +34,7 @@ import {
   GoalType,
   FatMode,
   FiberMode,
-  CalculatedTarget
+  CalculatedTarget, ProteinMode
 } from '../../../core/models/nutrition.model';
 
 import {
@@ -61,24 +61,27 @@ export class MetabolicProfile implements OnInit {
   private modalCloseButton?: ElementRef<HTMLButtonElement>;
 
   private lastFocusedElement: HTMLElement | null = null;
-
+  //Señales de entrada del usuario
   readonly sex = signal<Sex>('male');
   readonly age = signal<number>(0);
   readonly weightKg = signal<number>(0);
   readonly heightCm = signal<number>(0);
   readonly bodyFatPct = signal<number | undefined>(undefined);
-
-  readonly activityFactor = signal<number>(0);
+  //señales de proteínass
+  readonly proteinMode = signal<ProteinMode>('per_kg');
+  readonly proteinValue = signal<number>(1.8);
+  //Señal de actividad
+  readonly activityFactor = signal<number>(1.2);
   readonly formula = signal<BmrFormula>('mifflin');
-
+  //Señal de objetivo
   readonly goalType = signal<GoalType>('deficit');
-  readonly kcalAdjustment = signal<number>(0);
-
-  readonly proteinRatio = signal<number>(0);
+  readonly kcalAdjustment = signal<number>(-300);
+  //Señal de grasas
   readonly fatMode = signal<FatMode>('per_kg');
-  readonly fatValue = signal<number>(0);
+  readonly fatValue = signal<number>(0.8);
+  //Señal de fibra
   readonly fiberMode = signal<FiberMode>('per_1000kcal');
-  readonly fiberValue = signal<number>(0);
+  readonly fiberValue = signal<number>(14);
 
   readonly saveSuccess = signal(false);
   readonly activeModal = signal<EducationTopic | null>(null);
@@ -101,7 +104,10 @@ export class MetabolicProfile implements OnInit {
     formula: this.formula(),
     goalType: this.goalType(),
     kcalAdjustment: this.kcalAdjustment(),
-    proteinRatioPerKg: this.proteinRatio(),
+    proteinMode: this.proteinMode(),
+    proteinValue: this.proteinValue(),
+    // Compatibilidad por si el BFF / API todavía espera esta propiedad exacta:
+    proteinRatioPerKg: this.proteinMode() === 'per_kg' ? this.proteinValue() : (this.proteinValue() * this.weightKg() / 100),
     fatMode: this.fatMode(),
     fatValue: this.fatValue(),
     fiberMode: this.fiberMode(),
@@ -130,37 +136,46 @@ export class MetabolicProfile implements OnInit {
 
     const validActivity = Number.isFinite(input.activityFactor) && input.activityFactor > 0;
     const validAdjustment = Number.isFinite(input.kcalAdjustment);
-    const validProtein = Number.isFinite(input.proteinRatioPerKg) && input.proteinRatioPerKg > 0;
+    const validProtein = Number.isFinite(input.proteinValue) && input.proteinValue > 0;
     const validFat = Number.isFinite(input.fatValue) && input.fatValue > 0;
     const validFiber = Number.isFinite(input.fiberValue) && input.fiberValue > 0;
-    
-    const validBodyFat = input.formula !== 'katch' || 
-      (input.bodyFatPct !== undefined && Number.isFinite(input.bodyFatPct) && 
-       input.bodyFatPct >= 1 && input.bodyFatPct <= 75);
+
+    const validBodyFat = input.formula !== 'katch' ||
+      (input.bodyFatPct !== undefined && Number.isFinite(input.bodyFatPct) &&
+        input.bodyFatPct >= 1 && input.bodyFatPct <= 75);
 
     return Boolean(
-      validAnthropometry && validActivity && validAdjustment && 
+      validAnthropometry && validActivity && validAdjustment &&
       validProtein && validFat && validFiber && validBodyFat
     );
   }
 
+
   ngOnInit(): void {
-    this.profileService.loadUserProfile().pipe(
-      tap(profile => {
+    forkJoin({
+      profile: this.profileService.loadUserProfile(),
+      target: this.profileService.loadActiveTarget()
+    }).pipe(
+      tap(({ profile }) => {
         if (!profile) return;
 
         this.sex.set(profile.sex);
         this.heightCm.set(profile.heightCm);
 
         const birthDate = new Date(`${profile.birthDate}T00:00:00`);
+
         if (Number.isNaN(birthDate.getTime())) return;
 
         const today = new Date();
-        let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+        let calculatedAge =
+          today.getFullYear() - birthDate.getFullYear();
 
         const birthdayHasNotOccurred =
           today.getMonth() < birthDate.getMonth() ||
-          (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate());
+          (
+            today.getMonth() === birthDate.getMonth() &&
+            today.getDate() < birthDate.getDate()
+          );
 
         if (birthdayHasNotOccurred) {
           calculatedAge--;
@@ -170,14 +185,14 @@ export class MetabolicProfile implements OnInit {
           this.age.set(calculatedAge);
         }
       }),
-      switchMap(() => this.profileService.loadActiveTarget()),
       tap(() => this.applyActiveTarget()),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
+
   private applyActiveTarget(): void {
-    const current = this.activeTarget();
+    const current = this.activeTarget() as any; // Cast temporal a any si el tipado global aún no se actualizó
     if (!current) return;
 
     this.weightKg.set(current.weight_kg);
@@ -186,7 +201,11 @@ export class MetabolicProfile implements OnInit {
     this.formula.set(current.bmr_formula);
     this.goalType.set(current.goal_type);
     this.kcalAdjustment.set(current.kcal_adjustment);
-    this.proteinRatio.set(current.protein_per_kg);
+
+    // Mapeo seguro de proteínas soportando ambos formatos
+    this.proteinMode.set(current.protein_mode ?? 'per_kg');
+    this.proteinValue.set(current.protein_value ?? current.protein_per_kg ?? 0);
+
     this.fatMode.set(current.fat_mode);
     this.fatValue.set(current.fat_value);
     this.fiberMode.set(current.fiber_mode);
@@ -301,11 +320,17 @@ export class MetabolicProfile implements OnInit {
           bmr_formula: this.formula(),
           goal_type: this.goalType(),
           kcal_adjustment: this.kcalAdjustment(),
-          protein_per_kg: this.proteinRatio(),
+
+          // Compatibilidad con el esquema actual de Supabase.
+          protein_per_kg: this.proteinMode() === 'per_kg'
+            ? this.proteinValue()
+            : (this.proteinValue() * 4 / this.preview()!.targetKcal) * 100,
+
           fat_mode: this.fatMode(),
           fat_value: this.fatValue(),
           fiber_mode: this.fiberMode(),
           fiber_value: this.fiberValue(),
+
           bmr_kcal: result.bmr,
           tdee_kcal: result.tdee,
           target_kcal: result.targetKcal,
@@ -327,9 +352,9 @@ export class MetabolicProfile implements OnInit {
           tap(() => this.saveSuccess.set(false))
         );
       }),
-      catchError(() => EMPTY),
-      finalize(() => {
-        this.saving = false;
+      catchError((error: unknown) => {
+        console.error('Error al guardar el objetivo metabólico:', error);
+        return EMPTY;
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
