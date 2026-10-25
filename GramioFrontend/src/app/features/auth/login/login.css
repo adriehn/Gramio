@@ -1,0 +1,326 @@
+﻿
+/* =========================================
+   GRAMIO — LOGIN
+========================================= */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #24352d;
+}
+
+/* Contenedor principal */
+:host > div {
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 85vh;
+  padding: 40px 20px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(198, 222, 187, 0.48) 0%,
+      rgba(244, 247, 240, 0) 68%
+    ),
+    #f4f7f0;
+}
+
+/* Luz ambiental detrás de la tarjeta */
+:host > div::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+
+  width: min(480px, 90%);
+  height: 420px;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+  background: rgba(150, 190, 137, 0.22);
+  filter: blur(65px);
+  pointer-events: none;
+}
+
+/* Tarjeta del login */
+:host > div > div {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+
+  display: block;
+  flex: 0 1 430px;
+
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 36px 32px;
+
+  background: #ffffff;
+  border: 1px solid #e2eade;
+  border-radius: 24px;
+
+  box-shadow:
+    0 24px 60px rgba(44, 76, 49, 0.12),
+    0 4px 14px rgba(44, 76, 49, 0.05);
+
+  animation: gramio-appear 0.35s ease-out both;
+}
+
+/* Encabezado */
+:host h2 {
+  margin: 0;
+  color: #24583c;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+}
+
+:host header p {
+  margin-top: 10px;
+  color: #78867a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Etiquetas */
+:host label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #4b6252;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Campos */
+:host input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 49px;
+  padding: 13px 15px;
+
+  border: 1px solid #dce5dc;
+  border-radius: 11px;
+
+  background: #f8faf7;
+  color: #24352d;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+:host input::placeholder {
+  color: #a4afa5;
+}
+
+:host input:hover {
+  border-color: #bdcfbd;
+}
+
+:host input:focus {
+  border-color: #57976b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(87, 151, 107, 0.12);
+}
+
+/* Espaciado entre campos */
+:host form > div + div {
+  margin-top: 20px;
+}
+
+/* Error */
+:host form [role="alert"] {
+  padding: 13px 15px;
+  border: 1px solid #f1caca;
+  border-radius: 10px;
+  background: #fff3f1;
+  color: #b44242;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Botones */
+:host form > div:last-child {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+:host button {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 10px;
+
+  border: 0;
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: transform 0.18s ease, background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+:host button[type="submit"] {
+  background: #32764b;
+  color: #ffffff;
+  box-shadow: 0 5px 12px rgba(50, 118, 75, 0.16);
+}
+
+:host button[type="submit"]:hover:not(:disabled) {
+  background: #28643e;
+  box-shadow: 0 7px 17px rgba(50, 118, 75, 0.22);
+  transform: translateY(-2px);
+}
+
+:host button[routerLink] {
+  border: 1px solid #dce6dc;
+  background: #ffffff;
+  color: #376047;
+}
+
+:host button[routerLink]:hover:not(:disabled) {
+  background: #f0f6ef;
+  border-color: #b9d0bb;
+  transform: translateY(-2px);
+}
+
+:host button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+:host button:focus-visible,
+:host input:focus-visible {
+  outline: 3px solid rgba(69, 139, 88, 0.35);
+  outline-offset: 3px;
+}
+
+/* Animación */
+@keyframes gramio-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  :host > div {
+    min-height: 85vh;
+    padding: 24px 16px;
+  }
+
+  :host > div > div {
+    flex-basis: 430px;
+    padding: 30px 22px;
+    border-radius: 20px;
+  }
+
+  :host h2 {
+    font-size: 28px;
+  }
+
+  :host form > div:last-child {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  :host button {
+    flex: auto;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host > div > div {
+    animation: none;
+  }
+
+  :host button,
+  :host input {
+    transition: none;
+  }
+}
+
+/* Fondo ambiental desenfocado */
+:host > div {
+  background:
+    radial-gradient(
+      ellipse at 50% 45%,
+      rgba(181, 213, 166, 0.42) 0%,
+      rgba(218, 233, 207, 0.24) 35%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(151, 192, 139, 0.22),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(198, 222, 180, 0.32),
+      transparent 45%
+    ),
+    #f4f7f0;
+}
+
+/* Halo verde difuminado */
+:host > div::before {
+  width: min(650px, 110%);
+  height: 560px;
+
+  background: rgba(151, 190, 135, 0.24);
+  filter: blur(100px);
+  opacity: 0.9;
+}
+
+/* Manchas de luz suaves en el fondo */
+:host > div::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+
+  width: 300px;
+  height: 300px;
+  top: auto;
+  right: auto;
+  bottom: -100px;
+  left: -80px;
+
+  border-radius: 50%;
+  background: rgba(174, 207, 157, 0.28);
+  filter: blur(75px);
+  pointer-events: none;
+}

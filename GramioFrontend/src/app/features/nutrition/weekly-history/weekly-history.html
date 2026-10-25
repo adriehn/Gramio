@@ -1,0 +1,65 @@
+
+<main class="weekly-history">
+  <header class="page-header">
+    <div>
+      <h1>Historial semanal</h1>
+      <p>Revisá tu alimentación y compará tus promedios con tus objetivos.</p>
+    </div>
+  </header>
+
+  <section class="week-navigation" aria-label="Navegación entre semanas">
+    <button type="button" class="nav-button" (click)="previousWeek()">
+      ← Semana anterior
+    </button>
+
+    <div class="week-current">
+      <h2>{{ weekLabel }}</h2>
+
+      <label for="week-date">Ir a una fecha</label>
+      <input
+        id="week-date"
+        type="date"
+        [value]="selectedWeekStart"
+        (change)="onDateChange($event)"
+      />
+    </div>
+
+    <div class="next-controls">
+      <button
+        type="button"
+        class="nav-button"
+        (click)="nextWeek()"
+        [disabled]="isCurrentWeek"
+      >
+        Semana siguiente →
+      </button>
+
+      @if (!isCurrentWeek) {
+        <button type="button" class="current-button" (click)="currentWeek()">
+          Volver a esta semana
+        </button>
+      }
+    </div>
+  </section>
+
+  @if (loading) {
+    <div class="feedback" role="status">
+      Cargando historial semanal...
+    </div>
+  } @else if (errorMessage) {
+    <div class="feedback error" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button type="button" class="nav-button" (click)="loadWeek()">
+        Reintentar
+      </button>
+    </div>
+  } @else if (summary) {
+    <app-weekly-summary-cards
+      [averages]="summary.averages"
+      [registeredDays]="summary.progress.registeredDays"
+      [totalDays]="summary.progress.totalDays"
+    />
+
+    <app-weekly-days-table [days]="summary.days" />
+  }
+</main>

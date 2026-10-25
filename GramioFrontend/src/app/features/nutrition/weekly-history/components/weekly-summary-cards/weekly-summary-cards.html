@@ -1,0 +1,80 @@
+<section class="summary-grid">
+  <article class="summary-card">
+    <span class="card-label">Promedio diario de calorías</span>
+
+<div class="main-value">
+  @if (averages().kcal != null) {
+    {{ format(averages().kcal) }}
+    <span>kcal</span>
+  } @else {
+    —
+  }
+</div>
+
+<p class="card-detail">
+  Objetivo:
+  {{ format(averages().targetKcal) }} kcal/día
+</p>
+
+@if (calorieDifference !== null) {
+  <p class="difference" [class.positive]="calorieDifference <= 0">
+    {{ calorieDifference > 0 ? '+' : '' }}{{ format(calorieDifference) }}
+    kcal respecto al objetivo
+  </p>
+}
+
+  </article>
+
+  <article class="summary-card">
+    <span class="card-label">Promedio diario de proteínas</span>
+
+<div class="main-value">
+  @if (averages().proteinG != null) {
+    {{ format(averages().proteinG, 1) }}
+    <span>g</span>
+  } @else {
+    —
+  }
+</div>
+
+<p class="card-detail">
+  Objetivo:
+  {{ format(averages().targetProteinG) }} g/día
+</p>
+
+@if (proteinDifference !== null) {
+  <p class="difference" [class.positive]="proteinDifference >= 0">
+    {{ proteinDifference > 0 ? '+' : '' }}{{ format(proteinDifference, 1) }}
+    g respecto al objetivo
+  </p>
+}
+
+  </article>
+
+  <article class="summary-card progress-card">
+    <span class="card-label">Registro semanal</span>
+
+<div class="main-value">
+  {{ registeredDays() }}<span>/{{ totalDays() }}</span>
+</div>
+
+<p class="card-detail">Días con datos nutricionales</p>
+
+<div
+  class="progress-track"
+  role="progressbar"
+  aria-label="Días registrados en la semana"
+  [attr.aria-valuenow]="registeredDays()"
+  [attr.aria-valuemin]="0"
+  [attr.aria-valuemax]="totalDays()"
+>
+  <div
+    class="progress-fill"
+    [style.width.%]="totalDays() > 0
+      ? (registeredDays() / totalDays()) * 100
+      : 0"
+  ></div>
+</div>
+
+  </article>
+</section>

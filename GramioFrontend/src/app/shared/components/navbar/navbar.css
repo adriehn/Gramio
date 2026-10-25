@@ -1,0 +1,405 @@
+﻿
+:host {
+  display: block;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.gramio-navbar,
+.navbar-brand,
+.brand-link,
+.navbar-links,
+.navbar-link,
+.navbar-actions,
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.gramio-navbar {
+  min-height: 76px;
+  box-sizing: border-box;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 5%;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e2eade;
+  box-shadow: 0 3px 14px rgba(44, 76, 49, 0.035);
+}
+
+.navbar-brand {
+  flex-shrink: 0;
+}
+
+.brand-link {
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  color: #fff;
+  background: #32764b;
+  border-radius: 12px;
+  box-shadow: 0 4px 9px rgba(50, 118, 75, 0.16);
+}
+
+.brand-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.brand-name {
+  color: #24583c;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+/* Navegación */
+.navbar-links {
+  align-self: stretch;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.navbar-link {
+  position: relative;
+  align-self: stretch;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 12px;
+  color: #78867a;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.navbar-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: #32764b;
+}
+
+.navbar-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  background: #57976b;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Usuario y acciones */
+.navbar-actions {
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  gap: 9px;
+  min-width: 0;
+}
+
+.user-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #dce8da;
+  border-radius: 50%;
+  background: #edf5e9;
+  color: #32764b;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.user-email {
+  max-width: 180px;
+  overflow: hidden;
+  color: #78867a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botones */
+.logout-button,
+.login-button,
+.register-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 39px;
+  box-sizing: border-box;
+  padding: 9px 13px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease, transform 0.2s ease;
+}
+
+.logout-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.logout-button {
+  border: 1px solid #dce5dc;
+  background: #fff;
+  color: #4b6252;
+}
+
+.logout-button:hover {
+  border-color: #c4d7c4;
+  background: #f0f6ef;
+  color: #24583c;
+}
+
+.login-button {
+  border: 1px solid #32764b;
+  background: #32764b;
+  color: #fff;
+}
+
+.login-button:hover {
+  background: #28643e;
+  transform: translateY(-1px);
+}
+
+.register-button {
+  border: 1px solid #dce5dc;
+  background: #fff;
+  color: #32764b;
+}
+
+.register-button:hover {
+  background: #f0f6ef;
+  border-color: #c4d7c4;
+}
+
+.brand-link:focus-visible,
+.navbar-link:focus-visible,
+.logout-button:focus-visible,
+.login-button:focus-visible,
+.register-button:focus-visible {
+  outline: 3px solid rgba(87, 151, 107, 0.4);
+  outline-offset: 3px;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .gramio-navbar {
+    padding-right: 22px;
+    padding-left: 22px;
+    gap: 10px;
+  }
+
+  .navbar-link {
+    gap: 6px;
+    padding: 0 7px;
+    font-size: 12px;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .user-email {
+    max-width: 110px;
+  }
+}
+
+/* Mobile: marca arriba, navegación abajo */
+@media (max-width: 640px) {
+  .gramio-navbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand actions"
+      "links links";
+    align-items: center;
+    gap: 12px 10px;
+    min-height: auto;
+    padding: 13px 16px 10px;
+  }
+
+  .navbar-brand {
+    grid-area: brand;
+    min-width: 0;
+  }
+
+  .brand-link {
+    gap: 8px;
+  }
+
+  .brand-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+  }
+
+  .brand-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .brand-name {
+    font-size: 22px;
+  }
+
+  .navbar-actions {
+    grid-area: actions;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .user-info {
+    gap: 0;
+  }
+
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .user-email {
+    display: none;
+  }
+
+  .logout-button {
+    width: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 11px;
+  }
+
+  .logout-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .logout-label {
+    display: none;
+  }
+
+  .navbar-links {
+    grid-area: links;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .navbar-link {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    min-height: 43px;
+    padding: 8px 5px;
+    border: 1px solid #e2eade;
+    border-radius: 12px;
+    background: #f8faf6;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .navbar-link svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .navbar-link.active {
+    border-color: #c9dfc8;
+    background: #edf5e9;
+    color: #28643e;
+  }
+
+  .navbar-link.active::after {
+    display: none;
+  }
+
+  .navbar-actions .login-button,
+  .navbar-actions .register-button {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Celulares muy angostos */
+@media (max-width: 360px) {
+  .gramio-navbar {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .navbar-link {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .navbar-link svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .navbar-actions {
+    gap: 5px;
+  }
+
+  .navbar-actions .login-button,
+  .navbar-actions .register-button {
+    padding-right: 7px;
+    padding-left: 7px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+.brand-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform: scale(1.3);
+}

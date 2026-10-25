@@ -1,0 +1,125 @@
+﻿
+<div class="home-container">
+  <section class="hero-card">
+    <span class="badge">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path d="M11 20A7 7 0 0 1 4 13c0-4 4-8 9-9-1 5-1 8-5 11" />
+        <path d="M11 20c0-5 3-9 8-11 1 5-2 10-8 11Z" />
+      </svg>
+      Gestión nutricional y pesajes
+    </span>
+
+    <h1 class="hero-title">
+      Controlá tu progreso,
+      <span class="title-highlight">alcanzá tus objetivos.</span>
+    </h1>
+
+    <p class="hero-description">
+      Calculá tu gasto metabólico, definí tus objetivos calóricos y
+      registrá tus progresos con herramientas diseñadas para acompañar
+      tu evolución.
+    </p>
+
+    <div class="actions">
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/perfil" class="btn-primary">
+          Ir a mi perfil metabólico
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <path d="M5 12h14m-7-7 7 7-7 7" />
+          </svg>
+        </a>
+      } @else {
+        <a routerLink="/login" class="btn-primary">
+          Comenzar ahora
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true">
+            <path d="M5 12h14m-7-7 7 7-7 7" />
+          </svg>
+        </a>
+
+        <a routerLink="/login" class="btn-secondary">
+          Ya tengo cuenta
+        </a>
+      }
+    </div>
+
+    <div class="hero-note">
+      <span class="status-dot"></span>
+      <span>Tu progreso, tus datos, tus objetivos.</span>
+    </div>
+  </section>
+
+  <section class="features-section" aria-label="Funcionalidades de Gramio">
+    <div class="section-heading">
+      <span class="section-eyebrow">Todo en un solo lugar</span>
+      <h2>Herramientas para tu progreso</h2>
+      <p>Información clara para tomar mejores decisiones.</p>
+    </div>
+
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon icon-green">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="1.8" aria-hidden="true">
+            <rect x="5" y="3" width="14" height="18" rx="2" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 7h6m-6 4h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6" />
+          </svg>
+        </div>
+
+        <span class="feature-number">01 / METABOLISMO</span>
+        <h3>Fórmulas metabólicas</h3>
+        <p>
+          Estimá tu metabolismo basal con métodos como Mifflin-St Jeor,
+          Harris-Benedict o Katch-McArdle, según los datos disponibles.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon icon-blue">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M13 2 4 14h7l-1 8 10-12h-7l1-8Z" />
+          </svg>
+        </div>
+
+        <span class="feature-number">02 / OBJETIVOS</span>
+        <h3>Objetivos personalizados</h3>
+        <p>
+          Organizá tus objetivos calóricos y consultá la distribución
+          de proteínas, grasas y fibra según tu planificación.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon icon-amber">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 3v18h18M7 14l4-4 4 4 6-7" />
+          </svg>
+        </div>
+
+        <span class="feature-number">03 / SEGUIMIENTO</span>
+        <h3>Diario de pesajes</h3>
+        <p>
+          Registrá tu peso y observá su evolución a lo largo del tiempo
+          para comparar la tendencia con tus objetivos.
+        </p>
+      </article>
+    </div>
+  </section>
+</div>

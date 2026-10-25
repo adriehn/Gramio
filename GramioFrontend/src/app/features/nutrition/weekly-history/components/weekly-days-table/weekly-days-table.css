@@ -1,0 +1,149 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: #263b2d;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  margin-top: 27px;
+}
+
+*, :host * {
+  box-sizing: border-box;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 19px;
+}
+
+.section-heading h2 {
+  margin: 5px 0 0;
+  color: #2b4e35;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.35px;
+  line-height: 1.35;
+}
+
+.section-heading p {
+  color: #78867a;
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 8px 0 20px;
+}
+
+.table-section {
+  min-width: 0;
+}
+
+.table-wrapper {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e2eade;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 5px 22px rgba(44, 76, 49, 0.045);
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+thead {
+  background: #f3f8ee;
+}
+
+th {
+  padding: 14px 13px;
+  border-bottom: 1px solid #dfe9da;
+  color: #526a55;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.45px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+td {
+  padding: 15px 13px;
+  border-bottom: 1px solid #edf1e9;
+  color: #526454;
+  vertical-align: middle;
+}
+
+tbody tr td {
+  border-bottom: 0;
+}
+
+tbody tr {
+  background: #f9fbf7;
+  border-bottom: 1px solid #edf1e9;
+}
+
+.day-name {
+  display: block;
+  color: #354e39;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.day-date {
+  display: block;
+  margin-top: 4px;
+  color: #879387;
+  font-size: 10px;
+}
+
+.empty-day {
+  color: #a0aaa0;
+  font-size: 11px;
+  font-style: italic;
+  background: #fbfcfa;
+}
+
+.muted {
+  color: #879387;
+  font-size: 10px;
+}
+
+.notes-cell {
+  max-width: 230px;
+  min-width: 160px;
+  color: #617264;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.table-footnote {
+  padding-top: 18px;
+  margin: 13px 0 0;
+  color: #859085;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .table-wrapper {
+    border-radius: 15px;
+  }
+  .section-heading {
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 15px;
+  }
+  .section-heading h2 {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,633 @@
+﻿<div class="profile-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">GRAMIO · NUTRICIÓN PERSONALIZADA</span>
+      <h1>Perfil metabólico</h1>
+      <p>
+        Entendé tu gasto energético y configurá objetivos adaptados a tus necesidades.
+      </p>
+    </div>
+  </header>
+
+  <div class="profile-layout">
+    <main class="settings-card">
+      <section class="form-section" aria-labelledby="anthropometry-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">01 · TUS DATOS</span>
+            <h2 id="anthropometry-title">Antropometría</h2>
+          </div>
+
+          <button
+            type="button"
+            class="info-button"
+            aria-label="Información sobre las fórmulas metabólicas"
+            aria-haspopup="dialog"
+            (click)="openModal('formula', $event)">
+            ?
+          </button>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field">
+            <label for="sex">Sexo utilizado por la fórmula</label>
+            <select
+              id="sex"
+              name="sex"
+              [ngModel]="sex()"
+              (ngModelChange)="sex.set($event)">
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="age">Edad (años)</label>
+            <input
+              id="age"
+              name="age"
+              type="number"
+              min="1"
+              max="120"
+              step="1"
+              inputmode="numeric"
+              [ngModel]="age()"
+              (ngModelChange)="age.set(+$event)" />
+          </div>
+
+          <div class="field">
+            <label for="weight">Peso (kg)</label>
+            <input
+              id="weight"
+              name="weight"
+              type="number"
+              min="1"
+              max="500"
+              step="0.1"
+              inputmode="decimal"
+              [ngModel]="weightKg()"
+              (ngModelChange)="weightKg.set(+$event)" />
+          </div>
+
+          <div class="field">
+            <label for="height">Altura (cm)</label>
+            <input
+              id="height"
+              name="height"
+              type="number"
+              min="50"
+              max="260"
+              step="0.1"
+              inputmode="decimal"
+              [ngModel]="heightCm()"
+              (ngModelChange)="heightCm.set(+$event)" />
+          </div>
+
+          <div class="field">
+            <label for="bodyFat">Grasa corporal (%)</label>
+            <input
+              id="bodyFat"
+              name="bodyFat"
+              type="number"
+              min="1"
+              max="75"
+              step="0.1"
+              inputmode="decimal"
+              placeholder="Opcional"
+              [ngModel]="bodyFatPct() ?? null"
+              (ngModelChange)="bodyFatPct.set($event === '' || $event == null ? undefined : +$event)" />
+            <span class="field-hint">
+              Solo se utiliza cuando corresponde a la fórmula seleccionada.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="formula">Fórmula de TMB</label>
+            <select
+              id="formula"
+              name="formula"
+              [ngModel]="formula()"
+              (ngModelChange)="formula.set($event)">
+              <option value="mifflin">Mifflin-St Jeor</option>
+              <option value="harris">Harris-Benedict</option>
+              <option value="katch">Katch-McArdle</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="activity-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">02 · TU GASTO</span>
+            <h2 id="activity-title">Actividad y objetivo</h2>
+          </div>
+
+          <button
+            type="button"
+            class="info-button"
+            aria-label="Cómo influye la actividad física"
+            aria-haspopup="dialog"
+            (click)="openModal('activity', $event)">
+            ?
+          </button>
+        </div>
+
+        <div class="fields-grid fields-grid-two">
+          <div class="field">
+            <label for="activity">Nivel de actividad</label>
+            <select
+              id="activity"
+              name="activity"
+              [ngModel]="activityFactor()"
+              (ngModelChange)="activityFactor.set(+$event)">
+              <option [ngValue]="1.2">Sedentario · 1,20</option>
+              <option [ngValue]="1.375">Ligero · 1,375</option>
+              <option [ngValue]="1.55">Moderado · 1,55</option>
+              <option [ngValue]="1.725">Alto · 1,725</option>
+            </select>
+            <span class="field-hint">
+              Elegí el valor que mejor represente tu actividad total.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="goal">Objetivo energético</label>
+            <select
+              id="goal"
+              name="goal"
+              [ngModel]="goalType()"
+              (ngModelChange)="setGoalType($event)">
+              <option value="deficit">Déficit calórico</option>
+              <option value="maintenance">Mantenimiento</option>
+              <option value="surplus">Superávit calórico</option>
+            </select>
+
+            <button
+              type="button"
+              class="inline-info"
+              aria-haspopup="dialog"
+              (click)="openModal('goal', $event)">
+              ¿Cómo se elige?
+            </button>
+          </div>
+
+          <div class="field field-full">
+            <label for="adjustment">Ajuste respecto del TDEE (kcal)</label>
+            <input
+              id="adjustment"
+              name="adjustment"
+              type="number"
+              step="50"
+              inputmode="numeric"
+              [ngModel]="kcalAdjustment()"
+              (ngModelChange)="onKcalAdjustmentChange(+$event)" />
+            <span class="field-hint">
+              Negativo = déficit · 0 = mantenimiento · Positivo = superávit.
+              Este ajuste modifica tu objetivo estimado.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="nutrients-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">03 · TU ALIMENTACIÓN</span>
+            <h2 id="nutrients-title">Macronutrientes y fibra</h2>
+          </div>
+        </div>
+
+        <div class="nutrient-settings">
+          <div class="nutrient-setting">
+            <div class="nutrient-setting-heading">
+              <span class="nutrient-dot protein-dot" aria-hidden="true"></span>
+              <label for="protein">Proteínas</label>
+            </div>
+
+            <div class="input-with-unit">
+              <input
+                id="protein"
+                name="protein"
+                type="number"
+                min="0"
+                step="0.1"
+                inputmode="decimal"
+                [ngModel]="proteinRatio()"
+                (ngModelChange)="proteinRatio.set(+$event)" />
+              <span aria-hidden="true">g/kg</span>
+            </div>
+
+            <p class="field-hint">Construcción y reparación de tejidos.</p>
+          </div>
+
+          <div class="nutrient-setting">
+            <div class="nutrient-setting-heading">
+              <span class="nutrient-dot fat-dot" aria-hidden="true"></span>
+              <label for="fatMode">Grasas</label>
+            </div>
+
+            <select
+              id="fatMode"
+              name="fatMode"
+              [ngModel]="fatMode()"
+              (ngModelChange)="fatMode.set($event)">
+              <option value="per_kg">Gramos por kg</option>
+              <option value="percent_kcal">Porcentaje de calorías</option>
+            </select>
+
+            <div class="input-with-unit">
+              <input
+                id="fatValue"
+                name="fatValue"
+                type="number"
+                min="0"
+                step="0.1"
+                inputmode="decimal"
+                [attr.aria-label]="fatMode() === 'per_kg'
+                  ? 'Grasas en gramos por kilo'
+                  : 'Porcentaje de calorías provenientes de grasas'"
+                [ngModel]="fatValue()"
+                (ngModelChange)="fatValue.set(+$event)" />
+              <span aria-hidden="true">
+                {{ fatMode() === 'per_kg' ? 'g/kg' : '%' }}
+              </span>
+            </div>
+
+            <p class="field-hint">
+              Energía, membranas celulares y vitaminas.
+            </p>
+          </div>
+
+          <div class="nutrient-setting">
+            <div class="nutrient-setting-heading">
+              <span class="nutrient-dot fiber-dot" aria-hidden="true"></span>
+              <label for="fiberMode">Fibra</label>
+            </div>
+
+            <select
+              id="fiberMode"
+              name="fiberMode"
+              [ngModel]="fiberMode()"
+              (ngModelChange)="fiberMode.set($event)">
+              <option value="per_1000kcal">Gramos por 1.000 kcal</option>
+              <option value="fixed">Cantidad fija en gramos</option>
+            </select>
+
+            <div class="input-with-unit">
+              <input
+                id="fiberValue"
+                name="fiberValue"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="decimal"
+                [attr.aria-label]="fiberMode() === 'per_1000kcal'
+                  ? 'Fibra por cada mil calorías'
+                  : 'Cantidad fija de fibra en gramos'"
+                [ngModel]="fiberValue()"
+                (ngModelChange)="fiberValue.set(+$event)" />
+              <span aria-hidden="true">
+                {{ fiberMode() === 'per_1000kcal' ? 'g/1.000 kcal' : 'g' }}
+              </span>
+            </div>
+
+            <p class="field-hint">
+              Salud intestinal, saciedad y microbiota.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="summary-card" aria-label="Resumen nutricional calculado">
+      <div class="summary-content">
+        <span class="section-kicker">TU RESUMEN</span>
+        <h2>Tu objetivo diario</h2>
+
+        <p class="summary-description">
+          Una estimación inicial que podés ajustar según tu evolución.
+        </p>
+
+        @if (preview(); as target) {
+          <div class="calorie-card">
+            <div class="calorie-label">Objetivo energético</div>
+
+            <div class="calorie-number">
+              {{ target.targetKcal | number:'1.0-0' }}
+              <span>kcal/día</span>
+            </div>
+
+            <div class="calorie-context">
+              <div>
+                <span>TMB</span>
+                <strong>{{ target.bmr | number:'1.0-0' }}</strong>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Qué es la TMB"
+                  aria-haspopup="dialog"
+                  (click)="openModal('tmb', $event)">
+                  ?
+                </button>
+              </div>
+
+              <div>
+                <span>TDEE</span>
+                <strong>{{ target.tdee | number:'1.0-0' }}</strong>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Qué es el TDEE"
+                  aria-haspopup="dialog"
+                  (click)="openModal('tdee', $event)">
+                  ?
+                </button>
+              </div>
+            </div>
+
+            <div class="goal-indicator">
+              <span class="goal-indicator-dot" aria-hidden="true"></span>
+              {{
+                goalType() === 'deficit'
+                  ? 'Objetivo de déficit'
+                  : goalType() === 'surplus'
+                    ? 'Objetivo de superávit'
+                    : 'Objetivo de mantenimiento'
+              }}
+            </div>
+          </div>
+
+          <div class="macro-list" aria-label="Objetivos diarios de nutrientes">
+            <div class="macro-row">
+              <div class="macro-name">
+                <span class="nutrient-dot protein-dot" aria-hidden="true"></span>
+                <span>Proteínas</span>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Información sobre proteínas"
+                  aria-haspopup="dialog"
+                  (click)="openModal('protein', $event)">
+                  ?
+                </button>
+              </div>
+              <strong>{{ target.proteinG | number:'1.0-0' }} g</strong>
+            </div>
+
+            <div class="macro-row">
+              <div class="macro-name">
+                <span class="nutrient-dot fat-dot" aria-hidden="true"></span>
+                <span>Grasas</span>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Información sobre grasas"
+                  aria-haspopup="dialog"
+                  (click)="openModal('fat', $event)">
+                  ?
+                </button>
+              </div>
+              <strong>{{ target.fatG | number:'1.0-0' }} g</strong>
+            </div>
+
+            <div class="macro-row">
+              <div class="macro-name">
+                <span class="nutrient-dot carbs-dot" aria-hidden="true"></span>
+                <span>Carbohidratos</span>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Información sobre carbohidratos"
+                  aria-haspopup="dialog"
+                  (click)="openModal('carbs', $event)">
+                  ?
+                </button>
+              </div>
+              <strong>{{ target.carbsG | number:'1.0-0' }} g</strong>
+            </div>
+
+            <div class="macro-row">
+              <div class="macro-name">
+                <span class="nutrient-dot fiber-dot" aria-hidden="true"></span>
+                <span>Fibra</span>
+                <button
+                  type="button"
+                  class="metric-help"
+                  aria-label="Información sobre fibra"
+                  aria-haspopup="dialog"
+                  (click)="openModal('fiber', $event)">
+                  ?
+                </button>
+              </div>
+              <strong>{{ target.fiberG | number:'1.0-0' }} g</strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="distribution-card"
+            aria-haspopup="dialog"
+            (click)="openModal('distribution', $event)">
+            <span class="distribution-icon" aria-hidden="true">↗</span>
+            <span class="distribution-copy">
+              <strong>¿Por qué estos nutrientes?</strong>
+              <small>
+                Descubrí cómo se relacionan las calorías y los macros.
+              </small>
+            </span>
+            <span class="distribution-arrow" aria-hidden="true">→</span>
+          </button>
+        } @else {
+          <div class="error-message" role="status">
+            <strong>Completá tus datos para ver el cálculo.</strong>
+            <p>
+              Revisá la edad, el peso, la altura, la actividad y los valores
+              de los nutrientes. Si elegís Katch-McArdle, también necesitás
+              ingresar el porcentaje de grasa corporal.
+            </p>
+          </div>
+        }
+
+        @if (serviceError(); as err) {
+          <div class="error-message service-error" role="alert">
+            {{ err.userMessage }}
+          </div>
+        }
+
+        @if (saveSuccess()) {
+          <div class="success-message" role="status">
+            <span aria-hidden="true">✓</span>
+            ¡Tu objetivo activo se actualizó correctamente!
+          </div>
+        }
+      </div>
+
+      <div class="summary-footer">
+        <p>
+          Los resultados son estimaciones. La evolución real puede requerir ajustes.
+        </p>
+
+        <button
+          type="button"
+          class="save-button"
+          (click)="save()"
+          [disabled]="isLoading() || !preview()"
+          [attr.aria-busy]="isLoading()">
+          @if (isLoading()) {
+            Guardando...
+          } @else {
+            Guardar objetivo activo
+          }
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+@if (activeModal(); as topic) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <section
+      #modalDialog
+      class="education-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="education-modal-title"
+      tabindex="-1"
+      (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+        <div>
+          <span class="section-kicker">GRAMIO · APRENDÉ NUTRICIÓN</span>
+          <h2 id="education-modal-title">
+            {{ educationContent[topic].title }}
+          </h2>
+        </div>
+
+        <button
+          #modalCloseButton
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar explicación"
+          (click)="closeModal()">
+          ×
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="modal-intro">
+          {{ educationContent[topic].intro }}
+        </p>
+
+        @if (preview(); as target) {
+          @if (topic === 'tmb') {
+            <div class="modal-metric">
+              <span>Tu TMB estimada</span>
+              <strong>{{ target.bmr | number:'1.0-0' }} kcal/día</strong>
+              <small>Calculada con la fórmula que seleccionaste.</small>
+            </div>
+          }
+
+          @if (topic === 'tdee') {
+            <div class="modal-metric">
+              <span>Tu TDEE estimado</span>
+              <strong>{{ target.tdee | number:'1.0-0' }} kcal/día</strong>
+              <small>
+                Incluye la estimación de actividad a partir de tu TMB.
+              </small>
+            </div>
+          }
+
+          @if (topic === 'goal') {
+            <div class="modal-metric">
+              <span>Tu objetivo actual</span>
+              <strong>{{ target.targetKcal | number:'1.0-0' }} kcal/día</strong>
+              <small>
+                Diferencia respecto del TDEE:
+                {{ target.targetKcal - target.tdee | number:'1.0-0' }} kcal.
+              </small>
+            </div>
+          }
+
+          @if (topic === 'distribution') {
+            <div class="modal-metric">
+              <span>Tu objetivo energético actual</span>
+              <strong>{{ target.targetKcal | number:'1.0-0' }} kcal/día</strong>
+              <small>
+                Proteínas: {{ target.proteinG | number:'1.0-0' }} g ·
+                Grasas: {{ target.fatG | number:'1.0-0' }} g ·
+                Carbohidratos: {{ target.carbsG | number:'1.0-0' }} g
+              </small>
+            </div>
+          }
+        }
+
+        <h3 class="modal-subheading">Lo importante</h3>
+
+        <ul class="education-points">
+          @for (point of educationContent[topic].points; track $index) {
+            <li>
+              <span class="point-check" aria-hidden="true">✓</span>
+              <span>{{ point }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="takeaway-card">
+          <span class="takeaway-label">PARA RECORDAR</span>
+          <p>{{ educationContent[topic].takeaway }}</p>
+        </div>
+
+        @if (topic === 'distribution') {
+          <div class="energy-reference">
+            <h3>Equivalencias energéticas aproximadas</h3>
+
+            <div class="energy-reference-row">
+              <span>
+                <span class="nutrient-dot protein-dot" aria-hidden="true"></span>
+                Proteínas
+              </span>
+              <strong>4 kcal/g</strong>
+            </div>
+
+            <div class="energy-reference-row">
+              <span>
+                <span class="nutrient-dot carbs-dot" aria-hidden="true"></span>
+                Carbohidratos disponibles
+              </span>
+              <strong>4 kcal/g</strong>
+            </div>
+
+            <div class="energy-reference-row">
+              <span>
+                <span class="nutrient-dot fat-dot" aria-hidden="true"></span>
+                Grasas
+              </span>
+              <strong>9 kcal/g</strong>
+            </div>
+
+            <p>
+              Son equivalencias generales. La fibra, los polioles y los
+              factores específicos de los alimentos pueden modificar
+              los cálculos energéticos.
+            </p>
+          </div>
+        }
+
+        <p class="modal-disclaimer">
+          Información educativa general. No sustituye una evaluación
+          individual de un profesional de nutrición.
+        </p>
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="save-button modal-done"
+          (click)="closeModal()">
+          Entendido
+        </button>
+      </footer>
+    </section>
+  </div>
+}

@@ -1,0 +1,1453 @@
+:host {
+    display: block;
+    min-height: calc(100vh - 76px);
+    color: #263b2d;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(ellipse at 8% 4%, rgba(180, 220, 177, 0.2), transparent 32%),
+        #f4f7f0;
+}
+
+:host,
+:host * {
+    box-sizing: border-box;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 3px solid rgba(68, 133, 85, 0.3);
+    outline-offset: 3px;
+}
+
+.diary-page {
+    width: min(100%, 1320px);
+    margin: 0 auto;
+    padding: 32px 24px 52px;
+}
+
+.diary-header {
+    margin-bottom: 24px;
+}
+
+.eyebrow,
+.section-kicker {
+    display: block;
+    color: #47805a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.diary-header h1 {
+    margin: 8px 0;
+    color: #24583c;
+    font-size: clamp(27px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.8px;
+}
+
+.diary-header p,
+.summary-intro {
+    margin: 0;
+    color: #78867a;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.session-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 13px 16px;
+    border: 1px solid #dcebd7;
+    border-radius: 12px;
+    background: #f5faf1;
+    color: #58705b;
+    font-size: 12px;
+}
+
+.session-info>div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #57976b;
+    box-shadow: 0 0 0 4px #e0efdc;
+}
+
+.diary-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    align-items: start;
+    gap: 22px;
+}
+
+.main-column {
+    display: grid;
+    min-width: 0;
+    gap: 20px;
+}
+
+.panel,
+.summary-panel,
+.status-card {
+    min-width: 0;
+    padding: 23px;
+    border: 1px solid #e2eade;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 5px 22px rgba(44, 76, 49, 0.045);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.panel-heading h2,
+.summary-panel h2 {
+    margin: 5px 0 0;
+    color: #2b4e35;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.panel>label,
+.form-field label,
+.grams-control>label {
+    display: block;
+    margin-bottom: 8px;
+    color: #617264;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    color: #729078;
+    font-size: 24px;
+    transform: translateY(-53%);
+    pointer-events: none;
+}
+
+.search-wrapper input,
+.form-field input,
+.form-field select,
+.grams-control input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 45px;
+    padding: 11px 13px;
+    border: 1px solid #dce5dc;
+    border-radius: 10px;
+    background: #f8faf7;
+    color: #2e4535;
+    font-size: 13px;
+}
+
+.search-wrapper input {
+    padding-left: 43px;
+}
+
+.search-wrapper input:focus,
+.form-field input:focus,
+.form-field select:focus,
+.grams-control input:focus {
+    border-color: #57976b;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(87, 151, 107, 0.12);
+}
+
+input:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.hint {
+    margin: 7px 0 0;
+    color: #879387;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.search-results {
+    display: grid;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 6px;
+    border: 1px solid #e2eade;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.food-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #344d39;
+    text-align: left;
+    cursor: pointer;
+}
+
+.food-result:hover {
+    background: #f1f7ed;
+}
+
+.food-result>span:first-child,
+.result-kcal {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.food-result strong {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.food-result small,
+.result-kcal small {
+    color: #839083;
+    font-size: 10px;
+}
+
+.result-kcal {
+    flex-shrink: 0;
+    color: #3b6945;
+    font-size: 11px;
+    font-weight: 750;
+    text-align: right;
+}
+
+.empty-results,
+.empty-state,
+.empty-group {
+    color: #879387;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.selected-food {
+    margin-top: 19px;
+    padding-top: 19px;
+    border-top: 1px solid #e7ede4;
+}
+
+.selected-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.selected-heading h3,
+.meal-card h3 {
+    margin: 5px 0;
+    color: #2b4e35;
+    font-size: 16px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.selected-heading p {
+    margin: 0;
+    color: #879387;
+    font-size: 11px;
+}
+
+.text-button {
+    padding: 7px 0;
+    border: 0;
+    background: transparent;
+    color: #32764b;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.text-button:hover {
+    color: #205b35;
+    text-decoration: underline;
+}
+
+.grams-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.grams-control>label {
+    margin: 0;
+}
+
+.grams-control>div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: min(230px, 55%);
+}
+
+.grams-control input {
+    min-height: 42px;
+}
+
+.grams-control>div>span {
+    flex-shrink: 0;
+    color: #718071;
+    font-size: 11px;
+}
+
+.preview-card {
+    margin-top: 17px;
+    padding: 16px;
+    border: 1px solid #dcebd7;
+    border-radius: 13px;
+    background: #f5f9f2;
+}
+
+.preview-calories {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #e0e9dc;
+}
+
+.preview-calories span {
+    color: #6d7e6e;
+    font-size: 12px;
+}
+
+.preview-calories strong {
+    color: #24583c;
+    font-size: 19px;
+    font-variant-numeric: tabular-nums;
+}
+
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.macro-grid>div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.macro-grid span {
+    color: #78867a;
+    font-size: 10px;
+}
+
+.macro-grid strong {
+    color: #344d39;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 45px;
+    padding: 11px 15px;
+    border: 1px solid #32764b;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.primary-button {
+    margin-top: 15px;
+    background: #32764b;
+    color: #fff;
+}
+
+.primary-button:hover:not(:disabled) {
+    border-color: #28643e;
+    background: #28643e;
+}
+
+.secondary-button {
+    border-color: #d4e4d0;
+    background: #f0f7ec;
+    color: #32764b;
+}
+
+.secondary-button:hover:not(:disabled) {
+    border-color: #b9d4b5;
+    background: #e6f2e1;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.notice {
+    margin: 15px 0 0;
+    padding: 12px;
+    border: 1px solid #e5e8d5;
+    border-radius: 10px;
+    background: #fbfaef;
+    color: #7b7047;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* Grupos */
+
+.group-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 12px;
+}
+
+.form-field {
+    min-width: 0;
+}
+
+.group-form .secondary-button {
+    grid-column: 1 / -1;
+}
+
+.empty-state {
+    margin-top: 17px;
+    padding: 15px;
+    border: 1px dashed #dce5dc;
+    border-radius: 11px;
+    text-align: center;
+}
+
+.group-list {
+    display: grid;
+    gap: 13px;
+    margin-top: 20px;
+}
+
+.meal-card {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e2eade;
+    border-radius: 13px;
+    background: #fff;
+}
+
+.meal-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.meal-order {
+    color: #7b8b7c;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+}
+
+.meal-card h3 {
+    margin-top: 5px;
+    font-size: 15px;
+}
+
+.group-status {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #f0f2ee;
+    color: #768076;
+    font-size: 9px;
+    font-weight: 750;
+}
+
+.group-status-open {
+    background: #e9f5e5;
+    color: #32764b;
+}
+
+.empty-group {
+    margin: 10px 0;
+}
+
+.entry-list {
+    display: grid;
+    margin-top: 10px;
+}
+
+.entry-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid #edf1ea;
+}
+
+.entry-row>div:first-child,
+.entry-nutrients {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.entry-row strong {
+    color: #435746;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.entry-row small {
+    color: #849084;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.entry-nutrients {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.meal-totals {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px;
+    margin-top: 10px;
+    padding-top: 13px;
+    border-top: 1px solid #e5ece2;
+    color: #647564;
+    font-size: 11px;
+}
+
+.meal-totals strong {
+    color: #2f5c3b;
+}
+
+.meal-totals small {
+    grid-column: 1 / -1;
+    color: #829082;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.finish-group {
+    margin-top: 10px;
+}
+
+/* Resumen diario */
+
+.summary-panel {
+    position: sticky;
+    top: 18px;
+}
+
+.summary-intro {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.daily-calories {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 20px;
+    padding: 19px 15px;
+    border: 1px solid #dce8d7;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #f3f8ee, #fbfdf9);
+}
+
+.daily-calories span {
+    color: #78867a;
+    font-size: 11px;
+}
+
+.daily-calories strong {
+    color: #24583c;
+    font-size: clamp(29px, 3vw, 39px);
+    font-weight: 850;
+    letter-spacing: -1px;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.daily-calories small {
+    color: #78867a;
+    font-size: 11px;
+}
+
+.daily-macros {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.daily-macros>div {
+    display: grid;
+    grid-template-columns: 9px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    color: #637364;
+    font-size: 11px;
+}
+
+.daily-macros strong {
+    color: #344d39;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.macro-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.protein {
+    background: #40865a;
+}
+
+.carbs {
+    background: #548eb2;
+}
+
+.fat {
+    background: #bd8a32;
+}
+
+.fiber {
+    background: #8a6bb3;
+}
+
+.summary-footnote {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e7ede4;
+    color: #879387;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.close-day-button {
+    margin-top: 19px;
+}
+
+.status-card {
+    max-width: 600px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.status-card h2 {
+    margin: 0 0 8px;
+    color: #2b4e35;
+    font-size: 18px;
+}
+
+.status-card p {
+    color: #78867a;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.error-banner {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: min(450px, calc(100% - 40px));
+    padding: 14px 16px;
+    border: 1px solid #f1caca;
+    border-radius: 12px;
+    background: #fff3f1;
+    color: #a83c3c;
+    box-shadow: 0 10px 35px rgba(40, 50, 40, 0.12);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.error-banner button {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 4px 7px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+    .diary-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .summary-panel {
+        position: static;
+    }
+
+    .daily-macros {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .diary-page {
+        padding: 23px 13px 32px;
+    }
+
+    .panel,
+    .summary-panel,
+    .status-card {
+        padding: 17px 14px;
+        border-radius: 14px;
+    }
+
+    .session-info {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .macro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grams-control {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .grams-control>div {
+        width: 100%;
+    }
+
+    .group-form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .group-form .secondary-button {
+        grid-column: auto;
+    }
+
+    .entry-row {
+        flex-direction: column;
+    }
+
+    .entry-nutrients {
+        text-align: left;
+    }
+
+    .daily-macros {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+.group-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.delete-group-button {
+    color: #b42318;
+}
+
+.group-actions button:disabled,
+.modal-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgb(20 30 24 / 65%);
+    overflow-y: auto;
+}
+
+.diary-modal {
+    width: min(100%, 440px);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    padding: 1.5rem;
+    border: 1px solid #dce7dc;
+    border-radius: 18px;
+    background: #fffdf7;
+    color: #26372b;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
+}
+
+.diary-modal h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+}
+
+.diary-modal p {
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+    color: #58665b;
+}
+
+.diary-modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.diary-modal label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.diary-modal input,
+.diary-modal select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem;
+    border: 1px solid #cbd8cb;
+    border-radius: 9px;
+    background: #fff;
+    color: #26372b;
+    font: inherit;
+}
+
+.diary-modal input:focus-visible,
+.diary-modal select:focus-visible,
+.modal-actions button:focus-visible {
+    outline: 3px solid #7dbb8a;
+    outline-offset: 2px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.modal-actions button {
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 9px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-button {
+    background: #287447;
+    color: white;
+}
+
+.secondary-button {
+    background: #e8eee7;
+    color: #26372b;
+}
+
+.danger-button {
+    background: #b42318;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .modal-backdrop {
+        align-items: flex-end;
+        padding: 0.5rem;
+    }
+
+    .diary-modal {
+        padding: 1.25rem;
+        border-radius: 16px;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}
+
+
+/* Evitar desbordamientos de contenido */
+.diary-page,
+.diary-layout,
+.main-column,
+.panel,
+.summary-panel,
+.meal-card,
+.selected-food,
+.entry-row > div {
+  min-width: 0;
+}
+
+.diary-page {
+  overflow-wrap: anywhere;
+}
+
+.search-results,
+.food-result,
+.entry-row,
+.meal-card-header,
+.meal-totals,
+.daily-macros > div {
+  min-width: 0;
+}
+
+.food-result > span:first-child {
+  flex: 1;
+}
+
+.result-kcal {
+  max-width: 42%;
+  white-space: normal;
+}
+
+/* Mejor comportamiento de los botones */
+.diary-page button {
+  max-width: 100%;
+  touch-action: manipulation;
+}
+
+.diary-page button:disabled {
+  cursor: not-allowed;
+}
+
+.text-button {
+  min-height: 36px;
+  padding: 8px 4px;
+}
+
+/* Los valores nutricionales largos no deben romper la tarjeta */
+.entry-nutrients small,
+.meal-totals small,
+.summary-footnote,
+.hint,
+.notice,
+.empty-state,
+.error-banner {
+  overflow-wrap: anywhere;
+}
+
+.daily-macros strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* Mensaje de error con espacio para pantallas pequeñas */
+.error-banner {
+  max-width: calc(100vw - 40px);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .diary-page {
+    padding: 20px 12px 32px;
+  }
+
+  .diary-header {
+    margin-bottom: 20px;
+  }
+
+  .diary-header p {
+    max-width: 42rem;
+  }
+
+  .session-info > span {
+    overflow-wrap: anywhere;
+  }
+
+  .food-result {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 9px;
+  }
+
+  .macro-grid {
+    gap: 14px 10px;
+  }
+
+  .preview-calories {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .meal-card-header {
+    flex-wrap: wrap;
+  }
+
+  .group-actions {
+    gap: 8px 14px;
+  }
+
+  .error-banner {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: calc(100% - 24px);
+    max-width: none;
+  }
+
+  /* Modal tipo hoja inferior */
+  .modal-backdrop {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .diary-modal {
+    width: 100%;
+    max-height: 90vh;
+    max-height: 90dvh;
+    margin-top: auto;
+    padding: 22px 18px max(20px, env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 380px) {
+  .panel,
+  .summary-panel,
+  .status-card {
+    padding: 15px 12px;
+  }
+
+  .meal-card {
+    padding: 13px;
+  }
+
+  .daily-macros > div {
+    grid-template-columns: 9px minmax(0, 1fr) minmax(0, auto);
+    gap: 7px;
+  }
+
+  .diary-modal {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+}
+
+/* Modal compacto: eliminar alimento */
+.delete-entry-backdrop {
+    align-items: center;
+    justify-content: center;
+    background: rgb(29 57 38 / 48%);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    animation: delete-backdrop-in 180ms ease-out both;
+}
+
+.delete-entry-modal {
+    width: min(100%, 370px);
+    max-height: calc(100dvh - 2rem);
+    padding: 20px;
+    border: 1px solid #dce8d8;
+    border-radius: 15px;
+    background: #fffdf8;
+    box-shadow: 0 16px 48px rgb(28 55 35 / 18%);
+    animation: delete-modal-in 200ms ease-out both;
+}
+
+.delete-entry-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+}
+
+.delete-entry-modal .delete-entry-heading h2 {
+    margin: 0;
+    color: #2b4e35;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.delete-entry-close {
+    display: inline-flex;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #78867a;
+    font-size: 23px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.delete-entry-close:hover:not(:disabled) {
+    background: #edf3e9;
+    color: #2b4e35;
+}
+
+.delete-entry-modal > p {
+    margin: 0;
+    color: #718071;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.delete-entry-modal > p strong {
+    color: #344d39;
+    font-weight: 750;
+}
+
+.delete-entry-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.delete-entry-modal .delete-entry-actions button {
+    width: auto;
+    min-width: 92px;
+    min-height: 39px;
+    padding: 9px 13px;
+    border-radius: 9px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.delete-entry-modal .delete-entry-actions .secondary-button {
+    border: 1px solid #dce7d8;
+    background: #f2f6ef;
+    color: #45634a;
+}
+
+.delete-entry-modal .delete-entry-actions .secondary-button:hover:not(:disabled) {
+    border-color: #c8d9c3;
+    background: #e9f1e5;
+}
+
+.delete-entry-modal .delete-entry-actions .danger-button {
+    border: 1px solid #b94c45;
+    background: #b94c45;
+    color: #fff;
+}
+
+.delete-entry-modal .delete-entry-actions .danger-button:hover:not(:disabled) {
+    border-color: #a43c36;
+    background: #a43c36;
+}
+
+.delete-entry-modal .delete-entry-actions button:focus-visible,
+.delete-entry-close:focus-visible {
+    outline: 3px solid rgb(71 128 90 / 35%);
+    outline-offset: 3px;
+}
+
+.delete-entry-modal .delete-entry-actions button:disabled,
+.delete-entry-close:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* Aparición suave */
+@keyframes delete-backdrop-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes delete-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(7px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Mantener el modal compacto en móviles */
+@media (max-width: 600px) {
+    .modal-backdrop.delete-entry-backdrop {
+        align-items: center;
+        padding: 16px;
+    }
+
+    .diary-modal.delete-entry-modal {
+        width: 100%;
+        max-width: 370px;
+        margin: auto;
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    .delete-entry-actions {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .delete-entry-modal .delete-entry-actions button {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+    }
+}
+
+/* Respetar la preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+    .delete-entry-backdrop,
+    .delete-entry-modal {
+        animation: none;
+    }
+}
+
+/* Modal de cierre: campo de nota */
+#training-note {
+    display: block;
+    width: 100%;
+    min-height: 125px;
+    margin-top: 9px;
+    padding: 14px 15px;
+    border: 1px solid #d8e4d5;
+    border-radius: 12px;
+    background: #f8faf6;
+    color: #2e4535;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.7;
+    resize: vertical;
+    transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease;
+}
+
+#training-note::placeholder {
+    color: #9aa79a;
+    opacity: 1;
+}
+
+#training-note:hover:not(:disabled) {
+    border-color: #b9cfb6;
+}
+
+#training-note:focus {
+    border-color: #57976b;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgb(87 151 107 / 12%);
+}
+
+#training-note:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+#training-note + .modal-actions {
+    margin-top: 22px;
+}
+
+/* Etiqueta de la nota */
+.diary-modal label[for="training-note"] {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 0;
+    color: #405b45;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+/* Modal de cierre */
+.diary-modal:has(#training-note) {
+    width: min(100%, 460px);
+    padding: 27px;
+    border: 1px solid #e0eadd;
+    border-radius: 20px;
+    background: #fffefa;
+    box-shadow: 0 24px 70px rgb(30 55 35 / 22%);
+}
+
+.diary-modal:has(#training-note) h2 {
+    margin-bottom: 10px;
+    color: #28583b;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.diary-modal:has(#training-note) > p {
+    margin-bottom: 0;
+    color: #748174;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.diary-modal:has(#training-note) .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.diary-modal:has(#training-note) .modal-actions button {
+    min-width: 0;
+    min-height: 45px;
+    margin: 0;
+    padding: 11px 13px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.4;
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+}
+
+.diary-modal:has(#training-note) .modal-actions .secondary-button {
+    border-color: #dce7d8;
+    background: #f2f6ef;
+    color: #45634a;
+}
+
+.diary-modal:has(#training-note) .modal-actions .secondary-button:hover:not(:disabled) {
+    background: #e8f1e4;
+}
+
+.diary-modal:has(#training-note) .modal-actions .primary-button {
+    background: #32764b;
+    color: #fff;
+}
+
+.diary-modal:has(#training-note) .modal-actions .primary-button:hover:not(:disabled) {
+    background: #28643e;
+}
+
+.diary-modal:has(#training-note) .modal-actions button:focus-visible {
+    outline: 3px solid rgb(87 151 107 / 30%);
+    outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+    .diary-modal:has(#training-note) {
+        width: 100%;
+        padding: 24px 19px max(22px, env(safe-area-inset-bottom));
+        border-radius: 20px 20px 0 0;
+    }
+
+    #training-note {
+        min-height: 115px;
+        font-size: 16px;
+    }
+
+    .diary-modal:has(#training-note) .modal-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .diary-modal:has(#training-note) .modal-actions button {
+        min-height: 47px;
+    }
+}

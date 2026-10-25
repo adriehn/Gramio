@@ -1,0 +1,38 @@
+﻿# Dependencies
+**/node_modules/
+
+# Build output and caches
+**/dist/
+**/coverage/
+**/.angular/
+**/out-tsc/
+**/.tmp/
+**/temp/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+
+# Local Git backups
+*.bundle
+
+# Local backups
+*.bundle
+**/.git-backup/
