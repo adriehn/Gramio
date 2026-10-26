@@ -8,6 +8,7 @@ import { EMPTY, catchError, debounceTime, filter, of, switchMap, tap, timer } fr
 import { ProfileService } from '../../core/services/profile.service';
 import { MetabolicInput, Sex, BmrFormula, GoalType, FatMode, FiberMode, CalculatedTarget, ProteinMode } from '../../core/models/nutrition.model';
 import { EDUCATION_CONTENT, EducationTopic } from './metabolic-profile-education';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-metabolic-profile',
@@ -20,7 +21,7 @@ export class MetabolicProfile implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly nutritionApi = inject(NutritionApiService);
-
+  private readonly authService = inject(AuthService);
   @ViewChild('modalDialog')
   private modalDialog?: ElementRef<HTMLElement>;
 
@@ -58,6 +59,13 @@ export class MetabolicProfile implements OnInit {
   readonly isLoading = this.profileService.isLoading;
   readonly activeTarget = this.profileService.activeTarget;
   readonly serviceError = this.profileService.error;
+  // Señales para el modal de edición de datos personales
+  readonly isPersonalDataModalOpen = signal(false);
+  readonly editName = signal<string>('');
+  readonly editEmail = signal<string>('');
+  readonly editBirthDate = signal<string>('');
+  readonly personalDataMessage = signal<string>('');
+  readonly personalDataError = signal<string>('');
 
   private saving = false;
 
@@ -128,7 +136,9 @@ export class MetabolicProfile implements OnInit {
 
         this.sex.set(profile.sex);
         this.heightCm.set(profile.heightCm);
-
+        this.editBirthDate.set(profile.birthDate);
+        this.editName.set(this.authService.userProfile()?.displayName || '');
+        this.editEmail.set(this.authService.userProfile()?.email || '');
         const birthDate = new Date(`${profile.birthDate}T00:00:00`);
 
         if (Number.isNaN(birthDate.getTime())) return;
@@ -156,7 +166,48 @@ export class MetabolicProfile implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
+  // Agregá esta señal junto a las demás
+  async savePersonalData(): Promise<void> {
+    if (this.isLoading()) return;
 
+    // Limpiamos errores previos al intentar de nuevo
+    this.personalDataError.set('');
+
+    const currentEmail = this.authService.userProfile()?.email;
+    let requiresEmailConfirmation = false;
+
+    if (this.editEmail() !== currentEmail) {
+      const emailSuccess = await this.authService.updateEmail(this.editEmail());
+
+      if (!emailSuccess) {
+        // Capturamos el error y detenemos la ejecución para que el usuario lo vea
+        const errorMsg = this.authService.currentError()?.userMessage || 'No se pudo actualizar el email. Por favor, intentá de nuevo más tarde.';
+        this.personalDataError.set(errorMsg);
+        return;
+      }
+      requiresEmailConfirmation = true;
+    }
+
+    this.profileService.updatePersonalData(this.editName(), this.editBirthDate())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(success => {
+        if (success) {
+          this.isPersonalDataModalOpen.set(false);
+
+          const msg = requiresEmailConfirmation
+            ? 'Datos actualizados. Revisá tu nueva casilla para confirmar el cambio de email.'
+            : 'Tus datos personales se actualizaron correctamente.';
+
+          this.personalDataMessage.set(msg);
+
+          timer(5000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.personalDataMessage.set('');
+          });
+        } else {
+          this.personalDataError.set('Ocurrió un error al guardar tus datos.');
+        }
+      });
+  }
 
   private applyActiveTarget(): void {
     const current = this.activeTarget() as any; // Cast temporal a any si el tipado global aún no se actualizó
@@ -273,7 +324,8 @@ export class MetabolicProfile implements OnInit {
 
     this.profileService.saveUserProfile(
       this.sex(),
-      this.heightCm()
+      this.heightCm(),
+
     ).pipe(
       switchMap(profileSaved => {
         if (!profileSaved) return EMPTY;

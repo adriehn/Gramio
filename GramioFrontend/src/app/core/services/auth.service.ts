@@ -173,6 +173,38 @@ export class AuthService implements OnDestroy {
   }
 
   /**
+ * Actualiza datos personales
+ */
+  async updateAccount(email: string, displayName: string): Promise<boolean> {
+    this.clearError();
+    try {
+      const { error } = await this.supabase.auth.updateUser({
+        email,
+        data: { display_name: displayName }
+      });
+
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      this.currentError.set(normalizeAppError(err, 'No se pudieron actualizar los datos de la cuenta.'));
+      return false;
+    }
+  }
+   /**
+ * Actualiza email del usuario
+ */
+  async updateEmail(email: string): Promise<boolean> {
+    this.clearError();
+    try {
+      const { error } = await this.supabase.auth.updateUser({ email });
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      this.currentError.set(normalizeAppError(err, 'No se pudo actualizar el email.'));
+      return false;
+    }
+  }
+  /**
    * Limpia el error mostrado por la interfaz.
    */
   clearError(): void {

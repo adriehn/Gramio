@@ -88,7 +88,7 @@ export class ProfileService {
    */
   saveUserProfile(
     sex: Sex,
-    heightCm: number
+    heightCm: number,
   ): Observable<boolean> {
     return defer(() =>
       from(this.supabase.auth.getUser())
@@ -129,6 +129,33 @@ export class ProfileService {
           )
         );
 
+        return of(false);
+      })
+    );
+  }
+  updatePersonalData(displayName: string, birthDate: string): Observable<boolean> {
+    return defer(() => from(this.supabase.auth.getUser())).pipe(
+      switchMap(({ data: { user }, error: authError }) => {
+        if (authError || !user) throw authError || new Error('unauthorized');
+
+        return from(
+          this.supabase
+            .from('profiles')
+            .update({
+              display_name: displayName,
+              birth_date: birthDate,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id)
+        ).pipe(
+          map(({ error }) => {
+            if (error) throw error;
+            return true;
+          })
+        );
+      }),
+      catchError((err: unknown) => {
+        this.error.set(normalizeAppError(err, 'No se pudieron guardar los datos personales.'));
         return of(false);
       })
     );
