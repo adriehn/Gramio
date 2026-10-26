@@ -1,0 +1,268 @@
+
+<main class="tdee-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">GRAMIO · METABOLISMO</span>
+      <h1>Gasto energético observado</h1>
+      <p>
+        Contrastá tu ingesta registrada con la evolución de tu peso
+        para estimar cuánta energía gastás realmente.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="button button-secondary"
+      (click)="loadEstimate()"
+      [disabled]="loading()"
+    >
+      @if (loading()) {
+        Actualizando…
+      } @else {
+        <span aria-hidden="true">↻</span>
+        Actualizar datos
+      }
+    </button>
+  </header>
+
+  @if (loading() && !data()) {
+    <section class="state-card" role="status">
+      <span class="loading-indicator" aria-hidden="true"></span>
+      <div>
+        <h2>Analizando tus registros</h2>
+        <p>Estamos consultando tu ingesta y las mediciones de peso.</p>
+      </div>
+    </section>
+  }
+
+  @if (errorMessage()) {
+    <section class="state-card error-card" role="alert">
+      <div>
+        <h2>No pudimos calcular la estimación</h2>
+        <p>{{ errorMessage() }}</p>
+      </div>
+      <button
+        type="button"
+        class="button button-secondary"
+        (click)="loadEstimate()"
+        [disabled]="loading()"
+      >
+        Reintentar
+      </button>
+    </section>
+  }
+
+  @if (data(); as response) {
+    <section class="info-banner">
+      <span class="info-icon" aria-hidden="true">i</span>
+      <p>
+        Se analizan registros hasta el
+        <strong>{{ formatDate(response.dataThrough) }}</strong>.
+        Solo se incluyen días cerrados con ingesta registrada.
+        Los días sin datos no se interpretan como días de consumo cero.
+      </p>
+    </section>
+
+    <section class="comparison-section">
+      <div class="section-heading">
+        <div>
+          <h2>Compará los períodos</h2>
+          <p>
+            Un período más largo puede reducir el efecto de las
+            fluctuaciones puntuales de peso.
+          </p>
+        </div>
+      </div>
+
+      <div class="period-grid">
+        @for (result of response.results; track result.periodDays) {
+          <button
+            type="button"
+            class="period-card"
+            [class.period-card-selected]="selectedPeriod() === result.periodDays"
+            [attr.aria-pressed]="selectedPeriod() === result.periodDays"
+            (click)="selectPeriod(result.periodDays)"
+          >
+            <span class="period-card-top">
+              <span class="period-title">Últimos {{ result.periodDays }} días</span>
+              <span
+                class="period-indicator"
+                [class.period-indicator-selected]="selectedPeriod() === result.periodDays"
+                aria-hidden="true"
+              ></span>
+            </span>
+
+            <span class="period-dates">
+              {{ formatDate(result.startDate) }}
+              – {{ formatDate(result.endDate) }}
+            </span>
+
+            <span class="period-metric-label">TDEE estimado</span>
+            <strong class="period-value">
+              @if (result.estimatedTdeeKcal !== null) {
+                {{ formatKcal(result.estimatedTdeeKcal) }}
+                <small>kcal/día</small>
+              } @else {
+                <small>No disponible</small>
+              }
+            </strong>
+
+            <span class="period-foot">
+              {{ result.registeredDays }} de {{ result.periodDays }}
+              días registrados
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+
+    @if (selectedResult(); as result) {
+      <section class="detail-panel">
+        <div class="detail-heading">
+          <div>
+            <span class="eyebrow">ANÁLISIS DEL PERÍODO</span>
+            <h2>Últimos {{ result.periodDays }} días</h2>
+          </div>
+
+          <span class="status-pill" [ngClass]="statusClass(result)">
+            {{ statusLabel(result) }}
+          </span>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <span class="metric-label">Ingesta media</span>
+            <strong>
+              @if (result.averageIntakeKcal !== null) {
+                {{ formatKcal(result.averageIntakeKcal) }}
+                <small>kcal/día</small>
+              } @else {
+                —
+              }
+            </strong>
+            <p>Promedio de los días registrados</p>
+          </article>
+
+          <article class="metric-card metric-card-primary">
+            <span class="metric-label">TDEE observado estimado</span>
+            <strong>
+              @if (result.estimatedTdeeKcal !== null) {
+                {{ formatKcal(result.estimatedTdeeKcal) }}
+                <small>kcal/día</small>
+              } @else {
+                —
+              }
+            </strong>
+            <p>Gasto diario estimado según la tendencia de peso</p>
+          </article>
+
+          <article class="metric-card">
+            <span class="metric-label">Cambio de peso</span>
+            <strong>
+              @if (result.weightTrend.observedChangeKg !== undefined) {
+                {{ result.weightTrend.observedChangeKg > 0 ? '+' : '' }}{{ formatWeight(result.weightTrend.observedChangeKg) }}
+                <small>kg</small>
+              } @else {
+                —
+              }
+            </strong>
+            <p>Entre la primera y la última medición del período</p>
+          </article>
+
+          <article class="metric-card">
+            <span class="metric-label">Tendencia semanal</span>
+            <strong>
+              @if (result.weightTrend.trendKgPerWeek !== undefined) {
+                {{ result.weightTrend.trendKgPerWeek > 0 ? '+' : '' }}{{ formatWeight(result.weightTrend.trendKgPerWeek) }}
+                <small>kg/semana</small>
+              } @else {
+                —
+              }
+            </strong>
+            <p>Estimación de la dirección del cambio de peso</p>
+          </article>
+        </div>
+
+        <section class="weight-section">
+          <div class="section-heading">
+            <div>
+              <h3>Datos de peso utilizados</h3>
+              <p>
+                {{ result.weightTrend.measurementsCount ?? 0 }}
+                mediciones incluidas en el período.
+              </p>
+            </div>
+          </div>
+
+          @if (result.weightTrend.available) {
+            <div class="weight-comparison">
+              <div>
+                <span>Primera medición</span>
+                <strong>
+                  {{ formatWeight(result.weightTrend.firstWeightKg) }} kg
+                </strong>
+                <small>{{ formatDate(result.weightTrend.firstDate) }}</small>
+              </div>
+
+              <span class="weight-arrow" aria-hidden="true">→</span>
+
+              <div>
+                <span>Última medición</span>
+                <strong>
+                  {{ formatWeight(result.weightTrend.lastWeightKg) }} kg
+                </strong>
+                <small>{{ formatDate(result.weightTrend.lastDate) }}</small>
+              </div>
+            </div>
+          } @else {
+            <p class="inline-warning">
+              {{ result.weightTrend.reason ?? 'No hay mediciones suficientes para calcular la tendencia.' }}
+            </p>
+          }
+        </section>
+
+        @if (result.warnings.length > 0) {
+          <section class="warnings-section">
+            <h3>Observaciones</h3>
+            <ul>
+              @for (warning of result.warnings; track warning) {
+                <li>{{ warning }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (result.status === 'available') {
+          <section class="interpretation">
+            <h3>Cómo interpretar este resultado</h3>
+            <p>
+              La estimación combina la ingesta media con la tendencia
+              de peso del período. No es una medición directa del gasto
+              energético y puede variar por cambios de hidratación,
+              glucógeno y otros factores.
+            </p>
+            <p>
+              Compará los resultados de 14 y 28 días antes de decidir
+              si necesitás ajustar tu objetivo energético.
+            </p>
+          </section>
+        } @else {
+          <section class="interpretation interpretation-muted">
+            <h3>Todavía no conviene ajustar el objetivo</h3>
+            <p>
+              Primero completá los registros que faltan y cargá
+              suficientes mediciones de peso. No se cambiará ningún
+              objetivo metabólico con datos insuficientes.
+            </p>
+          </section>
+        }
+      </section>
+    }
+
+    <p class="page-footnote">
+      Estimación orientativa, no diagnóstico ni medición metabólica directa.
+      La regla energética utilizada es aproximada y no representa una
+      equivalencia exacta entre peso y gasto calórico.
+    </p>
+  }
+</main>

@@ -1250,13 +1250,15 @@ select:focus-visible {
   }
 }
 
+
+
 /* ==========================================
-   ADAPTACIÓN RESPONSIVE PARA CELULARES
-   Conserva la paleta y el diseño original.
+   RESPONSIVE Y ANCHO DEL CONTENIDO
    ========================================== */
 
 /* Evitar desbordamientos horizontales */
 :host {
+  display: block;
   width: 100%;
   min-width: 0;
   overflow-wrap: break-word;
@@ -1272,24 +1274,41 @@ select:focus-visible {
   min-width: 0;
 }
 
+/* Escritorio: contenido centrado y ancho controlado */
 .profile-page {
   width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 38px 24px 56px;
 }
 
-/* Tablets y pantallas medianas */
+.profile-layout {
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.9fr);
+  gap: 24px;
+}
+
+/* Pantallas medianas y tablets */
 @media (max-width: 1000px) {
+  .profile-page {
+    padding: 30px 22px 42px;
+  }
+
   .profile-layout {
     grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
   }
 
   .summary-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.85fr);
+    align-items: start;
     gap: 22px;
   }
 
   .summary-footer {
     align-self: end;
+    padding-top: 0;
+    border-top: 0;
   }
 }
 
@@ -1321,10 +1340,6 @@ select:focus-visible {
     padding: 11px 14px;
   }
 
-  .profile-layout {
-    gap: 18px;
-  }
-
   .settings-card {
     padding: 20px;
   }
@@ -1342,13 +1357,10 @@ select:focus-visible {
     border-top: 1px solid #e7ede4;
   }
 
-  .fields-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 12px;
-  }
-
+  .fields-grid,
   .fields-grid-two {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
   }
 
   .field-full {
@@ -1367,17 +1379,14 @@ select:focus-visible {
     flex-wrap: wrap;
   }
 
-  .nutrient-setting-heading label {
+  .nutrient-setting-heading label,
+  .learning-note p {
+    min-width: 0;
     overflow-wrap: anywhere;
   }
 
   .learning-note {
     flex-wrap: wrap;
-  }
-
-  .learning-note p {
-    min-width: 0;
-    overflow-wrap: anywhere;
   }
 
   .calorie-number {
@@ -1401,7 +1410,7 @@ select:focus-visible {
     min-height: 48px;
   }
 
-  /* Modal: contenido desplazable sin salir de la pantalla */
+  /* Modal adaptable a la pantalla */
   .modal-backdrop {
     padding: 16px;
   }
@@ -1414,13 +1423,13 @@ select:focus-visible {
     min-height: 0;
   }
 
-  .modal-header {
+  .modal-header,
+  .modal-body {
     padding: 20px;
   }
 
   .modal-body {
     min-height: 0;
-    padding: 20px;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -1445,12 +1454,6 @@ select:focus-visible {
   .page-header h1 {
     font-size: 26px;
     letter-spacing: -0.7px;
-  }
-
-  .eyebrow,
-  .section-kicker {
-    font-size: 10px;
-    letter-spacing: 1px;
   }
 
   .settings-card,
@@ -1482,15 +1485,10 @@ select:focus-visible {
     height: 30px;
   }
 
-  /* Dos columnas para los campos y ancho completo donde corresponda */
   .fields-grid,
   .fields-grid-two {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 15px 9px;
-  }
-
-  .field-full {
-    grid-column: 1 / -1;
   }
 
   .field label,
@@ -1512,7 +1510,6 @@ select:focus-visible {
     line-height: 1.5;
   }
 
-  /* Los ajustes nutricionales pasan a una columna */
   .nutrient-settings {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
@@ -1524,10 +1521,6 @@ select:focus-visible {
 
   .nutrient-setting-heading {
     flex-wrap: nowrap;
-  }
-
-  .nutrient-setting select {
-    font-size: 12px;
   }
 
   .nutrient-setting .field-hint {
@@ -1580,7 +1573,7 @@ select:focus-visible {
   }
 
   .calorie-context {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px;
   }
 
@@ -1615,10 +1608,6 @@ select:focus-visible {
   .distribution-card {
     gap: 9px;
     padding: 11px 9px;
-  }
-
-  .distribution-card strong {
-    font-size: 11px;
   }
 
   .distribution-card small {
@@ -1759,10 +1748,8 @@ select:focus-visible {
   }
 }
 
-/* Accesibilidad */
+/* Accesibilidad: reducir movimiento */
 @media (prefers-reduced-motion: reduce) {
-  .education-modal,
-  .modal-backdrop,
   *,
   *::before,
   *::after {

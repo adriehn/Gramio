@@ -26,11 +26,14 @@ select:focus-visible {
     outline-offset: 3px;
 }
 
+
 .diary-page {
-    width: min(100%, 1320px);
-    margin: 0 auto;
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
     padding: 32px 24px 52px;
 }
+
 
 .diary-header {
     margin-bottom: 24px;
@@ -91,12 +94,14 @@ select:focus-visible {
     box-shadow: 0 0 0 4px #e0efdc;
 }
 
+
 .diary-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 310px;
+    grid-template-columns: minmax(0, 1fr) 290px;
     align-items: start;
-    gap: 22px;
+    gap: 20px;
 }
+
 
 .main-column {
     display: grid;

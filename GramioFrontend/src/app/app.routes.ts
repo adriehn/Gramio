@@ -40,8 +40,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/body-measurements/body-measurements')
         .then(m => m.BodyMeasurements)
+  }, {
+    path: 'tdee-observado',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/nutrition/observed-tdee/observed-tdee')
+        .then(m => m.ObservedTdeeComponent)
   },
-  
+
   {
     path: '**',
     redirectTo: ''
