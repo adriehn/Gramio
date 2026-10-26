@@ -1,46 +1,13 @@
-﻿import { NutritionApiService } from '../../../core/services/nutrition-api.service';
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  HostListener,
-  OnInit,
-  ViewChild,
-  computed,
-  inject,
-  signal
-} from '@angular/core';
+﻿import { NutritionApiService } from '../../core/services/nutrition-api.service';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
-import {
-  EMPTY,
-  catchError,
-  debounceTime,
-  filter,
-  finalize,
-  of,
-  switchMap,
-  tap,
-  timer
-} from 'rxjs';
-
-import { ProfileService } from '../../../core/services/profile.service';
-import {
-  MetabolicInput,
-  Sex,
-  BmrFormula,
-  GoalType,
-  FatMode,
-  FiberMode,
-  CalculatedTarget, ProteinMode
-} from '../../../core/models/nutrition.model';
-
-import {
-  EDUCATION_CONTENT,
-  EducationTopic
-} from './metabolic-profile-education';
+import { EMPTY, catchError, debounceTime, filter, of, switchMap, tap, timer } from 'rxjs';
+import { ProfileService } from '../../core/services/profile.service';
+import { MetabolicInput, Sex, BmrFormula, GoalType, FatMode, FiberMode, CalculatedTarget, ProteinMode } from '../../core/models/nutrition.model';
+import { EDUCATION_CONTENT, EducationTopic } from './metabolic-profile-education';
 
 @Component({
   selector: 'app-metabolic-profile',

@@ -1,0 +1,167 @@
+@if (open) {
+  <div
+    class="education-backdrop"
+    (click)="onBackdropClick($event)"
+  >
+    <section
+      class="education-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="education-title"
+      aria-describedby="education-description"
+    >
+      <header class="education-header">
+        <div>
+          <span class="education-eyebrow">GRAMIO · GUÍA PRÁCTICA</span>
+
+          <h2 id="education-title">
+            {{ isSingleGuide ? visibleGuides[0].title : 'Cómo tomar tus medidas' }}
+          </h2>
+
+          <p id="education-description">
+            {{ isSingleGuide
+              ? 'Seguí estos pasos para medir esta zona de forma consistente.'
+              : 'Aprendé dónde colocar la cinta y cómo registrar cada medida.' }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="education-close"
+          aria-label="Cerrar guía de mediciones"
+          (click)="close()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="education-content">
+        <div class="education-intro">
+          <div class="education-illustration" aria-hidden="true">
+            <svg viewBox="0 0 180 220" role="img">
+              <circle cx="90" cy="26" r="17" class="body-skin" />
+
+              <path
+                class="body-skin"
+                d="M76 45
+                   L66 49
+                   C55 53 49 61 45 73
+                   L31 112
+                   C29 118 33 122 38 123
+                   C42 124 45 121 47 116
+                   L62 84
+                   L65 117
+                   L59 157
+                   L53 207
+                   L73 207
+                   L89 153
+                   L107 207
+                   L127 207
+                   L120 157
+                   L114 117
+                   L117 84
+                   L132 116
+                   C134 121 138 124 142 122
+                   C147 120 149 116 146 110
+                   L134 73
+                   C130 61 124 53 113 49
+                   L103 45 Z"
+              />
+
+              <path
+                class="body-detail"
+                d="M76 46 Q90 58 104 46
+                   M66 68 Q90 78 114 68
+                   M65 117 Q90 124 115 117
+                   M70 155 Q90 161 110 155"
+              />
+
+              <path
+                class="body-tape"
+                d="M48 78 Q90 91 132 78"
+              />
+
+              <path
+                class="body-tape"
+                d="M62 112 Q90 123 118 112"
+              />
+
+              <path
+                class="body-tape"
+                d="M61 144 Q90 155 119 144"
+              />
+
+              <path
+                class="body-tape"
+                d="M57 183 Q67 190 77 183"
+              />
+
+              <path
+                class="body-tape"
+                d="M103 183 Q113 190 123 183"
+              />
+
+              <circle cx="90" cy="85" r="3" class="body-marker" />
+              <circle cx="90" cy="119" r="3" class="body-marker" />
+              <circle cx="90" cy="150" r="3" class="body-marker" />
+            </svg>
+          </div>
+
+          <div class="education-basics">
+            <h3>Antes de empezar</h3>
+
+            <ul>
+              <li>Usá una cinta métrica flexible.</li>
+              <li>Medite con una postura relajada.</li>
+              <li>Apoyá la cinta sin comprimir la piel.</li>
+              <li>Intentá medir en condiciones similares cada vez.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="education-guides">
+          @for (guide of visibleGuides; track guide.key) {
+            <article class="guide-card">
+              <div class="guide-card-heading">
+                <span class="guide-number">
+                  {{ guides.indexOf(guide) + 1 }}
+                </span>
+
+                <div>
+                  <h3>{{ guide.title }}</h3>
+                  <p>{{ guide.location }}</p>
+                </div>
+              </div>
+
+              <ol>
+                @for (instruction of guide.instructions; track $index) {
+                  <li>{{ instruction }}</li>
+                }
+              </ol>
+
+              <div class="guide-tip">
+                <span aria-hidden="true">✦</span>
+                <p><strong>Consejo:</strong> {{ guide.tip }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+
+      <footer class="education-footer">
+        <p>
+          La consistencia importa más que una precisión perfecta.
+          Compará mediciones tomadas con el mismo método.
+        </p>
+
+        <button
+          type="button"
+          class="education-done"
+          (click)="close()"
+        >
+          Entendido
+        </button>
+      </footer>
+    </section>
+  </div>
+}

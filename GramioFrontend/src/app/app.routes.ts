@@ -1,6 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { RegisterComponent } from '@features/auth/register/register';
+
 export const routes: Routes = [
   {
     path: '',
@@ -14,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'perfil',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/profile/metabolic-profile/metabolic-profile').then(m => m.MetabolicProfile)
+    loadComponent: () => import('./features/metabolic-profile/metabolic-profile').then(m => m.MetabolicProfile)
   },
   {
     path: 'registro',
@@ -23,7 +24,7 @@ export const routes: Routes = [
     path: 'nutricion',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/nutrition/food-diary/food-diary')
+      import('./features/food-diary/food-diary')
         .then(m => m.FoodDiary)
   },
   {
@@ -33,7 +34,14 @@ export const routes: Routes = [
       import('./features/nutrition/weekly-history/weekly-history')
         .then(m => m.WeeklyHistoryComponent),
   }
-  ,
+  , {
+    path: 'progreso-corporal',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/body-measurements/body-measurements')
+        .then(m => m.BodyMeasurements)
+  },
+  
   {
     path: '**',
     redirectTo: ''

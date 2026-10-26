@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EMPTY, Observable, Subject, catchError, distinctUntilChanged, finalize, of, switchMap, tap, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../../core/services/food-diary.service';
-import { RecipeCreatorModal } from './components/recipe-creator-modal/recipe-creator-modal';
-import { CreateRecipePayload } from '../../../core/models/recipe.model';
+import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../core/services/food-diary.service';
+import { RecipeCreatorModal } from './recipe-creator-modal/recipe-creator-modal';
+import { CreateRecipePayload } from '../../core/models/recipe.model';
 
 @Component({
   selector: 'app-food-diary',

@@ -1,31 +1,11 @@
 
-import {
-  Component,
-  EventEmitter,
-  Output,
-  computed,
-  inject,
-  signal
-} from '@angular/core';
+import { Component, EventEmitter, Output, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  Subject,
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  finalize,
-  of,
-  switchMap,
-  tap
-} from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { CreateRecipePayload } from '../../../../../core/models/recipe.model';
-import {
-  FoodDiaryService,
-  FoodItem
-} from '../../../../../core/services/food-diary.service';
+import { CreateRecipePayload } from '../../../core/models/recipe.model';
+import { FoodDiaryService, FoodItem } from '../../../core/services/food-diary.service';
 
 interface RecipeMacros {
   kcal_100: number;
