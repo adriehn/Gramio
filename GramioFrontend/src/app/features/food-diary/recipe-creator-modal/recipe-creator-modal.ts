@@ -1,4 +1,3 @@
-
 import { Component, EventEmitter, Output, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -49,13 +48,14 @@ export class RecipeCreatorModal {
   readonly searchLoading = signal(false);
   readonly searchError = signal<string | null>(null);
 
+  // Señales de inputs manuales permitiendo null para no forzar el "0"
   readonly manualName = signal('');
-  readonly manualQuantity = signal(100);
-  readonly manualKcal = signal(0);
-  readonly manualProtein = signal(0);
-  readonly manualCarbs = signal(0);
-  readonly manualFat = signal(0);
-  readonly manualFiber = signal(0);
+  readonly manualQuantity = signal<number | null>(null);
+  readonly manualKcal = signal<number | null>(null);
+  readonly manualProtein = signal<number | null>(null);
+  readonly manualCarbs = signal<number | null>(null);
+  readonly manualFat = signal<number | null>(null);
+  readonly manualFiber = signal<number | null>(null);
 
   readonly lines = signal<RecipeLine[]>([]);
   readonly saving = signal(false);
@@ -185,45 +185,87 @@ export class RecipeCreatorModal {
 
   addManualIngredient(): void {
     const name = this.manualName().trim();
-    const quantity = this.manualQuantity();
+    const portion = this.manualQuantity();
 
     if (!name) {
       this.error.set('Ingresá el nombre del producto.');
       return;
     }
 
-    if (!this.isPositive(quantity)) {
-      this.error.set('La cantidad del ingrediente debe ser mayor que cero.');
+    if (!portion || portion <= 0) {
+      this.error.set('La porción debe ser mayor que cero.');
       return;
     }
 
+    // Se calculan los valores a 100g para almacenar estandarizado
+    const factor = 100 / portion;
+    const round100g = (val: number | null) => Math.round((val || 0) * factor * 10) / 10;
+
     const macros: RecipeMacros = {
-      kcal_100: this.manualKcal(),
-      protein_100: this.manualProtein(),
-      carbs_100: this.manualCarbs(),
-      fat_100: this.manualFat(),
-      fiber_100: this.manualFiber()
+      kcal_100: round100g(this.manualKcal()),
+      protein_100: round100g(this.manualProtein()),
+      carbs_100: round100g(this.manualCarbs()),
+      fat_100: round100g(this.manualFat()),
+      fiber_100: round100g(this.manualFiber())
     };
 
     if (Object.values(macros).some(value => !this.isNonNegative(value))) {
-      this.error.set('Los nutrientes deben ser números válidos y no negativos.');
+      this.error.set('Los nutrientes deben ser números válidos.');
       return;
     }
 
-    this.lines.update(lines => [
-      ...lines,
-      {
-        key: this.nextLineKey++,
-        name,
-        source: 'manual',
-        quantity_g: quantity,
-        macros,
-        manual_macros: { ...macros }
-      }
-    ]);
-
-    this.resetManualIngredient();
+    this.saving.set(true);
     this.error.set(null);
+
+    // Creamos un payload de "receta" con 1 solo ingrediente manual (así se guarda como alimento propio)
+    const payload: CreateRecipePayload = {
+      name: name,
+      ingredients: [
+        {
+          source: 'manual',
+          quantity_g: 100, // Lo enviamos por 100g porque ya escalamos los macros arriba
+          manual_name: name,
+          manual_macros: macros
+        }
+      ],
+      is_cooked: false
+    };
+
+    this.diary.createRecipe(payload)
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({
+        next: (createdFood) => {
+          // El backend ya lo guardó en la tabla foods. Lo agregamos como ingrediente de base de datos.
+          this.lines.update(lines => [
+            ...lines,
+            {
+              key: this.nextLineKey++,
+              name: createdFood.name,
+              source: 'database',
+              quantity_g: portion, // Sugerimos la misma cantidad de la porción ingresada
+              food_id: createdFood.id,
+              macros: {
+                kcal_100: createdFood.kcal_100,
+                protein_100: createdFood.protein_100,
+                carbs_100: createdFood.carbs_100,
+                fat_100: createdFood.fat_100,
+                fiber_100: createdFood.fiber_100
+              }
+            }
+          ]);
+
+          this.resetManualIngredient();
+          this.error.set(null);
+          this.setMode('database');
+        },
+        error: (err) => {
+          this.error.set(
+            err?.error?.message ||
+            err?.message ||
+            'No se pudo guardar el ingrediente personalizado.'
+          );
+        }
+      });
   }
 
   updateQuantity(key: number, quantity: number): void {
@@ -234,7 +276,6 @@ export class RecipeCreatorModal {
           : line
       )
     );
-
     this.error.set(null);
   }
 
@@ -243,13 +284,18 @@ export class RecipeCreatorModal {
     this.error.set(null);
   }
 
+  // Conserva el comportamiento por defecto para inputs que necesitan siempre ser cero si vacíos
   toNumber(value: unknown): number {
-    if (value === '' || value === null || value === undefined) {
-      return 0;
-    }
-
+    if (value === '' || value === null || value === undefined) return 0;
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  // Convierte el input en null cuando se borra, evitando que se clave en 0
+  toNullableNumber(value: unknown): number | null {
+    if (value === '' || value === null || value === undefined) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
   }
 
   format(value: number): string {
@@ -330,12 +376,12 @@ export class RecipeCreatorModal {
 
   private resetManualIngredient(): void {
     this.manualName.set('');
-    this.manualQuantity.set(100);
-    this.manualKcal.set(0);
-    this.manualProtein.set(0);
-    this.manualCarbs.set(0);
-    this.manualFat.set(0);
-    this.manualFiber.set(0);
+    this.manualQuantity.set(null);
+    this.manualKcal.set(null);
+    this.manualProtein.set(null);
+    this.manualCarbs.set(null);
+    this.manualFat.set(null);
+    this.manualFiber.set(null);
   }
 
   private isPositive(value: number): boolean {
