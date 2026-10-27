@@ -1,6 +1,9 @@
 ﻿:host {
   display: block;
-  position: relative;
+  position: sticky;
+  /* Cambiado de relative a sticky */
+  top: 0;
+  /* Añadido para que se fije arriba */
   z-index: 100;
   width: 100%;
   font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -358,6 +361,14 @@
     border-radius: 13px;
     background: #fff;
     box-shadow: 0 8px 24px rgba(44, 76, 49, 0.09);
+
+    /* Nuevas propiedades para que flote */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
   }
 
   .mobile-link {
@@ -443,7 +454,7 @@
   gap: 0.75rem;
 }
 
-.mobile-link > span {
+.mobile-link>span {
   display: flex;
   align-items: center;
   gap: 0.75rem;
