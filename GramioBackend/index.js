@@ -17,7 +17,7 @@ app.use(helmet());
 // 2. Configuración de CORS
 const allowedOrigins = [
     'http://localhost:4200',
-    'https://gramio-frontend.vercel.app',
+    'https://gramio-web.vercel.app',
 ];
 app.use(
     cors({
