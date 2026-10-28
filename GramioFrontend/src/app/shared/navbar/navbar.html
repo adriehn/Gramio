@@ -136,8 +136,7 @@
 
   <div class="navbar-actions">
     @if (auth.isAuthenticated()) {
-    <button type="button" (click)="auth.signOut()" class="logout-button" aria-label="Cerrar sesión"
-      title="Cerrar sesión">
+    <button type="button" (click)="logout()" class="logout-button" aria-label="Cerrar sesión" title="Cerrar sesión">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
         stroke-linejoin="round" aria-hidden="true">
         <path d="M10 17l5-5-5-5" />

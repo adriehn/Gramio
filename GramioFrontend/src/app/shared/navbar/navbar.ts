@@ -1,6 +1,6 @@
 ﻿import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -12,4 +12,15 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class Navbar {
   readonly auth = inject(AuthService);
+  private router = inject(Router);
+
+  logout() {
+    this.auth.signOut()
+      .then(() => {
+        this.router.navigate(['/']);
+      })
+      .catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+      });
+  }
 }
