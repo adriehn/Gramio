@@ -4,7 +4,9 @@
     <header class="recipe-header">
       <div>
         <span class="recipe-kicker">GRAMIO · TU ALIMENTACIÓN</span>
-        <h2 id="recipe-title">Crear receta propia</h2>
+        <h2 id="recipe-title">
+          {{ editFoodId() ? 'Editar receta' : 'Crear receta propia' }}
+        </h2>
         <p>Combiná alimentos y calculá sus nutrientes totales.</p>
       </div>
 
@@ -220,9 +222,9 @@
         Cancelar
       </button>
 
-      <button type="button" class="recipe-save" [disabled]="saving() || !name().trim() || lines().length === 0"
-        (click)="save()">
-        {{ saving() ? 'Guardando...' : 'Guardar receta' }}
+      <button type="button" class="recipe-save"
+        [disabled]="saving() || loadingRecipe() || !name().trim() || lines().length === 0" (click)="save()">
+        {{ saving() ? 'Guardando...' : (editFoodId() ? 'Guardar cambios' : 'Guardar receta') }}
       </button>
     </footer>
   </section>

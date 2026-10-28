@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap, tap } from 'rxjs';
@@ -31,24 +31,25 @@ interface RecipeLine {
   templateUrl: './recipe-creator-modal.html',
   styleUrl: './recipe-creator-modal.css'
 })
-export class RecipeCreatorModal {
+export class RecipeCreatorModal implements OnInit {
   private readonly diary = inject(FoodDiaryService);
   private readonly searchTerms$ = new Subject<string>();
   private nextLineKey = 0;
 
-  @Output() readonly close = new EventEmitter<void>();
-  @Output() readonly created = new EventEmitter<FoodItem>();
+  // APIs modernas de Angular 17/18+ para Inputs y Outputs
+  readonly editFoodId = input<string | null>(null);
+  readonly close = output<void>();
+  readonly created = output<FoodItem>();
 
   readonly name = signal('');
   readonly mode = signal<'database' | 'manual'>('database');
   readonly isCooked = signal(false);
-
+  readonly loadingRecipe = signal(false);
   readonly searchTerm = signal('');
   readonly results = signal<FoodItem[]>([]);
   readonly searchLoading = signal(false);
   readonly searchError = signal<string | null>(null);
 
-  // Señales de inputs manuales permitiendo null para no forzar el "0"
   readonly manualName = signal('');
   readonly manualQuantity = signal<number | null>(null);
   readonly manualKcal = signal<number | null>(null);
@@ -84,7 +85,6 @@ export class RecipeCreatorModal {
       { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
 
-    // Estima una pérdida del 10 % del peso al cocinar.
     const cookedWeight = this.isCooked()
       ? totalWeight * 0.9
       : totalWeight;
@@ -100,7 +100,6 @@ export class RecipeCreatorModal {
       };
     }
 
-    // Normaliza los nutrientes según el peso final estimado.
     const to100g = (value: number): number =>
       (value / cookedWeight) * 100;
 
@@ -113,6 +112,42 @@ export class RecipeCreatorModal {
       fiber: to100g(nutrients.fiber)
     };
   });
+
+  ngOnInit(): void {
+    const foodId = this.editFoodId();
+    if (foodId) {
+      this.loadRecipeForEditing(foodId);
+    }
+  }
+
+  private loadRecipeForEditing(foodId: string): void {
+    this.loadingRecipe.set(true);
+    this.error.set(null);
+
+    this.diary.getCustomRecipe(foodId)
+      .pipe(finalize(() => this.loadingRecipe.set(false)))
+      .subscribe({
+        next: (data) => {
+          this.name.set(data.name);
+          this.isCooked.set(data.is_cooked);
+
+          const newLines = data.ingredients.map((ing: any) => ({
+            key: this.nextLineKey++,
+            name: ing.name,
+            source: ing.source,
+            quantity_g: ing.quantity_g,
+            food_id: ing.food_id,
+            macros: ing.macros,
+            manual_macros: ing.manual_macros
+          }));
+
+          this.lines.set(newLines);
+        },
+        error: (err) => {
+          this.error.set(err?.message || 'Error al cargar la receta.');
+        }
+      });
+  }
 
   constructor() {
     this.searchTerms$
@@ -197,7 +232,6 @@ export class RecipeCreatorModal {
       return;
     }
 
-    // Se calculan los valores a 100g para almacenar estandarizado
     const factor = 100 / portion;
     const round100g = (val: number | null) => Math.round((val || 0) * factor * 10) / 10;
 
@@ -209,21 +243,15 @@ export class RecipeCreatorModal {
       fiber_100: round100g(this.manualFiber())
     };
 
-    if (Object.values(macros).some(value => !this.isNonNegative(value))) {
-      this.error.set('Los nutrientes deben ser números válidos.');
-      return;
-    }
-
     this.saving.set(true);
     this.error.set(null);
 
-    // Creamos un payload de "receta" con 1 solo ingrediente manual (así se guarda como alimento propio)
     const payload: CreateRecipePayload = {
       name: name,
       ingredients: [
         {
           source: 'manual',
-          quantity_g: 100, // Lo enviamos por 100g porque ya escalamos los macros arriba
+          quantity_g: 100,
           manual_name: name,
           manual_macros: macros
         }
@@ -235,14 +263,13 @@ export class RecipeCreatorModal {
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
         next: (createdFood) => {
-          // El backend ya lo guardó en la tabla foods. Lo agregamos como ingrediente de base de datos.
           this.lines.update(lines => [
             ...lines,
             {
               key: this.nextLineKey++,
               name: createdFood.name,
               source: 'database',
-              quantity_g: portion, // Sugerimos la misma cantidad de la porción ingresada
+              quantity_g: portion,
               food_id: createdFood.id,
               macros: {
                 kcal_100: createdFood.kcal_100,
@@ -259,11 +286,7 @@ export class RecipeCreatorModal {
           this.setMode('database');
         },
         error: (err) => {
-          this.error.set(
-            err?.error?.message ||
-            err?.message ||
-            'No se pudo guardar el ingrediente personalizado.'
-          );
+          this.error.set(err?.message || 'No se pudo guardar el ingrediente personalizado.');
         }
       });
   }
@@ -284,16 +307,20 @@ export class RecipeCreatorModal {
     this.error.set(null);
   }
 
-  // Conserva el comportamiento por defecto para inputs que necesitan siempre ser cero si vacíos
   toNumber(value: unknown): number {
     if (value === '' || value === null || value === undefined) return 0;
+    if (typeof value === 'string') {
+      value = value.replace(',', '.');
+    }
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  // Convierte el input en null cuando se borra, evitando que se clave en 0
   toNullableNumber(value: unknown): number | null {
     if (value === '' || value === null || value === undefined) return null;
+    if (typeof value === 'string') {
+      value = value.replace(',', '.');
+    }
     const parsed = Number(value);
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
   }
@@ -311,9 +338,7 @@ export class RecipeCreatorModal {
   }
 
   save(): void {
-    if (this.saving()) {
-      return;
-    }
+    if (this.saving()) return;
 
     const recipeName = this.name().trim();
     const lines = this.lines();
@@ -328,18 +353,10 @@ export class RecipeCreatorModal {
       return;
     }
 
-    if (
-      lines.some(
-        line =>
-          !this.isPositive(line.quantity_g) ||
-          Object.values(line.macros).some(
-            value => !this.isNonNegative(value)
-          )
-      )
-    ) {
-      this.error.set(
-        'Revisá las cantidades y los nutrientes de los ingredientes.'
-      );
+    const dbFoodIds = lines.filter(l => l.source === 'database' && l.food_id).map(l => l.food_id);
+    const hasDuplicates = new Set(dbFoodIds).size !== dbFoodIds.length;
+    if (hasDuplicates) {
+      this.error.set('Tenés alimentos duplicados en la lista. Unificá las cantidades en una sola línea.');
       return;
     }
 
@@ -348,33 +365,46 @@ export class RecipeCreatorModal {
 
     const payload: CreateRecipePayload = {
       name: recipeName,
-      ingredients: lines.map(line => ({
-        source: line.source,
-        quantity_g: line.quantity_g,
-        food_id: line.food_id,
-        manual_name: line.source === 'manual' ? line.name : undefined,
-        manual_macros: line.manual_macros
-      })),
+      ingredients: lines.map(line => {
+        if (line.source === 'database') {
+          return {
+            source: 'database' as const,
+            quantity_g: line.quantity_g,
+            food_id: line.food_id!
+          };
+        } else {
+          return {
+            source: 'manual' as const,
+            quantity_g: line.quantity_g,
+            manual_name: line.name,
+            manual_macros: line.manual_macros!
+          };
+        }
+      }),
       is_cooked: this.isCooked()
     };
 
-    this.diary.createRecipe(payload)
+    const foodId = this.editFoodId();
+    const request$ = foodId
+      ? this.diary.updateCustomRecipe(foodId, payload)
+      : this.diary.createRecipe(payload);
+
+    request$
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
-        next: createdFood => {
-          this.created.emit(createdFood);
+        next: savedFood => {
+          this.created.emit(savedFood);
         },
         error: err => {
-          this.error.set(
-            err?.error?.message ||
-            err?.message ||
-            'No se pudo crear la receta.'
-          );
+          this.error.set(err?.message || 'No se pudo guardar la receta.');
         }
       });
   }
 
-  private resetManualIngredient(): void {
+
+
+
+  resetManualIngredient(): void {
     this.manualName.set('');
     this.manualQuantity.set(null);
     this.manualKcal.set(null);
@@ -382,10 +412,6 @@ export class RecipeCreatorModal {
     this.manualCarbs.set(null);
     this.manualFat.set(null);
     this.manualFiber.set(null);
-  }
-
-  private isPositive(value: number): boolean {
-    return Number.isFinite(value) && value > 0;
   }
 
   private isNonNegative(value: number): boolean {

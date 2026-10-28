@@ -17,7 +17,7 @@ import { CreateRecipePayload } from '../../core/models/recipe.model';
 })
 
 export class FoodDiary {
-  
+
   readonly diary = inject(FoodDiaryService);
   private readonly destroyRef = inject(DestroyRef);
   // 1. Agregá el signal para controlar la visibilidad del modal
@@ -58,7 +58,13 @@ export class FoodDiary {
   readonly trainingNote = signal('');
   readonly closingDay = signal(false);
   private readonly editSearchTerms$ = new Subject<string>();
-  
+  readonly deletingCustomRecipe = signal<FoodItem | null>(null);
+  readonly recipeActionBusy = signal(false);
+  readonly editingRecipeId = signal<string | null>(null);
+  readonly showMyRecipesModal = signal(false);
+  readonly myRecipes = signal<FoodItem[]>([]);
+  readonly loadingMyRecipes = signal(false);
+
   readonly editNutrientPreview = computed(() => {
     const food = this.editSelectedFood();
     const grams = this.editGrams();
@@ -763,20 +769,94 @@ export class FoodDiary {
 
     return fallback;
   }
-  openRecipeModal(): void {
+  openRecipeModal(foodId: string | null = null): void {
     this.localError.set(null);
+    this.editingRecipeId.set(foodId);
     this.showRecipeModal.set(true);
   }
 
+  // Modificá onRecipeCreated (sirve para ambos, crear y editar)
   onRecipeCreated(food: FoodItem): void {
     this.showRecipeModal.set(false);
-    this.selectedFood.set(food);
-    this.searchTerm.set(food.name);
-    this.searchResults.set([]);
-    this.grams.set(100);
-    this.localError.set(null);
+    this.editingRecipeId.set(null);
+    this.selectFood(food);
   }
 
+  // =========================================================
+  // Eliminar Recetas Personalizadas
+  // =========================================================
 
+  requestDeleteCustomRecipe(food: FoodItem): void {
+    if (this.recipeActionBusy()) return;
+    this.localError.set(null);
+    this.deletingCustomRecipe.set(food);
+  }
 
+  cancelDeleteCustomRecipe(): void {
+    if (!this.recipeActionBusy()) {
+      this.deletingCustomRecipe.set(null);
+    }
+  }
+
+  confirmDeleteCustomRecipe(): void {
+    const food = this.deletingCustomRecipe();
+
+    if (!food || this.recipeActionBusy()) {
+      return;
+    }
+
+    this.recipeActionBusy.set(true);
+    this.localError.set(null);
+
+    this.diary.deleteCustomRecipe(food.id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.recipeActionBusy.set(false))
+      )
+      .subscribe({
+        next: () => {
+          // Limpiamos el modal y la selección actual de la pantalla
+          this.deletingCustomRecipe.set(null);
+          this.selectedFood.set(null);
+          this.searchTerm.set('');
+          this.searchResults.set([]);
+        },
+        error: (error: unknown) => {
+          this.localError.set(
+            this.getErrorMessage(
+              error,
+              'No se pudo eliminar la receta personalizada.'
+            )
+          );
+        }
+      });
+  }
+  // Funciones para manejar el modal de editar mis recetas
+  openMyRecipes(): void {
+    this.localError.set(null);
+    this.loadingMyRecipes.set(true);
+    this.showMyRecipesModal.set(true);
+
+    this.diary.getMyRecipes()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loadingMyRecipes.set(false))
+      )
+      .subscribe({
+        next: (recipes) => {
+          this.myRecipes.set(recipes);
+        },
+        error: (error: unknown) => {
+          this.localError.set(
+            this.getErrorMessage(error, 'No se pudieron cargar tus recetas.')
+          );
+          this.showMyRecipesModal.set(false);
+        }
+      });
+  }
+
+  selectMyRecipe(recipe: FoodItem): void {
+    this.showMyRecipesModal.set(false);
+    this.selectFood(recipe); // Reutilizamos tu función existente
+  }
 }

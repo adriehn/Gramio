@@ -12,6 +12,7 @@ export type MealType =
     | 'dinner'
     | 'other';
 
+// 1. En food-diary.service.ts, actualiza la interfaz:
 export interface FoodItem {
     id: string;
     name: string;
@@ -22,6 +23,8 @@ export interface FoodItem {
     carbs_100: number;
     fat_100: number;
     fiber_100: number;
+    user_id?: string;
+    is_custom?: boolean;
 }
 
 export interface DiarySession {
@@ -88,7 +91,6 @@ export class FoodDiaryService {
     );
 
     // Buscar alimentos disponibles para registrar o editar.
-    // Buscar alimentos disponibles para registrar o editar.
     searchFoods(term: string): Observable<FoodItem[]> {
         const query = term.trim();
 
@@ -101,13 +103,9 @@ export class FoodDiaryService {
         return from(
             this.supabase.client
                 .from('foods')
-                .select(
-                    'id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100'
-                )
+                .select('id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100,user_id')
                 .eq('is_archived', false)
                 .ilike('name', `%${query}%`)
-                // Quitamos el order() de la base de datos y ampliamos el límite
-                // para asegurarnos de capturar los que empiezan con la palabra
                 .limit(50)
         ).pipe(
             map(({ data, error }) => {
@@ -117,26 +115,25 @@ export class FoodDiaryService {
                     );
                 }
 
-                const items = (data ?? []) as FoodItem[];
+                // MAPEO DINÁMICO: Evaluamos si es receta propia
+                const items = (data ?? []).map(item => ({
+                    ...item,
+                    is_custom: item.category === 'recipe'
+                })) as FoodItem[];
 
-                // Ordenamiento personalizado en el cliente
                 return items
                     .sort((a, b) => {
                         const aName = a.name.toLowerCase();
                         const bName = b.name.toLowerCase();
 
-                        // 1. Verificamos si empiezan con el término exacto
                         const aStarts = aName.startsWith(lowerQuery);
                         const bStarts = bName.startsWith(lowerQuery);
 
-                        // 2. Si 'a' empieza con el término y 'b' no, 'a' va primero
                         if (aStarts && !bStarts) return -1;
                         if (!aStarts && bStarts) return 1;
 
-                        // 3. Si ambos cumplen (o ninguno), ordenamos alfabéticamente
                         return aName.localeCompare(bName);
                     })
-                    // Devolvemos solo los 10 resultados más relevantes para la UI
                     .slice(0, 10);
             })
         );
@@ -148,7 +145,7 @@ export class FoodDiaryService {
             this.supabase.client
                 .from('foods')
                 .select(
-                    'id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100'
+                    'id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100,user_id'
                 )
                 .eq('id', foodId)
                 .maybeSingle()
@@ -164,7 +161,11 @@ export class FoodDiaryService {
                     throw new Error('No se encontró el alimento original.');
                 }
 
-                return data as FoodItem;
+                // MAPEO DINÁMICO
+                const item = data as FoodItem;
+                item.is_custom = item.category === 'recipe';
+
+                return item;
             })
         );
     }
@@ -589,12 +590,74 @@ export class FoodDiaryService {
                             id: recipe.food_id,
                             name: recipe.name,
                             brand: null,
-                            category: 'Receta Propia',
+                            category: 'recipe', // Coincide con tu backend
                             kcal_100: Number(recipe.kcal_100),
                             protein_100: Number(recipe.protein_100),
                             carbs_100: Number(recipe.carbs_100),
                             fat_100: Number(recipe.fat_100),
-                            fiber_100: Number(recipe.fiber_100)
+                            fiber_100: Number(recipe.fiber_100),
+                            is_custom: true
+                        } as FoodItem;
+                    })
+                );
+            })
+        );
+    }
+    // Obtener los detalles de una receta para editar
+getCustomRecipe(foodId: string): Observable<any> {
+        return from(this.supabase.client.auth.getSession()).pipe(
+            switchMap(({ data, error }) => {
+                const token = data.session?.access_token;
+                if (error || !token) throw new Error('Tu sesión expiró. Iniciá sesión nuevamente.');
+
+                return from(
+                    fetch(`${environment.apiUrl}/api/nutrition/recipes/${foodId}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }).then(async response => {
+                        const body = await response.json().catch(() => null);
+                        if (!response.ok || !body?.success) {
+                            throw new Error(body?.message || 'No se pudo cargar la receta.');
+                        }
+                        return body.data; // Debe retornar { name, is_cooked, ingredients: [...] }
+                    })
+                );
+            })
+        );
+    }
+
+    // Actualizar una receta existente
+    updateCustomRecipe(foodId: string, payload: CreateRecipePayload): Observable<FoodItem> {
+        return from(this.supabase.client.auth.getSession()).pipe(
+            switchMap(({ data, error }) => {
+                const token = data.session?.access_token;
+                if (error || !token) throw new Error('Tu sesión expiró.');
+
+                return from(
+                    fetch(`${environment.apiUrl}/api/nutrition/recipes/${foodId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(async response => {
+                        const body = await response.json().catch(() => null);
+                        if (!response.ok || !body?.success || !body?.data) {
+                            throw new Error(body?.message || 'No se pudo actualizar la receta.');
+                        }
+
+                        const recipe = body.data;
+                        return {
+                            id: recipe.food_id,
+                            name: recipe.name,
+                            brand: null,
+                            category: 'recipe', // Importante para que lo tome como is_custom
+                            kcal_100: Number(recipe.kcal_100),
+                            protein_100: Number(recipe.protein_100),
+                            carbs_100: Number(recipe.carbs_100),
+                            fat_100: Number(recipe.fat_100),
+                            fiber_100: Number(recipe.fiber_100),
+                            is_custom: true
                         } as FoodItem;
                     })
                 );
@@ -781,5 +844,62 @@ export class FoodDiaryService {
         this.error.set(message);
 
         return throwError(() => new Error(message));
+    }
+    // Eliminar una receta personalizada.
+    deleteCustomRecipe(foodId: string): Observable<void> {
+        return from(this.supabase.client.auth.getSession()).pipe(
+            switchMap(({ data, error }) => {
+                const token = data.session?.access_token;
+
+                if (error || !token) {
+                    return throwError(() => new Error('Tu sesión expiró. Iniciá sesión nuevamente.'));
+                }
+
+                return from(
+                    fetch(`${environment.apiUrl}/api/nutrition/recipes/${foodId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }).then(async response => {
+                        const body = await response.json().catch(() => null);
+
+                        if (!response.ok || !body?.success) {
+                            throw new Error(body?.message || 'No se pudo eliminar la receta.');
+                        }
+                    })
+                );
+            })
+        );
+    }
+    // Obtener todas las recetas personalizadas del usuario
+    getMyRecipes(): Observable<FoodItem[]> {
+        return from(this.supabase.client.auth.getUser()).pipe(
+            switchMap(({ data, error }) => {
+                if (error || !data.user) {
+                    throw new Error('No se pudo verificar tu sesión.');
+                }
+
+                return from(
+                    this.supabase.client
+                        .from('foods')
+                        .select('id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100,user_id')
+                        .eq('is_archived', false)
+                        .eq('category', 'recipe')
+                        .eq('user_id', data.user.id) // <- FILTRO CLAVE: Solo tus recetas
+                        .order('name')
+                );
+            }),
+            map(({ data, error }) => {
+                if (error) {
+                    throw new Error(`No se pudieron cargar tus recetas: ${error.message}`);
+                }
+
+                return (data ?? []).map(item => ({
+                    ...item,
+                    is_custom: true
+                })) as FoodItem[];
+            })
+        );
     }
 }

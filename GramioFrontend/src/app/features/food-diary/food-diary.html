@@ -6,780 +6,719 @@
     </header>
 
     @if (diary.loading() && !diary.session()) {
-        <div class="status-card" role="status">
-            Preparando tu jornada...
-        </div>
+    <div class="status-card" role="status">
+        Preparando tu jornada...
+    </div>
     } @else if (diary.session(); as session) {
-        <div class="session-info">
-            <div>
-                <span class="status-dot"></span>
-                <strong>Jornada activa</strong>
-            </div>
-            <span>Vence: {{ session.expires_at | date:'dd/MM/yyyy HH:mm' }}</span>
+    <div class="session-info">
+        <div>
+            <span class="status-dot"></span>
+            <strong>Jornada activa</strong>
         </div>
+        <span>Vence: {{ session.expires_at | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
 
-        <div class="diary-layout">
-            <main class="main-column">
+    <div class="diary-layout">
+        <main class="main-column">
 
-                <!-- ALIMENTOS -->
-                <section class="panel">
-                    <div class="panel-heading">
-                        <div>
-                            <span class="section-kicker">01 · ALIMENTOS</span>
-                            <h2>¿Qué comiste?</h2>
-                        </div>
+            <!-- ALIMENTOS -->
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">01 · ALIMENTOS</span>
+                        <h2>¿Qué comiste?</h2>
                     </div>
+                </div>
 
-                    <!-- CREAR RECETA PROPIA -->
-                    <div class="recipe-create-area">
-                        <p class="hint">
-                            ¿Preparaste una comida con varios ingredientes? Creá tu receta
-                            para calcular sus nutrientes y reutilizarla en tu registro.
-                        </p>
+                <!-- CREAR RECETA PROPIA -->
+                <div class="recipe-create-area">
+                    <p class="hint">
+                        ¿Preparaste una comida con varios ingredientes? Creá tu receta
+                        para calcular sus nutrientes y reutilizarla en tu registro.
+                    </p>
 
-                        <button
-                            type="button"
-                            class="recipe-create-button"
-                            (click)="openRecipeModal()"
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" class="recipe-create-button" (click)="openRecipeModal()"
                             [disabled]="diary.loading()">
                             <span aria-hidden="true">＋</span>
                             Crear receta propia
                         </button>
+
+                        <button type="button" class="secondary-button"
+                            style="width: auto; min-height: 42px; margin-top: 0; padding: 10px 16px; font-size: 14px;"
+                            (click)="openMyRecipes()" [disabled]="diary.loading()">
+                            Ver mis recetas
+                        </button>
                     </div>
+                </div>
 
-                    <label for="food-search">Buscá un alimento</label>
+                <label for="food-search">Buscá un alimento</label>
 
-                    <div class="search-wrapper">
-                        <span class="search-icon" aria-hidden="true">⌕</span>
-                        <input
-                            id="food-search"
-                            type="search"
-                            autocomplete="off"
-                            placeholder="Ej.: avena, banana, huevo..."
-                            [ngModel]="searchTerm()"
-                            (ngModelChange)="onSearchChange($event)"
-                            [disabled]="!diary.activeGroup() || diary.loading()"
-                            aria-describedby="search-help" />
-                    </div>
+                <div class="search-wrapper">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input id="food-search" type="search" autocomplete="off" placeholder="Ej.: avena, banana, huevo..."
+                        [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)"
+                        [disabled]="!diary.activeGroup() || diary.loading()" aria-describedby="search-help" />
+                </div>
 
-                    <p id="search-help" class="hint">
-                        Escribí al menos dos caracteres y seleccioná un resultado.
-                    </p>
+                <p id="search-help" class="hint">
+                    Escribí al menos dos caracteres y seleccioná un resultado.
+                </p>
 
-                    @if (searching()) {
-                        <p class="hint" role="status">Buscando alimentos...</p>
-                    }
+                @if (searching()) {
+                <p class="hint" role="status">Buscando alimentos...</p>
+                }
 
-                    @if (searchResults().length > 0) {
-                        <div class="search-results" role="listbox" aria-label="Alimentos encontrados">
-                            @for (food of searchResults(); track food.id) {
-                                <button
-                                    type="button"
-                                    class="food-result"
-                                    role="option"
-                                    [attr.aria-selected]="selectedFood()?.id === food.id"
-                                    (click)="selectFood(food)">
-                                    <span>
-                                        <strong>{{ food.name }}</strong>
-                                        @if (food.brand) {
-                                            <small>{{ food.brand }}</small>
-                                        }
-                                    </span>
-
-                                    <span class="result-kcal">
-                                        {{ food.kcal_100 | number:'1.0-0' }} kcal
-                                        <small>por 100 g</small>
-                                    </span>
-                                </button>
+                @if (searchResults().length > 0) {
+                <div class="search-results" role="listbox" aria-label="Alimentos encontrados">
+                    @for (food of searchResults(); track food.id) {
+                    <button type="button" class="food-result" role="option"
+                        [attr.aria-selected]="selectedFood()?.id === food.id" (click)="selectFood(food)">
+                        <span>
+                            <strong>{{ food.name }}</strong>
+                            @if (food.brand) {
+                            <small>{{ food.brand }}</small>
                             }
-                        </div>
-                    } @else if (searchTerm().trim().length >= 2 && !searching() && !selectedFood()) {
-                        <p class="empty-results">No encontramos coincidencias.</p>
+                        </span>
+
+                        <span class="result-kcal">
+                            {{ food.kcal_100 | number:'1.0-0' }} kcal
+                            <small>por 100 g</small>
+                        </span>
+                    </button>
                     }
+                </div>
+                } @else if (searchTerm().trim().length >= 2 && !searching() && !selectedFood()) {
+                <p class="empty-results">No encontramos coincidencias.</p>
+                }
 
-                    @if (selectedFood(); as food) {
-                        <div class="selected-food">
-                            <div class="selected-heading">
-                                <div>
-                                    <span class="section-kicker">ALIMENTO SELECCIONADO</span>
-                                    <h3>{{ food.name }}</h3>
-                                    @if (food.brand) {
-                                        <p>{{ food.brand }}</p>
-                                    }
-                                </div>
-
-                                <button
-                                    type="button"
-                                    class="text-button"
-                                    (click)="selectedFood.set(null); searchTerm.set('')">
-                                    Cambiar
-                                </button>
-                            </div>
-
-                            <div class="grams-control">
-                                <label for="grams">Cantidad consumida</label>
-                                <div>
-                                    <input
-                                        id="grams"
-                                        type="number"
-                                        min="0.1"
-                                        max="10000"
-                                        step="1"
-                                        [ngModel]="grams()"
-                                        (ngModelChange)="grams.set(+$event)" />
-                                    <span>gramos</span>
-                                </div>
-                            </div>
-
-                            @if (nutrientPreview(); as nutrients) {
-                                <div class="preview-card">
-                                    <div class="preview-calories">
-                                        <span>Calorías estimadas</span>
-                                        <strong>{{ formatNumber(nutrients.kcal) }} kcal</strong>
-                                    </div>
-
-                                    <div class="macro-grid">
-                                        <div>
-                                            <span>Proteínas</span>
-                                            <strong>{{ formatNumber(nutrients.protein) }} g</strong>
-                                        </div>
-                                        <div>
-                                            <span>Carbohidratos</span>
-                                            <strong>{{ formatNumber(nutrients.carbs) }} g</strong>
-                                        </div>
-                                        <div>
-                                            <span>Grasas</span>
-                                            <strong>{{ formatNumber(nutrients.fat) }} g</strong>
-                                        </div>
-                                        <div>
-                                            <span>Fibra</span>
-                                            <strong>{{ formatNumber(nutrients.fiber) }} g</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
-                            <button
-                                type="button"
-                                class="primary-button"
-                                (click)="addFood()"
-                                [disabled]="diary.loading() || !nutrientPreview()">
-                                {{ diary.loading() ? 'Guardando...' : 'Agregar a la comida' }}
-                            </button>
-                        </div>
-                    }
-
-                    @if (!diary.activeGroup()) {
-                        <p class="notice">
-                            Para agregar alimentos, primero creá un grupo de comida.
-                        </p>
-                    }
-                </section>
-
-                <!-- GRUPOS DE COMIDAS -->
-                <section class="panel">
-                    <div class="panel-heading">
+                @if (selectedFood(); as food) {
+                <div class="selected-food">
+                    <div class="selected-heading">
                         <div>
-                            <span class="section-kicker">02 · ORGANIZACIÓN</span>
-                            <h2>Grupos de comidas</h2>
-                        </div>
-                    </div>
-
-                    <div class="group-form">
-                        <div class="form-field">
-                            <label for="group-type">Tipo de comida</label>
-                            <select
-                                id="group-type"
-                                [ngModel]="groupType()"
-                                (ngModelChange)="onGroupTypeChange($event)">
-                                <option value="breakfast">Desayuno</option>
-                                <option value="lunch">Almuerzo</option>
-                                <option value="snack">Merienda / colación</option>
-                                <option value="dinner">Cena</option>
-                                <option value="other">Otra comida</option>
-                            </select>
+                            <span class="section-kicker">ALIMENTO SELECCIONADO</span>
+                            <h3>{{ food.name }}</h3>
+                            @if (food.brand) {
+                            <p>{{ food.brand }}</p>
+                            }
                         </div>
 
-                        <div class="form-field">
-                            <label for="group-label">Nombre del grupo</label>
-                            <input
-                                id="group-label"
-                                type="text"
-                                maxlength="60"
-                                placeholder="Ej.: Merienda post-entreno"
-                                [ngModel]="groupLabel()"
-                                (ngModelChange)="groupLabel.set($event)" />
-                        </div>
-
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            (click)="createGroup()"
-                            [disabled]="diary.loading() || groupActionBusy()">
-                            {{ diary.activeGroup() ? 'Finalizar grupo y crear otro' : 'Crear grupo' }}
+                        <button type="button" class="text-button" (click)="selectedFood.set(null); searchTerm.set('')">
+                            Cambiar
                         </button>
                     </div>
 
-                    <p class="hint">
-                        Al crear otro grupo, el grupo abierto se finaliza automáticamente.
-                        Podés seguir editando cualquier grupo mientras la jornada permanezca abierta.
-                    </p>
-
-                    @if (diary.groups().length === 0) {
-                        <div class="empty-state">
-                            Todavía no creaste grupos. Empezá por desayuno, almuerzo o la comida que quieras registrar.
+                    <div class="grams-control">
+                        <label for="grams">Cantidad consumida</label>
+                        <div>
+                            <input id="grams" type="number" min="0.1" max="10000" step="1" [ngModel]="grams()"
+                                (ngModelChange)="grams.set(+$event)" />
+                            <span>gramos</span>
                         </div>
+                    </div>
+
+                    @if (nutrientPreview(); as nutrients) {
+                    <div class="preview-card">
+                        <div class="preview-calories">
+                            <span>Calorías estimadas</span>
+                            <strong>{{ formatNumber(nutrients.kcal) }} kcal</strong>
+                        </div>
+
+                        <div class="macro-grid">
+                            <div>
+                                <span>Proteínas</span>
+                                <strong>{{ formatNumber(nutrients.protein) }} g</strong>
+                            </div>
+                            <div>
+                                <span>Carbohidratos</span>
+                                <strong>{{ formatNumber(nutrients.carbs) }} g</strong>
+                            </div>
+                            <div>
+                                <span>Grasas</span>
+                                <strong>{{ formatNumber(nutrients.fat) }} g</strong>
+                            </div>
+                            <div>
+                                <span>Fibra</span>
+                                <strong>{{ formatNumber(nutrients.fiber) }} g</strong>
+                            </div>
+                        </div>
+                    </div>
                     }
 
-                    <div class="group-list">
-                        @for (group of diary.groups(); track group.id) {
-                            <article class="meal-card">
-                                <header class="meal-card-header">
-                                    <div>
-                                        <span class="meal-order">COMIDA {{ group.group_order }}</span>
-                                        <h3>{{ group.label }}</h3>
-                                    </div>
+                    <button type="button" class="primary-button" (click)="addFood()"
+                        [disabled]="diary.loading() || !nutrientPreview()">
+                        {{ diary.loading() ? 'Guardando...' : 'Agregar a la comida' }}
+                    </button>
 
-                                    <span
-                                        class="group-status"
-                                        [class.group-status-open]="group.status === 'open'">
-                                        {{ group.status === 'open' ? 'En curso' : 'Finalizado' }}
-                                    </span>
-                                </header>
+                    <!-- Botones únicos para recetas propias -->
+                    @if (food.is_custom) {
+                    <div class="group-actions" style="margin-top: 12px; justify-content: center; gap: 15px;">
+                        <button type="button" class="text-button" style="color: #47805a;"
+                            (click)="openRecipeModal(food.id)">
+                            Editar mi receta
+                        </button>
 
-                                <!-- ACCIONES DEL GRUPO -->
-                                <div class="group-actions">
-                                    <button
-                                        type="button"
-                                        class="text-button"
-                                        (click)="openEditGroup(group)"
-                                        [disabled]="groupActionBusy() || diary.loading()"
-                                        [attr.aria-label]="'Editar grupo ' + group.label">
-                                        Editar
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        class="text-button delete-group-button"
-                                        (click)="requestDeleteGroup(group)"
-                                        [disabled]="groupActionBusy() || diary.loading()"
-                                        [attr.aria-label]="'Eliminar grupo ' + group.label">
-                                        Eliminar
-                                    </button>
-                                </div>
-
-                                @if (entriesForGroup(group.id).length === 0) {
-                                    <p class="empty-group">Todavía no agregaste alimentos.</p>
-                                } @else {
-                                    <div class="entry-list">
-                                        @for (entry of entriesForGroup(group.id); track entry.id) {
-                                            <div class="entry-row">
-                                                <div class="entry-main">
-                                                    <strong>{{ entry.name }}</strong>
-                                                    <small>{{ entry.quantity_g | number:'1.0-1' }} g</small>
-
-                                                    <div class="entry-actions">
-                                                        <button
-                                                            type="button"
-                                                            class="text-button"
-                                                            (click)="openEditEntry(entry)"
-                                                            [disabled]="diary.loading() || editSaving() || groupActionBusy()"
-                                                            [attr.aria-label]="'Editar ' + entry.name">
-                                                            Editar
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            class="text-button delete-group-button"
-                                                            (click)="removeEntry(entry)"
-                                                            [disabled]="diary.loading() || editSaving() || groupActionBusy()"
-                                                            [attr.aria-label]="'Eliminar ' + entry.name">
-                                                            Eliminar
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div class="entry-nutrients">
-                                                    <strong>{{ entry.kcal | number:'1.0-0' }} kcal</strong>
-                                                    <small>
-                                                        P {{ entry.protein_g | number:'1.0-1' }} ·
-                                                        C {{ entry.carbs_g | number:'1.0-1' }} ·
-                                                        G {{ entry.fat_g | number:'1.0-1' }} ·
-                                                        Fib {{ entry.fiber_g | number:'1.0-1' }}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                }
-
-                                <div class="meal-totals">
-                                    <span>Subtotal</span>
-                                    <strong>{{ formatNumber(totalsForGroup(group.id).kcal) }} kcal</strong>
-                                    <small>
-                                        P {{ formatNumber(totalsForGroup(group.id).protein) }} g ·
-                                        C {{ formatNumber(totalsForGroup(group.id).carbs) }} g ·
-                                        G {{ formatNumber(totalsForGroup(group.id).fat) }} g ·
-                                        Fib {{ formatNumber(totalsForGroup(group.id).fiber) }} g
-                                    </small>
-                                </div>
-
-                                @if (group.status === 'open') {
-                                    <button
-                                        type="button"
-                                        class="text-button finish-group"
-                                        (click)="finishGroup()"
-                                        [disabled]="diary.loading() || groupActionBusy()">
-                                        Finalizar este grupo
-                                    </button>
-                                }
-                            </article>
-                        }
+                        <button type="button" class="text-button delete-group-button"
+                            (click)="requestDeleteCustomRecipe(food)">
+                            Eliminar mi receta
+                        </button>
                     </div>
-                </section>
-            </main>
+                    }
+                </div>
+                }
 
-            <!-- RESUMEN DEL DÍA -->
-            <aside class="summary-panel">
-                <span class="section-kicker">03 · TU DÍA</span>
-                <h2>Totales acumulados</h2>
-                <p class="summary-intro">
-                    Suma de los alimentos registrados en esta jornada.
+                @if (!diary.activeGroup()) {
+                <p class="notice">
+                    Para agregar alimentos, primero creá un grupo de comida.
+                </p>
+                }
+            </section>
+
+            <!-- GRUPOS DE COMIDAS -->
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">02 · ORGANIZACIÓN</span>
+                        <h2>Grupos de comidas</h2>
+                    </div>
+                </div>
+
+                <div class="group-form">
+                    <div class="form-field">
+                        <label for="group-type">Tipo de comida</label>
+                        <select id="group-type" [ngModel]="groupType()" (ngModelChange)="onGroupTypeChange($event)">
+                            <option value="breakfast">Desayuno</option>
+                            <option value="lunch">Almuerzo</option>
+                            <option value="snack">Merienda / colación</option>
+                            <option value="dinner">Cena</option>
+                            <option value="other">Otra comida</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="group-label">Nombre del grupo</label>
+                        <input id="group-label" type="text" maxlength="60" placeholder="Ej.: Merienda post-entreno"
+                            [ngModel]="groupLabel()" (ngModelChange)="groupLabel.set($event)" />
+                    </div>
+
+                    <button type="button" class="secondary-button" (click)="createGroup()"
+                        [disabled]="diary.loading() || groupActionBusy()">
+                        {{ diary.activeGroup() ? 'Finalizar grupo y crear otro' : 'Crear grupo' }}
+                    </button>
+                </div>
+
+                <p class="hint">
+                    Al crear otro grupo, el grupo abierto se finaliza automáticamente.
+                    Podés seguir editando cualquier grupo mientras la jornada permanezca abierta.
                 </p>
 
-                <div class="daily-calories">
-                    <span>Energía total</span>
-                    <strong>{{ formatNumber(diary.dailyTotals().kcal) }}</strong>
-                    <small>kcal</small>
+                @if (diary.groups().length === 0) {
+                <div class="empty-state">
+                    Todavía no creaste grupos. Empezá por desayuno, almuerzo o la comida que quieras registrar.
                 </div>
-
-                <div class="daily-macros">
-                    <div>
-                        <span class="macro-dot protein"></span>
-                        <span>Proteínas</span>
-                        <strong>{{ formatNumber(diary.dailyTotals().protein) }} g</strong>
-                    </div>
-                    <div>
-                        <span class="macro-dot carbs"></span>
-                        <span>Carbohidratos</span>
-                        <strong>{{ formatNumber(diary.dailyTotals().carbs) }} g</strong>
-                    </div>
-                    <div>
-                        <span class="macro-dot fat"></span>
-                        <span>Grasas</span>
-                        <strong>{{ formatNumber(diary.dailyTotals().fat) }} g</strong>
-                    </div>
-                    <div>
-                        <span class="macro-dot fiber"></span>
-                        <span>Fibra</span>
-                        <strong>{{ formatNumber(diary.dailyTotals().fiber) }} g</strong>
-                    </div>
-                </div>
-
-                <div class="summary-footnote">
-                    Los nutrientes se estiman a partir de la información del alimento y la cantidad consumida.
-                </div>
-
-                @if (diary.session()) {
-                    <button
-                        type="button"
-                        class="primary-button close-day-button"
-                        (click)="finishDay()"
-                        [disabled]="diary.loading() || groupActionBusy() || closingDay()">
-                        {{ closingDay() ? 'Cerrando jornada…' : 'Cerrar y guardar jornada' }}
-                    </button>
-                } @else {
-                    <button type="button" class="primary-button close-day-button" disabled>
-                        Jornada cerrada
-                    </button>
                 }
-            </aside>
-        </div>
+
+                <div class="group-list">
+                    @for (group of diary.groups(); track group.id) {
+                    <article class="meal-card">
+                        <header class="meal-card-header">
+                            <div>
+                                <span class="meal-order">COMIDA {{ group.group_order }}</span>
+                                <h3>{{ group.label }}</h3>
+                            </div>
+
+                            <span class="group-status" [class.group-status-open]="group.status === 'open'">
+                                {{ group.status === 'open' ? 'En curso' : 'Finalizado' }}
+                            </span>
+                        </header>
+
+                        <!-- ACCIONES DEL GRUPO -->
+                        <div class="group-actions">
+                            <button type="button" class="text-button" (click)="openEditGroup(group)"
+                                [disabled]="groupActionBusy() || diary.loading()"
+                                [attr.aria-label]="'Editar grupo ' + group.label">
+                                Editar
+                            </button>
+
+                            <button type="button" class="text-button delete-group-button"
+                                (click)="requestDeleteGroup(group)" [disabled]="groupActionBusy() || diary.loading()"
+                                [attr.aria-label]="'Eliminar grupo ' + group.label">
+                                Eliminar
+                            </button>
+                        </div>
+
+                        @if (entriesForGroup(group.id).length === 0) {
+                        <p class="empty-group">Todavía no agregaste alimentos.</p>
+                        } @else {
+                        <div class="entry-list">
+                            @for (entry of entriesForGroup(group.id); track entry.id) {
+                            <div class="entry-row">
+                                <div class="entry-main">
+                                    <strong>{{ entry.name }}</strong>
+                                    <small>{{ entry.quantity_g | number:'1.0-1' }} g</small>
+
+                                    <div class="entry-actions">
+                                        <button type="button" class="text-button" (click)="openEditEntry(entry)"
+                                            [disabled]="diary.loading() || editSaving() || groupActionBusy()"
+                                            [attr.aria-label]="'Editar ' + entry.name">
+                                            Editar
+                                        </button>
+
+                                        <button type="button" class="text-button delete-group-button"
+                                            (click)="removeEntry(entry)"
+                                            [disabled]="diary.loading() || editSaving() || groupActionBusy()"
+                                            [attr.aria-label]="'Eliminar ' + entry.name">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="entry-nutrients">
+                                    <strong>{{ entry.kcal | number:'1.0-0' }} kcal</strong>
+                                    <small>
+                                        P {{ entry.protein_g | number:'1.0-1' }} ·
+                                        C {{ entry.carbs_g | number:'1.0-1' }} ·
+                                        G {{ entry.fat_g | number:'1.0-1' }} ·
+                                        Fib {{ entry.fiber_g | number:'1.0-1' }}
+                                    </small>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        <div class="meal-totals">
+                            <span>Subtotal</span>
+                            <strong>{{ formatNumber(totalsForGroup(group.id).kcal) }} kcal</strong>
+                            <small>
+                                P {{ formatNumber(totalsForGroup(group.id).protein) }} g ·
+                                C {{ formatNumber(totalsForGroup(group.id).carbs) }} g ·
+                                G {{ formatNumber(totalsForGroup(group.id).fat) }} g ·
+                                Fib {{ formatNumber(totalsForGroup(group.id).fiber) }} g
+                            </small>
+                        </div>
+
+                        @if (group.status === 'open') {
+                        <button type="button" class="text-button finish-group" (click)="finishGroup()"
+                            [disabled]="diary.loading() || groupActionBusy()">
+                            Finalizar este grupo
+                        </button>
+                        }
+                    </article>
+                    }
+                </div>
+            </section>
+        </main>
+
+        <!-- RESUMEN DEL DÍA -->
+        <aside class="summary-panel">
+            <span class="section-kicker">03 · TU DÍA</span>
+            <h2>Totales acumulados</h2>
+            <p class="summary-intro">
+                Suma de los alimentos registrados en esta jornada.
+            </p>
+
+            <div class="daily-calories">
+                <span>Energía total</span>
+                <strong>{{ formatNumber(diary.dailyTotals().kcal) }}</strong>
+                <small>kcal</small>
+            </div>
+
+            <div class="daily-macros">
+                <div>
+                    <span class="macro-dot protein"></span>
+                    <span>Proteínas</span>
+                    <strong>{{ formatNumber(diary.dailyTotals().protein) }} g</strong>
+                </div>
+                <div>
+                    <span class="macro-dot carbs"></span>
+                    <span>Carbohidratos</span>
+                    <strong>{{ formatNumber(diary.dailyTotals().carbs) }} g</strong>
+                </div>
+                <div>
+                    <span class="macro-dot fat"></span>
+                    <span>Grasas</span>
+                    <strong>{{ formatNumber(diary.dailyTotals().fat) }} g</strong>
+                </div>
+                <div>
+                    <span class="macro-dot fiber"></span>
+                    <span>Fibra</span>
+                    <strong>{{ formatNumber(diary.dailyTotals().fiber) }} g</strong>
+                </div>
+            </div>
+
+            <div class="summary-footnote">
+                Los nutrientes se estiman a partir de la información del alimento y la cantidad consumida.
+            </div>
+
+            @if (diary.session()) {
+            <button type="button" class="primary-button close-day-button" (click)="finishDay()"
+                [disabled]="diary.loading() || groupActionBusy() || closingDay()">
+                {{ closingDay() ? 'Cerrando jornada…' : 'Cerrar y guardar jornada' }}
+            </button>
+            } @else {
+            <button type="button" class="primary-button close-day-button" disabled>
+                Jornada cerrada
+            </button>
+            }
+        </aside>
+    </div>
     } @else if (sessionClosed()) {
-        <div class="status-card" role="status">
-            <h2>¡Jornada cerrada correctamente!</h2>
-            <p>Se guardó el cierre de tu registro diario.</p>
-            <button
-                type="button"
-                class="primary-button"
-                (click)="retryInitialize()"
-                [disabled]="diary.loading()">
-                {{ diary.loading() ? 'Preparando…' : 'Iniciar nueva jornada' }}
-            </button>
-        </div>
+    <div class="status-card" role="status">
+        <h2>¡Jornada cerrada correctamente!</h2>
+        <p>Se guardó el cierre de tu registro diario.</p>
+        <button type="button" class="primary-button" (click)="retryInitialize()" [disabled]="diary.loading()">
+            {{ diary.loading() ? 'Preparando…' : 'Iniciar nueva jornada' }}
+        </button>
+    </div>
     } @else {
-        <div class="status-card">
-            <h2>No se pudo abrir la jornada</h2>
-            <p>Revisá la conexión y volvé a intentarlo.</p>
-            <button
-                type="button"
-                class="primary-button"
-                (click)="retryInitialize()"
-                [disabled]="diary.loading()">
-                {{ diary.loading() ? 'Reintentando…' : 'Reintentar' }}
-            </button>
-        </div>
+    <div class="status-card">
+        <h2>No se pudo abrir la jornada</h2>
+        <p>Revisá la conexión y volvé a intentarlo.</p>
+        <button type="button" class="primary-button" (click)="retryInitialize()" [disabled]="diary.loading()">
+            {{ diary.loading() ? 'Reintentando…' : 'Reintentar' }}
+        </button>
+    </div>
     }
 
     <!-- MENSAJES DE ERROR -->
     @if (localError() || diary.error()) {
-        <div class="error-banner" role="alert">
-            {{ localError() || diary.error() }}
-            <button
-                type="button"
-                aria-label="Cerrar mensaje"
-                (click)="localError.set(null); diary.error.set(null)">
-                ×
-            </button>
-        </div>
+    <div class="error-banner" role="alert">
+        {{ localError() || diary.error() }}
+        <button type="button" aria-label="Cerrar mensaje" (click)="localError.set(null); diary.error.set(null)">
+            ×
+        </button>
+    </div>
     }
 
     <!-- MODAL: EDITAR GRUPO -->
     @if (editingGroup(); as group) {
-        <div class="modal-backdrop">
-            <section
-                class="diary-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="edit-group-title">
-                <h2 id="edit-group-title">Editar grupo de comida</h2>
-                <p>Podés cambiar el nombre y el tipo sin modificar sus alimentos.</p>
+    <div class="modal-backdrop">
+        <section class="diary-modal" role="dialog" aria-modal="true" aria-labelledby="edit-group-title">
+            <h2 id="edit-group-title">Editar grupo de comida</h2>
+            <p>Podés cambiar el nombre y el tipo sin modificar sus alimentos.</p>
 
-                <form (ngSubmit)="saveGroupEdit()">
-                    <label for="edit-group-label">Nombre del grupo</label>
-                    <input
-                        id="edit-group-label"
-                        name="editGroupLabel"
-                        [ngModel]="editGroupLabel()"
-                        (ngModelChange)="editGroupLabel.set($event)"
-                        maxlength="80"
-                        required />
+            <form (ngSubmit)="saveGroupEdit()">
+                <label for="edit-group-label">Nombre del grupo</label>
+                <input id="edit-group-label" name="editGroupLabel" [ngModel]="editGroupLabel()"
+                    (ngModelChange)="editGroupLabel.set($event)" maxlength="80" required />
 
-                    <label for="edit-group-type">Tipo de comida</label>
-                    <select
-                        id="edit-group-type"
-                        name="editGroupType"
-                        [ngModel]="editGroupType()"
-                        (ngModelChange)="editGroupType.set($event)">
-                        <option value="breakfast">Desayuno</option>
-                        <option value="lunch">Almuerzo</option>
-                        <option value="snack">Merienda</option>
-                        <option value="dinner">Cena</option>
-                        <option value="other">Otro</option>
-                    </select>
+                <label for="edit-group-type">Tipo de comida</label>
+                <select id="edit-group-type" name="editGroupType" [ngModel]="editGroupType()"
+                    (ngModelChange)="editGroupType.set($event)">
+                    <option value="breakfast">Desayuno</option>
+                    <option value="lunch">Almuerzo</option>
+                    <option value="snack">Merienda</option>
+                    <option value="dinner">Cena</option>
+                    <option value="other">Otro</option>
+                </select>
 
-                    <div class="modal-actions">
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            (click)="cancelEditGroup()"
-                            [disabled]="groupActionBusy()">
-                            Cancelar
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="primary-button"
-                            [disabled]="groupActionBusy() || !editGroupLabel().trim()">
-                            {{ groupActionBusy() ? 'Guardando…' : 'Guardar cambios' }}
-                        </button>
-                    </div>
-                </form>
-            </section>
-        </div>
-    }
-
-    <!-- MODAL: CONFIRMAR ELIMINACIÓN DE GRUPO -->
-    @if (deletingGroup(); as group) {
-        <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteGroup()">
-            <section
-                class="diary-modal delete-entry-modal"
-                role="alertdialog"
-                aria-modal="true"
-                aria-labelledby="delete-group-title"
-                aria-describedby="delete-group-description"
-                (click)="$event.stopPropagation()">
-                <div class="delete-entry-heading">
-                    <h2 id="delete-group-title">Eliminar grupo</h2>
-
-                    <button
-                        type="button"
-                        class="delete-entry-close"
-                        aria-label="Cancelar eliminación"
-                        (click)="cancelDeleteGroup()"
-                        [disabled]="groupActionBusy()">
-                        ×
-                    </button>
-                </div>
-
-                <p id="delete-group-description">
-                    ¿Eliminar <strong>{{ group.label }}</strong> y todos los alimentos
-                    registrados dentro de él? Sus nutrientes dejarán de sumarse
-                    al total diario. Esta acción no se puede deshacer.
-                </p>
-
-                <div class="modal-actions delete-entry-actions">
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        (click)="cancelDeleteGroup()"
+                <div class="modal-actions">
+                    <button type="button" class="secondary-button" (click)="cancelEditGroup()"
                         [disabled]="groupActionBusy()">
                         Cancelar
                     </button>
 
-                    <button
-                        type="button"
-                        class="danger-button"
-                        (click)="confirmDeleteGroup()"
-                        [disabled]="groupActionBusy()">
-                        {{ groupActionBusy() ? 'Eliminando…' : 'Eliminar grupo' }}
+                    <button type="submit" class="primary-button"
+                        [disabled]="groupActionBusy() || !editGroupLabel().trim()">
+                        {{ groupActionBusy() ? 'Guardando…' : 'Guardar cambios' }}
                     </button>
                 </div>
-            </section>
-        </div>
+            </form>
+        </section>
+    </div>
+    }
+
+    <!-- MODAL: CONFIRMAR ELIMINACIÓN DE GRUPO -->
+    @if (deletingGroup(); as group) {
+    <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteGroup()">
+        <section class="diary-modal delete-entry-modal" role="alertdialog" aria-modal="true"
+            aria-labelledby="delete-group-title" aria-describedby="delete-group-description"
+            (click)="$event.stopPropagation()">
+            <div class="delete-entry-heading">
+                <h2 id="delete-group-title">Eliminar grupo</h2>
+
+                <button type="button" class="delete-entry-close" aria-label="Cancelar eliminación"
+                    (click)="cancelDeleteGroup()" [disabled]="groupActionBusy()">
+                    ×
+                </button>
+            </div>
+
+            <p id="delete-group-description">
+                ¿Eliminar <strong>{{ group.label }}</strong> y todos los alimentos
+                registrados dentro de él? Sus nutrientes dejarán de sumarse
+                al total diario. Esta acción no se puede deshacer.
+            </p>
+
+            <div class="modal-actions delete-entry-actions">
+                <button type="button" class="secondary-button" (click)="cancelDeleteGroup()"
+                    [disabled]="groupActionBusy()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="danger-button" (click)="confirmDeleteGroup()"
+                    [disabled]="groupActionBusy()">
+                    {{ groupActionBusy() ? 'Eliminando…' : 'Eliminar grupo' }}
+                </button>
+            </div>
+        </section>
+    </div>
     }
 
     <!-- MODAL: EDITAR ALIMENTO -->
     @if (editingEntry(); as entry) {
-        <div class="modal-backdrop">
-            <section
-                class="diary-modal food-edit-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="edit-food-title"
-                aria-describedby="edit-food-description">
-                <h2 id="edit-food-title">Editar alimento</h2>
-                <p id="edit-food-description">
-                    Cambiá el alimento o la cantidad. Los nutrientes se recalcularán al guardar.
-                </p>
+    <div class="modal-backdrop">
+        <section class="diary-modal food-edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-food-title"
+            aria-describedby="edit-food-description">
+            <h2 id="edit-food-title">Editar alimento</h2>
+            <p id="edit-food-description">
+                Cambiá el alimento o la cantidad. Los nutrientes se recalcularán al guardar.
+            </p>
 
-                <form (ngSubmit)="saveEntryEdit()">
-                    <label for="edit-food-search">Alimento</label>
-                    <input
-                        id="edit-food-search"
-                        name="editFoodSearch"
-                        type="search"
-                        autocomplete="off"
-                        [ngModel]="editSearchTerm()"
-                        (ngModelChange)="onEditSearchChange($event)"
-                        placeholder="Buscá otro alimento..."
-                        [disabled]="editSaving()" />
+            <form (ngSubmit)="saveEntryEdit()">
+                <label for="edit-food-search">Alimento</label>
+                <input id="edit-food-search" name="editFoodSearch" type="search" autocomplete="off"
+                    [ngModel]="editSearchTerm()" (ngModelChange)="onEditSearchChange($event)"
+                    placeholder="Buscá otro alimento..." [disabled]="editSaving()" />
 
-                    @if (editSearching()) {
-                        <p class="hint" role="status">Buscando alimentos...</p>
-                    }
+                @if (editSearching()) {
+                <p class="hint" role="status">Buscando alimentos...</p>
+                }
 
-                    @if (editSearchResults().length > 0) {
-                        <div class="search-results" role="listbox" aria-label="Resultados para editar alimento">
-                            @for (food of editSearchResults(); track food.id) {
-                                <button
-                                    type="button"
-                                    class="food-result"
-                                    role="option"
-                                    [attr.aria-selected]="editSelectedFood()?.id === food.id"
-                                    (click)="selectEditFood(food)">
-                                    <span>
-                                        <strong>{{ food.name }}</strong>
-                                        @if (food.brand) {
-                                            <small>{{ food.brand }}</small>
-                                        }
-                                    </span>
-
-                                    <span class="result-kcal">
-                                        {{ food.kcal_100 | number:'1.0-0' }} kcal
-                                        <small>por 100 g</small>
-                                    </span>
-                                </button>
-                            }
-                        </div>
-                    } @else if (editSearchTerm().trim().length >= 2 && !editSearching()) {
-                        <p class="empty-results">No encontramos coincidencias.</p>
-                    }
-
-                    @if (editSelectedFood(); as food) {
-                        <div class="edit-food-selected">
-                            <span class="section-kicker">ALIMENTO SELECCIONADO</span>
+                @if (editSearchResults().length > 0) {
+                <div class="search-results" role="listbox" aria-label="Resultados para editar alimento">
+                    @for (food of editSearchResults(); track food.id) {
+                    <button type="button" class="food-result" role="option"
+                        [attr.aria-selected]="editSelectedFood()?.id === food.id" (click)="selectEditFood(food)">
+                        <span>
                             <strong>{{ food.name }}</strong>
                             @if (food.brand) {
-                                <small>{{ food.brand }}</small>
+                            <small>{{ food.brand }}</small>
                             }
-                        </div>
-                    } @else {
-                        <p class="hint">
-                            Seleccioná un alimento de los resultados para confirmar el cambio.
-                        </p>
+                        </span>
+
+                        <span class="result-kcal">
+                            {{ food.kcal_100 | number:'1.0-0' }} kcal
+                            <small>por 100 g</small>
+                        </span>
+                    </button>
                     }
+                </div>
+                } @else if (editSearchTerm().trim().length >= 2 && !editSearching()) {
+                <p class="empty-results">No encontramos coincidencias.</p>
+                }
 
-                    <label for="edit-food-grams">Cantidad consumida (gramos)</label>
-                    <input
-                        id="edit-food-grams"
-                        name="editFoodGrams"
-                        type="number"
-                        min="0.1"
-                        max="10000"
-                        step="0.1"
-                        required
-                        [ngModel]="editGrams()"
-                        (ngModelChange)="editGrams.set(+$event)"
-                        [disabled]="editSaving()" />
-
-                    @if (editNutrientPreview(); as nutrients) {
-                        <div class="preview-card" aria-live="polite">
-                            <div class="preview-calories">
-                                <span>Calorías estimadas</span>
-                                <strong>{{ formatNumber(nutrients.kcal) }} kcal</strong>
-                            </div>
-
-                            <div class="macro-grid">
-                                <div>
-                                    <span>Proteínas</span>
-                                    <strong>{{ formatNumber(nutrients.protein) }} g</strong>
-                                </div>
-                                <div>
-                                    <span>Carbohidratos</span>
-                                    <strong>{{ formatNumber(nutrients.carbs) }} g</strong>
-                                </div>
-                                <div>
-                                    <span>Grasas</span>
-                                    <strong>{{ formatNumber(nutrients.fat) }} g</strong>
-                                </div>
-                                <div>
-                                    <span>Fibra</span>
-                                    <strong>{{ formatNumber(nutrients.fiber) }} g</strong>
-                                </div>
-                            </div>
-                        </div>
+                @if (editSelectedFood(); as food) {
+                <div class="edit-food-selected">
+                    <span class="section-kicker">ALIMENTO SELECCIONADO</span>
+                    <strong>{{ food.name }}</strong>
+                    @if (food.brand) {
+                    <small>{{ food.brand }}</small>
                     }
+                </div>
+                } @else {
+                <p class="hint">
+                    Seleccioná un alimento de los resultados para confirmar el cambio.
+                </p>
+                }
 
-                    <div class="modal-actions">
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            (click)="cancelEditEntry()"
-                            [disabled]="editSaving()">
-                            Cancelar
-                        </button>
+                <label for="edit-food-grams">Cantidad consumida (gramos)</label>
+                <input id="edit-food-grams" name="editFoodGrams" type="number" min="0.1" max="10000" step="0.1" required
+                    [ngModel]="editGrams()" (ngModelChange)="editGrams.set(+$event)" [disabled]="editSaving()" />
 
-                        <button
-                            type="submit"
-                            class="primary-button"
-                            [disabled]="
+                @if (editNutrientPreview(); as nutrients) {
+                <div class="preview-card" aria-live="polite">
+                    <div class="preview-calories">
+                        <span>Calorías estimadas</span>
+                        <strong>{{ formatNumber(nutrients.kcal) }} kcal</strong>
+                    </div>
+
+                    <div class="macro-grid">
+                        <div>
+                            <span>Proteínas</span>
+                            <strong>{{ formatNumber(nutrients.protein) }} g</strong>
+                        </div>
+                        <div>
+                            <span>Carbohidratos</span>
+                            <strong>{{ formatNumber(nutrients.carbs) }} g</strong>
+                        </div>
+                        <div>
+                            <span>Grasas</span>
+                            <strong>{{ formatNumber(nutrients.fat) }} g</strong>
+                        </div>
+                        <div>
+                            <span>Fibra</span>
+                            <strong>{{ formatNumber(nutrients.fiber) }} g</strong>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button" class="secondary-button" (click)="cancelEditEntry()"
+                        [disabled]="editSaving()">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="primary-button" [disabled]="
                                 editSaving() ||
                                 !editSelectedFood() ||
                                 !editNutrientPreview() ||
                                 editGrams() <= 0 ||
                                 editGrams() > 10000
                             ">
-                            {{ editSaving() ? 'Guardando...' : 'Guardar cambios' }}
-                        </button>
-                    </div>
-                </form>
-            </section>
-        </div>
+                        {{ editSaving() ? 'Guardando...' : 'Guardar cambios' }}
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
     }
 
     <!-- MODAL: ELIMINAR ALIMENTO -->
     @if (deleteEntryModal(); as entry) {
-        <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteEntry()">
-            <section
-                class="diary-modal delete-entry-modal"
-                role="alertdialog"
-                aria-modal="true"
-                aria-labelledby="delete-entry-title"
-                aria-describedby="delete-entry-description"
-                (click)="$event.stopPropagation()">
-                <div class="delete-entry-heading">
-                    <h2 id="delete-entry-title">Eliminar alimento</h2>
-                    <button
-                        type="button"
-                        class="delete-entry-close"
-                        aria-label="Cancelar eliminación"
-                        (click)="cancelDeleteEntry()"
-                        [disabled]="diary.loading()">
-                        ×
-                    </button>
-                </div>
+    <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteEntry()">
+        <section class="diary-modal delete-entry-modal" role="alertdialog" aria-modal="true"
+            aria-labelledby="delete-entry-title" aria-describedby="delete-entry-description"
+            (click)="$event.stopPropagation()">
+            <div class="delete-entry-heading">
+                <h2 id="delete-entry-title">Eliminar alimento</h2>
+                <button type="button" class="delete-entry-close" aria-label="Cancelar eliminación"
+                    (click)="cancelDeleteEntry()" [disabled]="diary.loading()">
+                    ×
+                </button>
+            </div>
 
-                <p id="delete-entry-description">
-                    ¿Eliminar <strong>{{ entry.name }}</strong> de tu registro?
-                    Sus nutrientes dejarán de sumarse al total diario.
-                </p>
+            <p id="delete-entry-description">
+                ¿Eliminar <strong>{{ entry.name }}</strong> de tu registro?
+                Sus nutrientes dejarán de sumarse al total diario.
+            </p>
 
-                <div class="modal-actions delete-entry-actions">
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        (click)="cancelDeleteEntry()"
-                        [disabled]="diary.loading()">
-                        Cancelar
-                    </button>
+            <div class="modal-actions delete-entry-actions">
+                <button type="button" class="secondary-button" (click)="cancelDeleteEntry()"
+                    [disabled]="diary.loading()">
+                    Cancelar
+                </button>
 
-                    <button
-                        type="button"
-                        class="danger-button"
-                        (click)="confirmDeleteEntry()"
-                        [disabled]="diary.loading()">
-                        {{ diary.loading() ? 'Eliminando…' : 'Eliminar' }}
-                    </button>
-                </div>
-            </section>
-        </div>
+                <button type="button" class="danger-button" (click)="confirmDeleteEntry()" [disabled]="diary.loading()">
+                    {{ diary.loading() ? 'Eliminando…' : 'Eliminar' }}
+                </button>
+            </div>
+        </section>
+    </div>
     }
 
     <!-- MODAL: CERRAR Y GUARDAR JORNADA -->
     @if (showFinishDayModal()) {
-        <div class="modal-backdrop" (click)="cancelFinishDay()">
-            <section
-                class="diary-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="finish-day-title"
-                aria-describedby="finish-day-description"
-                (click)="$event.stopPropagation()">
-                <h2 id="finish-day-title">Cerrar y guardar jornada</h2>
+    <div class="modal-backdrop" (click)="cancelFinishDay()">
+        <section class="diary-modal" role="dialog" aria-modal="true" aria-labelledby="finish-day-title"
+            aria-describedby="finish-day-description" (click)="$event.stopPropagation()">
+            <h2 id="finish-day-title">Cerrar y guardar jornada</h2>
 
-                <p id="finish-day-description">
-                    Antes de cerrar, podés dejar una nota sobre tu alimentación,
-                    entrenamiento, descanso o cómo te sentiste hoy.
-                </p>
+            <p id="finish-day-description">
+                Antes de cerrar, podés dejar una nota sobre tu alimentación,
+                entrenamiento, descanso o cómo te sentiste hoy.
+            </p>
 
-                <label for="training-note">Nota del día (opcional)</label>
-                <textarea
-                    id="training-note"
-                    name="trainingNote"
-                    rows="4"
-                    maxlength="1000"
-                    placeholder="Ej.: Entrenamiento de pecho y tríceps..."
-                    [ngModel]="trainingNote()"
-                    (ngModelChange)="trainingNote.set($event)"
-                    [disabled]="closingDay()"></textarea>
+            <label for="training-note">Nota del día (opcional)</label>
+            <textarea id="training-note" name="trainingNote" rows="4" maxlength="1000"
+                placeholder="Ej.: Entrenamiento de pecho y tríceps..." [ngModel]="trainingNote()"
+                (ngModelChange)="trainingNote.set($event)" [disabled]="closingDay()"></textarea>
 
-                <div class="modal-actions">
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        (click)="cancelFinishDay()"
-                        [disabled]="closingDay()">
-                        Seguir editando
-                    </button>
+            <div class="modal-actions">
+                <button type="button" class="secondary-button" (click)="cancelFinishDay()" [disabled]="closingDay()">
+                    Seguir editando
+                </button>
 
-                    <button
-                        type="button"
-                        class="primary-button"
-                        (click)="confirmFinishDay()"
-                        [disabled]="closingDay()">
-                        {{ closingDay() ? 'Cerrando…' : 'Guardar nota y cerrar' }}
-                    </button>
-                </div>
-            </section>
-        </div>
+                <button type="button" class="primary-button" (click)="confirmFinishDay()" [disabled]="closingDay()">
+                    {{ closingDay() ? 'Cerrando…' : 'Guardar nota y cerrar' }}
+                </button>
+            </div>
+        </section>
+    </div>
     }
 
     <!-- MODAL: CREAR RECETA PROPIA -->
     @if (showRecipeModal()) {
-        <app-recipe-creator-modal
-            (close)="showRecipeModal.set(false)"
-            (created)="onRecipeCreated($event)">
-        </app-recipe-creator-modal>
+    <app-recipe-creator-modal [editFoodId]="editingRecipeId()" (close)="showRecipeModal.set(false)"
+        (created)="onRecipeCreated($event)">
+    </app-recipe-creator-modal>
+    }
+    <!-- MODAL: ELIMINAR RECETA PERSONALIZADA -->
+    @if (deletingCustomRecipe(); as food) {
+    <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteCustomRecipe()">
+        <section class="diary-modal delete-entry-modal" role="alertdialog" aria-modal="true"
+            aria-labelledby="delete-recipe-title" (click)="$event.stopPropagation()">
+            <div class="delete-entry-heading">
+                <h2 id="delete-recipe-title">Eliminar receta</h2>
+                <button type="button" class="delete-entry-close" aria-label="Cancelar eliminación"
+                    (click)="cancelDeleteCustomRecipe()" [disabled]="recipeActionBusy()">
+                    ×
+                </button>
+            </div>
+
+            <p>
+                ¿Estás seguro de que querés eliminar tu receta <strong>{{ food.name }}</strong>?
+                Esta acción no se puede deshacer y dejará de aparecer en tus búsquedas.
+            </p>
+
+            <div class="modal-actions delete-entry-actions">
+                <button type="button" class="secondary-button" (click)="cancelDeleteCustomRecipe()"
+                    [disabled]="recipeActionBusy()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="danger-button" (click)="confirmDeleteCustomRecipe()"
+                    [disabled]="recipeActionBusy()">
+                    {{ recipeActionBusy() ? 'Eliminando…' : 'Eliminar receta' }}
+                </button>
+            </div>
+        </section>
+    </div>
+    }
+    <!-- MODAL: VER MIS RECETAS -->
+    @if (showMyRecipesModal()) {
+    <div class="modal-backdrop" (click)="showMyRecipesModal.set(false)">
+        <section class="diary-modal" role="dialog" aria-modal="true" aria-labelledby="my-recipes-title"
+            (click)="$event.stopPropagation()" style="padding: 24px;">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <h2 id="my-recipes-title"
+                    style="margin: 0; color: #2b4e35; font-size: 21px; font-weight: 800; letter-spacing: -0.5px;">Mis
+                    recetas</h2>
+
+                <button type="button" aria-label="Cerrar modal" (click)="showMyRecipesModal.set(false)"
+                    style="background: transparent; border: 0; font-size: 26px; color: #78867a; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s ease;">
+                    ×
+                </button>
+            </div>
+
+            @if (loadingMyRecipes()) {
+            <p class="hint" role="status" style="text-align: center; margin: 30px 0;">Cargando tus recetas...</p>
+            } @else if (myRecipes().length === 0) {
+            <div class="empty-state" style="margin: 20px 0; padding: 30px 15px;">
+                Todavía no creaste ninguna receta propia.
+            </div>
+            } @else {
+            <div class="search-results"
+                style="max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: none; padding: 0 4px 0 0; background: transparent;">
+                @for (recipe of myRecipes(); track recipe.id) {
+                <button type="button" class="food-result" (click)="selectMyRecipe(recipe)"
+                    style="border: 1px solid #dcebd7; border-radius: 12px; padding: 14px 16px; background: #fff; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(44, 76, 49, 0.02);">
+                    <span style="display: flex; flex-direction: column; gap: 4px;">
+                        <strong style="font-size: 14px; color: #2b4e35;">{{ recipe.name }}</strong>
+                    </span>
+                    <span class="result-kcal" style="font-size: 13px; font-weight: 800; color: #32764b;">
+                        {{ recipe.kcal_100 | number:'1.0-0' }} kcal
+                        <small
+                            style="display: block; font-size: 11px; font-weight: 600; margin-top: 3px; color: #839083;">por
+                            100 g</small>
+                    </span>
+                </button>
+                }
+            </div>
+            }
+        </section>
+    </div>
     }
 </div>
