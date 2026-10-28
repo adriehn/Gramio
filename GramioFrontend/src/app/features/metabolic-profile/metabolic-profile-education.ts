@@ -9,7 +9,8 @@ export type EducationTopic =
   | 'fat'
   | 'carbs'
   | 'fiber'
-  | 'distribution';
+  | 'distribution'
+  | 'macrologic';
 
 export interface EducationContent {
   title: string;
@@ -171,18 +172,29 @@ export const EDUCATION_CONTENT: Record<EducationTopic, EducationContent> = {
   },
 
   distribution: {
-    title: 'Cómo se relacionan los macronutrientes',
+    title: 'Impacto metabólico y hormonal',
     intro:
-      'Las calorías expresan energía; los gramos de cada macronutriente muestran cómo se distribuye parte de esa energía.',
+      'Cada macronutriente no solo aporta energía (calorías), sino que cumple roles hormonales y fisiológicos únicos en tu cuerpo para mejorar tu composición corporal.',
     points: [
-      'Proteínas: aproximadamente 4 kcal por gramo.',
-      'Carbohidratos disponibles: aproximadamente 4 kcal por gramo.',
-      'Grasas: aproximadamente 9 kcal por gramo.',
-      'La fibra puede contribuir con energía según su tipo y el criterio utilizado. Las etiquetas y los factores específicos pueden generar diferencias.',
-      'Si aumentás un macronutriente manteniendo fijas las calorías, normalmente tendrás que reducir otro para conservar el mismo total.',
-      'No existe una distribución perfecta para todas las personas: importa cubrir las necesidades, la calidad de la dieta y la posibilidad de sostenerla.'
+      'Proteínas (4 kcal/g): Son clave para la síntesis proteica muscular y preservar la masa magra. Tienen el mayor efecto termogénico (gastás más energía al digerirlas) y estimulan fuertemente hormonas de saciedad como el GLP-1 y PYY.',
+      'Grasas (9 kcal/g): Son indispensables para producir hormonas esteroideas clave (como la testosterona y los estrógenos). Facilitan la absorción de vitaminas liposolubles (A, D, E, K) y protegen el sistema nervioso.',
+      'Carbohidratos (4 kcal/g): Son la principal fuente de energía rápida (ATP). Estimulan la liberación de insulina, una hormona altamente anabólica y anticatabólica que transporta nutrientes y repone el glucógeno muscular post-entrenamiento.',
+      'Fibra: Retrasa el vaciado gástrico, lo que estabiliza los picos de glucosa e insulina. Al fermentar en el colon, produce ácidos grasos de cadena corta que mejoran la microbiota y la salud metabólica.'
     ],
     takeaway:
-      'Una buena distribución no se evalúa solo por porcentajes: también cuentan los alimentos, la fibra, los micronutrientes, la saciedad y el rendimiento.'
+      'Una distribución equilibrada no solo impacta en la balanza, sino que regula tus niveles de hambre, optimiza tu entorno hormonal y mejora tu rendimiento físico.'
+  },
+  macrologic: {
+    title: 'La lógica detrás de tus nutrientes',
+    intro:
+      'Configurar tu alimentación es como administrar un presupuesto energético. Cada nutriente ocupa un lugar específico en la ecuación.',
+    points: [
+      'Cimientos fijos: Las proteínas y grasas se calculan primero basándose en tu peso corporal, asegurando que cubras tus requerimientos estructurales y hormonales esenciales.',
+      'El balance flexible: Los carbohidratos actúan como la variable de ajuste. Una vez que las proteínas y grasas "ocuparon" su porción calórica, los carbohidratos completan la energía restante.',
+      'Ajuste automático: Si aumentás tus gramos de proteína o grasa, quedará menos energía libre. El sistema bajará automáticamente los carbohidratos para no exceder tu objetivo calórico diario.',
+      'La fibra corre en paralelo: Biológicamente es un carbohidrato complejo, por lo que su aporte ya está contemplado dentro de los carbohidratos totales. Se calcula como un objetivo de salud independiente, por eso moverla no altera el resto de la matemática.'
+    ],
+    takeaway:
+      'Esta distribución te garantiza priorizar tu salud estructural y hormonal primero, utilizando los carbohidratos como combustible ajustable y la fibra como un indicador de calidad nutricional.'
   }
 };

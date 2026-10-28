@@ -4,12 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
-import { EMPTY, catchError, debounceTime, filter, of, switchMap, tap, timer } from 'rxjs';
+import { EMPTY, catchError, debounceTime, filter, of, switchMap, tap, timer, finalize } from 'rxjs';
 import { ProfileService } from '../../core/services/profile.service';
 import { MetabolicInput, Sex, BmrFormula, GoalType, FatMode, FiberMode, CalculatedTarget, ProteinMode } from '../../core/models/nutrition.model';
 import { EDUCATION_CONTENT, EducationTopic } from './metabolic-profile-education';
 import { AuthService } from '@core/services/auth.service';
-
 @Component({
   selector: 'app-metabolic-profile',
   standalone: true,
@@ -325,7 +324,6 @@ export class MetabolicProfile implements OnInit {
     this.profileService.saveUserProfile(
       this.sex(),
       this.heightCm(),
-
     ).pipe(
       switchMap(profileSaved => {
         if (!profileSaved) return EMPTY;
@@ -339,17 +337,11 @@ export class MetabolicProfile implements OnInit {
           bmr_formula: this.formula(),
           goal_type: this.goalType(),
           kcal_adjustment: this.kcalAdjustment(),
-
-          // Compatibilidad con el esquema actual de Supabase.
-          protein_per_kg: this.proteinMode() === 'per_kg'
-            ? this.proteinValue()
-            : (this.proteinValue() * 4 / this.preview()!.targetKcal) * 100,
-
-          fat_mode: this.fatMode(),
+          protein_per_kg: this.proteinValue(), // Simplificado al eliminar el select
+          fat_mode: 'per_kg', // Forzado
           fat_value: this.fatValue(),
-          fiber_mode: this.fiberMode(),
+          fiber_mode: 'per_1000kcal', // Forzado
           fiber_value: this.fiberValue(),
-
           bmr_kcal: result.bmr,
           tdee_kcal: result.tdee,
           target_kcal: result.targetKcal,
@@ -366,7 +358,6 @@ export class MetabolicProfile implements OnInit {
       }),
       switchMap(saved => {
         if (!saved) return EMPTY;
-
         return timer(3000).pipe(
           tap(() => this.saveSuccess.set(false))
         );
@@ -374,6 +365,9 @@ export class MetabolicProfile implements OnInit {
       catchError((error: unknown) => {
         console.error('Error al guardar el objetivo metabólico:', error);
         return EMPTY;
+      }),
+      finalize(() => {
+        this.saving = false; // ESTO LIBERA EL BOTÓN Y EL FORMULARIO
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();

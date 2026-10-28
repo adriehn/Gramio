@@ -154,6 +154,11 @@
             <span class="section-kicker">03 · TU ALIMENTACIÓN</span>
             <h2 id="nutrients-title">Macronutrientes y fibra</h2>
           </div>
+          <!-- Nuevo botón info -->
+          <button type="button" class="info-button" aria-label="Cómo se distribuyen los nutrientes"
+            aria-haspopup="dialog" (click)="openModal('macrologic', $event)">
+            ?
+          </button>
         </div>
 
         <p class="section-intro">
@@ -166,104 +171,50 @@
           <div class="nutrient-setting">
             <div class="nutrient-setting-heading">
               <span class="nutrient-dot protein-dot" aria-hidden="true"></span>
-              <label for="proteinMode">Proteínas</label>
-              <button type="button" class="metric-help" aria-label="Información sobre proteínas" aria-haspopup="dialog"
-                (click)="openModal('protein', $event)">
-                ?
-              </button>
+              <label for="proteinValue">Proteínas</label>
             </div>
-
-            <select id="proteinMode" name="proteinMode" [ngModel]="proteinMode()"
-              (ngModelChange)="proteinMode.set($event)">
-              <option value="per_kg">Gramos por kg</option>
-              <option value="percent_kcal">Porcentaje de calorías</option>
-            </select>
 
             <div class="input-with-unit">
               <input id="proteinValue" name="proteinValue" type="number" min="0.1" step="0.1" inputmode="decimal"
-                [attr.aria-label]="proteinMode() === 'per_kg'
-                  ? 'Proteínas en gramos por kilo'
-                  : 'Porcentaje de calorías provenientes de proteínas'" [ngModel]="proteinValue()"
+                aria-label="Proteínas en gramos por kilo" [ngModel]="proteinValue()"
                 (ngModelChange)="proteinValue.set(+$event)" />
-              <span aria-hidden="true">
-                {{ proteinMode() === 'per_kg' ? 'g/kg' : '%' }}
-              </span>
+              <span aria-hidden="true">g/kg</span>
             </div>
 
-            <p class="field-hint">
-              Construcción y reparación de tejidos.
-            </p>
+            <p class="field-hint">Construcción y reparación de tejidos.</p>
           </div>
 
           <!-- GRASAS -->
           <div class="nutrient-setting">
             <div class="nutrient-setting-heading">
               <span class="nutrient-dot fat-dot" aria-hidden="true"></span>
-              <label for="fatMode">Grasas</label>
-              <button type="button" class="metric-help" aria-label="Información sobre grasas" aria-haspopup="dialog"
-                (click)="openModal('fat', $event)">
-                ?
-              </button>
+              <label for="fatValue">Grasas</label>
             </div>
-
-            <select id="fatMode" name="fatMode" [ngModel]="fatMode()" (ngModelChange)="fatMode.set($event)">
-              <option value="per_kg">Gramos por kg</option>
-              <option value="pct_kcal">Porcentaje de calorías</option>
-              <option value="fixed_g">Gramos fijos</option>
-            </select>
 
             <div class="input-with-unit">
               <input id="fatValue" name="fatValue" type="number" min="0.1" step="0.1" inputmode="decimal"
-                [attr.aria-label]="fatMode() === 'per_kg'
-                  ? 'Grasas en gramos por kilo'
-                  : fatMode() === 'pct_kcal'
-                    ? 'Porcentaje de calorías provenientes de grasas'
-                    : 'Cantidad fija de grasas en gramos'" [ngModel]="fatValue()"
-                (ngModelChange)="fatValue.set(+$event)" />
-              <span aria-hidden="true">
-                {{ fatMode() === 'per_kg'
-                ? 'g/kg'
-                : fatMode() === 'pct_kcal'
-                ? '%'
-                : 'g' }}
-              </span>
+                aria-label="Grasas en gramos por kilo" [ngModel]="fatValue()" (ngModelChange)="fatValue.set(+$event)" />
+              <span aria-hidden="true">g/kg</span>
             </div>
 
-            <p class="field-hint">
-              Energía, membranas celulares y absorción de vitaminas.
-            </p>
+            <p class="field-hint">Energía y regulación hormonal.</p>
           </div>
 
           <!-- FIBRA -->
           <div class="nutrient-setting">
             <div class="nutrient-setting-heading">
               <span class="nutrient-dot fiber-dot" aria-hidden="true"></span>
-              <label for="fiberMode">Fibra</label>
-              <button type="button" class="metric-help" aria-label="Información sobre fibra" aria-haspopup="dialog"
-                (click)="openModal('fiber', $event)">
-                ?
-              </button>
+              <label for="fiberValue">Fibra</label>
             </div>
-
-            <select id="fiberMode" name="fiberMode" [ngModel]="fiberMode()" (ngModelChange)="fiberMode.set($event)">
-              <option value="per_1000kcal">Gramos por 1.000 kcal</option>
-              <option value="fixed">Cantidad fija en gramos</option>
-            </select>
 
             <div class="input-with-unit">
               <input id="fiberValue" name="fiberValue" type="number" min="1" step="1" inputmode="decimal"
-                [attr.aria-label]="fiberMode() === 'per_1000kcal'
-                  ? 'Fibra por cada mil calorías'
-                  : 'Cantidad fija de fibra en gramos'" [ngModel]="fiberValue()"
+                aria-label="Fibra por cada mil calorías" [ngModel]="fiberValue()"
                 (ngModelChange)="fiberValue.set(+$event)" />
-              <span aria-hidden="true">
-                {{ fiberMode() === 'per_1000kcal' ? 'g/1.000 kcal' : 'g' }}
-              </span>
+              <span aria-hidden="true">g/1.000 kcal</span>
             </div>
 
-            <p class="field-hint">
-              Salud intestinal, saciedad y microbiota.
-            </p>
+            <p class="field-hint">Salud intestinal y saciedad.</p>
           </div>
         </div>
       </section>
