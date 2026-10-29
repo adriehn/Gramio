@@ -85,6 +85,7 @@ export class RecipeCreatorModal implements OnInit {
       { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
 
+    // Estima una pérdida del 10 % del peso al cocinar.
     const cookedWeight = this.isCooked()
       ? totalWeight * 0.9
       : totalWeight;
@@ -96,10 +97,17 @@ export class RecipeCreatorModal implements OnInit {
         protein: 0,
         carbs: 0,
         fat: 0,
-        fiber: 0
+        fiber: 0,
+        // Valores totales en 0
+        totalKcal: 0,
+        totalProtein: 0,
+        totalCarbs: 0,
+        totalFat: 0,
+        totalFiber: 0
       };
     }
 
+    // Normaliza los nutrientes según el peso final estimado.
     const to100g = (value: number): number =>
       (value / cookedWeight) * 100;
 
@@ -109,7 +117,13 @@ export class RecipeCreatorModal implements OnInit {
       protein: to100g(nutrients.protein),
       carbs: to100g(nutrients.carbs),
       fat: to100g(nutrients.fat),
-      fiber: to100g(nutrients.fiber)
+      fiber: to100g(nutrients.fiber),
+      // Valores totales de la mezcla
+      totalKcal: nutrients.kcal,
+      totalProtein: nutrients.protein,
+      totalCarbs: nutrients.carbs,
+      totalFat: nutrients.fat,
+      totalFiber: nutrients.fiber
     };
   });
 

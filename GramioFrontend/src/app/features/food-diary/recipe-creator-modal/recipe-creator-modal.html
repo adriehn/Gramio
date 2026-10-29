@@ -169,18 +169,20 @@
       <section class="recipe-preview" aria-live="polite">
         <div class="preview-heading">
           <div>
-            <span>PESO TOTAL INGREDIENTES</span>
+            <span>PESO TOTAL</span>
             <strong>{{ format(totals().weight) }} g</strong>
           </div>
-
           <div>
-            <span>CALORÍAS / 100 g</span>
+            <span>KCAL / 100 g</span>
             <strong>{{ format(totals().kcal) }} kcal</strong>
+          </div>
+          <div>
+            <span>KCAL TOTALES</span>
+            <strong>{{ format(totals().totalKcal) }} kcal</strong>
           </div>
         </div>
 
         <h3>Valores calculados por 100 g</h3>
-
         <div class="preview-macros">
           <div>
             <span>Proteínas</span>
@@ -197,6 +199,26 @@
           <div>
             <span>Fibra</span>
             <strong>{{ format(totals().fiber) }} g</strong>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 16px;">Valores totales de la receta</h3>
+        <div class="preview-macros">
+          <div>
+            <span>Proteínas</span>
+            <strong>{{ format(totals().totalProtein) }} g</strong>
+          </div>
+          <div>
+            <span>Carbohidratos</span>
+            <strong>{{ format(totals().totalCarbs) }} g</strong>
+          </div>
+          <div>
+            <span>Grasas</span>
+            <strong>{{ format(totals().totalFat) }} g</strong>
+          </div>
+          <div>
+            <span>Fibra</span>
+            <strong>{{ format(totals().totalFiber) }} g</strong>
           </div>
         </div>
       </section>

@@ -8,9 +8,9 @@
     inset: 0;
     z-index: 1000;
     display: flex;
-    align-items: flex-start; /* CLAVE: Evita que el tope quede fuera de la pantalla */
+    align-items: flex-start;
     justify-content: center;
-    padding: 24px 16px;
+    padding: 16px;
     background: rgb(29 57 38 / 48%);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
@@ -21,10 +21,10 @@
     display: flex;
     flex-direction: column;
     width: min(640px, 100%);
-    margin: auto; /* CLAVE: Lo centra verticalmente solo si entra en pantalla */
+    margin: auto;
     height: auto;
-    max-height: calc(100dvh - 48px); /* Limita la altura para habilitar el scroll interno */
-    overflow-y: auto; /* Habilita el scroll adentro del modal */
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
     color: #263b2d;
     background: #fffdf7;
     border: 1px solid #dce8d8;
@@ -38,8 +38,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
-    padding: 16px 20px;
+    gap: 12px;
+    padding: 12px 16px;
 }
 
 .recipe-header {
@@ -67,17 +67,17 @@
 .recipe-header h2 {
     margin: 0;
     color: #2b4e35;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     letter-spacing: -0.3px;
 }
 
 .recipe-header p,
 .recipe-hint {
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     color: #78867a;
     font-size: 11px;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 .recipe-close {
@@ -105,16 +105,16 @@
 
 /* Contenido */
 .recipe-body {
-    padding: 14px 20px 18px;
+    padding: 12px 16px 14px;
 }
 
 .recipe-body>label:first-of-type {
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 .recipe-body label {
     display: block;
-    margin: 8px 0 4px;
+    margin: 6px 0 2px;
     color: #617264;
     font-size: 11px;
     font-weight: 700;
@@ -125,8 +125,8 @@
     display: block;
     width: 100%;
     min-width: 0;
-    min-height: 36px;
-    padding: 6px 10px;
+    min-height: 32px;
+    padding: 4px 8px;
     color: #2e4535;
     background: #f8faf7;
     border: 1px solid #dce5dc;
@@ -157,8 +157,8 @@
 .recipe-tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 12px 0 8px;
+    gap: 4px;
+    margin: 8px 0 6px;
 }
 
 .recipe-tabs button,
@@ -169,8 +169,8 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-height: 34px;
-    padding: 6px 12px;
+    min-height: 32px;
+    padding: 4px 10px;
     border-radius: 8px;
     font-family: inherit;
     font-size: 11px;
@@ -198,7 +198,7 @@
 }
 
 .recipe-secondary {
-    margin-top: 10px;
+    margin-top: 8px;
     width: 100%;
     border: 1px solid #d4e4d0;
     background: #f0f7ec;
@@ -262,10 +262,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     min-width: 0;
-    padding: 8px 10px;
+    padding: 6px 8px;
     text-align: left;
     color: #344d39;
     background: transparent;
@@ -296,25 +296,24 @@
     color: #879387;
     font-size: 11px;
     line-height: 1.5;
-    margin: 6px 0;
+    margin: 4px 0;
 }
 
-/* Campos de macronutrientes: rediseñado con auto-fit para Mobile fluído */
+/* Campos de macronutrientes */
 .recipe-macro-inputs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
-    gap: 8px;
-    margin-top: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 6px;
+    margin-top: 6px;
 }
 
 /* Secciones e ingredientes */
 .recipe-section {
-    margin-top: 14px;
+    margin-top: 8px;
 }
 
-.recipe-section h3,
-.recipe-preview h3 {
-    margin: 4px 0 6px;
+.recipe-section h3 {
+    margin: 0 0 4px;
     color: #2b4e35;
     font-size: 12px;
     font-weight: 800;
@@ -322,10 +321,10 @@
 
 .recipe-line {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 100px auto;
+    grid-template-columns: minmax(0, 1fr) 75px auto;
     align-items: center;
-    gap: 8px;
-    padding: 8px 0;
+    gap: 6px;
+    padding: 4px 0;
     border-bottom: 1px solid #edf1ea;
 }
 
@@ -341,28 +340,44 @@
 
 .recipe-quantity {
     min-width: 0;
+    text-align: center;
 }
 
 .recipe-quantity span {
     display: block;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     color: #617264;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
+    text-align: center;
 }
 
 .recipe-quantity input {
-    min-height: 32px;
-    padding: 4px 6px;
+    min-height: 24px;
+    padding: 2px 4px;
     font-size: 11px;
+    text-align: center;
+}
+
+.recipe-quantity input[type="number"]::-webkit-inner-spin-button,
+.recipe-quantity input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.recipe-quantity input[type="number"] {
+    -moz-appearance: textfield;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .recipe-remove {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 30px;
-    padding: 4px 8px;
+    min-height: 24px;
+    /* Mismo alto que el input */
+    padding: 2px 6px;
     color: #b42318;
     background: transparent;
     border: 0;
@@ -379,72 +394,65 @@
 
 /* Vista previa nutricional */
 .recipe-preview {
-    margin-top: 14px;
-    padding: 12px;
+    margin-top: 6px;
+    padding: 6px 10px 4px;
     background: #f5f9f2;
     border: 1px solid #dcebd7;
-    border-radius: 12px;
+    border-radius: 8px;
 }
 
 .preview-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 8px;
+    gap: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 2px;
     border-bottom: 1px solid #e0e9dc;
 }
 
-.preview-heading>div {
+.preview-heading>div,
+.preview-macros>div {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
     min-width: 0;
 }
 
-.preview-heading span {
-    color: #6d7e6e;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.preview-heading span,
+.preview-macros span {
+    color: #78867a;
+    font-size: 9px;
+    line-height: 1.2;
 }
 
 .preview-heading strong {
     color: #24583c;
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+}
+
+.recipe-preview h3 {
+    margin: 4px 0 2px !important;
+    color: #2b4e35;
+    font-size: 10px;
+    font-weight: 800;
 }
 
 .preview-macros {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.preview-macros>div {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
     gap: 2px;
-}
-
-.preview-macros span {
-    color: #78867a;
-    font-size: 10px;
 }
 
 .preview-macros strong {
     color: #344d39;
-    font-size: 11px;
-    overflow-wrap: anywhere;
+    font-size: 10px;
 }
 
 /* Mensajes de error */
 .recipe-error {
-    margin-top: 10px;
-    padding: 8px 10px;
+    margin-top: 8px;
+    padding: 6px 10px;
     border: 1px solid #f1caca;
     border-radius: 8px;
     background: #fff3f1;
@@ -455,8 +463,8 @@
 
 /* Bloque del Checkbox de evaporación */
 .recipe-cooking-mode {
-    margin-top: 14px;
-    padding: 10px 12px;
+    margin-top: 10px;
+    padding: 8px 10px;
     background: #f5f9f2;
     border: 1px solid #dcebd7;
     border-radius: 10px;
@@ -467,13 +475,13 @@
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 10px !important;
+    gap: 8px !important;
     width: 100%;
     cursor: pointer;
     color: #344d39;
     font-size: 11px;
     font-weight: 700;
-    line-height: 1.5;
+    line-height: 1.4;
     margin: 0;
 }
 
@@ -497,10 +505,18 @@
     min-width: 0;
 }
 
+.recipe-cooking-mode .recipe-hint {
+    font-size: 9.5px;
+    line-height: 1.2;
+    margin-top: 6px;
+    color: #839083;
+    letter-spacing: 0.2px;
+}
+
 /* Responsive Mobile */
 @media (max-width: 600px) {
     .recipe-backdrop {
-        padding: 10px;
+        padding: 8px;
         align-items: center;
     }
 
@@ -510,29 +526,51 @@
     }
 
     .preview-macros {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 2px;
+    }
+
+    .preview-macros>div {
+        flex: 1 1 0;
+        text-align: center;
     }
 
     .recipe-line {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) 55px auto;
         gap: 6px;
-        align-items: flex-start;
+        align-items: center;
+        /* Centrado vertical */
+    }
+
+    .preview-macros span {
+        font-size: 8px;
+        letter-spacing: -0.2px;
     }
 
     .recipe-quantity {
-        width: 100%;
+        width: auto;
+    }
+
+    .recipe-quantity input {
+        min-height: 22px;
     }
 
     .recipe-remove {
-        justify-self: start;
-        padding: 2px 0;
+        justify-self: auto;
+        padding: 2px 4px;
     }
 
     .preview-heading {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+    }
+
+    .preview-heading>div {
+        text-align: center;
     }
 
     .recipe-footer {

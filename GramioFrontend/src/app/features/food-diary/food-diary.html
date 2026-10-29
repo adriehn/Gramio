@@ -1,6 +1,5 @@
 <div class="diary-page">
     <header class="diary-header">
-        <span class="eyebrow">GRAMIO · NUTRICIÓN</span>
         <h1>Registro diario</h1>
         <p>Registrá lo que comés y seguí tus nutrientes a lo largo del día.</p>
     </header>
@@ -37,16 +36,15 @@
                         para calcular sus nutrientes y reutilizarla en tu registro.
                     </p>
 
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div class="recipe-actions">
                         <button type="button" class="recipe-create-button" (click)="openRecipeModal()"
                             [disabled]="diary.loading()">
                             <span aria-hidden="true">＋</span>
-                            Crear receta propia
+                            Crear receta
                         </button>
 
-                        <button type="button" class="secondary-button"
-                            style="width: auto; min-height: 42px; margin-top: 0; padding: 10px 16px; font-size: 14px;"
-                            (click)="openMyRecipes()" [disabled]="diary.loading()">
+                        <button type="button" class="secondary-button recipe-secondary-button" (click)="openMyRecipes()"
+                            [disabled]="diary.loading()">
                             Ver mis recetas
                         </button>
                     </div>
