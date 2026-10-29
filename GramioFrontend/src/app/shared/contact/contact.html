@@ -1,0 +1,90 @@
+<main class="contact-page">
+  <header class="contact-header">
+    <span class="eyebrow">GRAMIO · CONTACTO</span>
+    <h1>Hablemos.</h1>
+    <p>
+      ¿Tenés una consulta, una sugerencia o encontraste algo que podemos mejorar?
+      Me interesa conocer tu experiencia con Gramio.
+    </p>
+  </header>
+
+  <section class="contact-card">
+    @if (submitted()) {
+      <div class="success-message" role="status">
+        <span class="success-icon" aria-hidden="true">✓</span>
+        <h2>Mensaje validado</h2>
+        <p>
+          El formulario funciona correctamente, pero todavía no está conectado
+          a un sistema de envío. Tu mensaje no fue enviado.
+        </p>
+      </div>
+    } @else {
+      <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+        <div class="form-field">
+          <label for="contact-name">Nombre</label>
+          <input
+            id="contact-name"
+            type="text"
+            formControlName="name"
+            placeholder="Cómo te llamás"
+            autocomplete="name"
+          />
+          @if (contactForm.controls.name.touched && contactForm.controls.name.invalid) {
+            <small class="field-error">Ingresá tu nombre.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="contact-email">Correo electrónico</label>
+          <input
+            id="contact-email"
+            type="email"
+            formControlName="email"
+            placeholder="vos@ejemplo.com"
+            autocomplete="email"
+          />
+          @if (contactForm.controls.email.touched && contactForm.controls.email.invalid) {
+            <small class="field-error">Ingresá un correo válido.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="contact-subject">Motivo de contacto</label>
+          <select id="contact-subject" formControlName="subject">
+            <option value="Consulta general">Consulta general</option>
+            <option value="Sugerencia">Sugerencia</option>
+            <option value="Problema técnico">Problema técnico</option>
+            <option value="Información nutricional">Información nutricional</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="contact-message">Mensaje</label>
+          <textarea
+            id="contact-message"
+            formControlName="message"
+            rows="5"
+            maxlength="2000"
+            placeholder="Contame en qué puedo ayudarte..."
+          ></textarea>
+          @if (contactForm.controls.message.touched && contactForm.controls.message.invalid) {
+            <small class="field-error">
+              Escribí un mensaje de hasta 2000 caracteres.
+            </small>
+          }
+        </div>
+
+        <button class="submit-button" type="submit">
+          Validar mensaje
+          <span aria-hidden="true">→</span>
+        </button>
+      </form>
+    }
+  </section>
+
+  <a class="back-link" routerLink="/">
+    <span aria-hidden="true">←</span>
+    Volver a Gramio
+  </a>
+</main>

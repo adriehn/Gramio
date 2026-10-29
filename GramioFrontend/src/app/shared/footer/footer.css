@@ -1,0 +1,126 @@
+:host {
+  --footer-height: 38px;
+  --footer-green: #24583c;
+  --footer-muted: #78867a;
+
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 1000;
+  display: block;
+  height: var(--footer-height);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  pointer-events: none;
+}
+
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+.footer-reveal-zone {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  pointer-events: auto;
+}
+.hover-footer {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--footer-height);
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid #e2eade;
+  box-shadow: 0 -4px 18px rgba(44, 76, 49, 0.06);
+  transform: translateY(100%);
+  transition: transform 220ms ease;
+  pointer-events: auto;
+}
+
+:host(:hover) .hover-footer,
+:host(:focus-within) .hover-footer {
+  transform: translateY(0);
+}
+
+.footer-content {
+  width: min(100%, 1200px);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--footer-green);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+.brand-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #57976b;
+}
+
+.footer-copy {
+  color: var(--footer-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.contact-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 27px;
+  padding: 0 10px;
+  border: 1px solid #dce5dc;
+  border-radius: 7px;
+  background: #f8faf7;
+  color: var(--footer-green);
+  font-size: 10px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.contact-button:hover {
+  background: #edf4eb;
+  border-color: #bdcfbd;
+}
+
+.contact-button:focus-visible {
+  outline: 2px solid #57976b;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .footer-copy {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-footer {
+    transition: none;
+  }
+}

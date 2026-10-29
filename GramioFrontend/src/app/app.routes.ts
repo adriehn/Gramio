@@ -1,7 +1,7 @@
 ﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { RegisterComponent } from '@features/auth/register/register';
-
+import { ContactComponent } from './shared/contact/contact';
 export const routes: Routes = [
   {
     path: '',
@@ -46,6 +46,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/observed-tdee/observed-tdee')
         .then(m => m.ObservedTdeeComponent)
+  },
+  {
+    path: 'contacto',
+    component: ContactComponent,
   },
 
   {
