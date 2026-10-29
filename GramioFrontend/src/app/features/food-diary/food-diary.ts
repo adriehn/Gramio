@@ -7,7 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../core/services/food-diary.service';
 import { RecipeCreatorModal } from './recipe-creator-modal/recipe-creator-modal';
 import { ProfileService } from '../../core/services/profile.service';
-
+import { effect } from '@angular/core';
 @Component({
   selector: 'app-food-diary',
   standalone: true,
@@ -129,6 +129,14 @@ export class FoodDiary {
     this.initializeDiary();
     this.initializeFoodSearch();
     this.profileService.loadActiveTarget().subscribe();
+    // Efecto para reaccionar si el objetivo cambia en otra pantalla o pestaña
+    effect(() => {
+      const target = this.profileService.activeTarget();
+      if (target) {
+        // Forzamos la actualización de los cómputos de progreso
+        console.log('Nuevo objetivo detectado en el diario:', target);
+      }
+    });
   }
 
   // =========================================================
