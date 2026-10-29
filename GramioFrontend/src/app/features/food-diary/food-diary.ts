@@ -26,7 +26,7 @@ export class FoodDiary {
   readonly searchTerm = signal('');
   readonly searchResults = signal<FoodItem[]>([]);
   readonly selectedFood = signal<FoodItem | null>(null);
-  readonly grams = signal(100);
+  grams = signal<number | null>(100);
   readonly sessionClosed = signal(false);
   // Grupo de comida activo
   readonly groupType = signal<MealType>('breakfast');
@@ -50,7 +50,7 @@ export class FoodDiary {
   readonly editSelectedFood = signal<FoodItem | null>(null);
   readonly editSearchTerm = signal('');
   readonly editSearchResults = signal<FoodItem[]>([]);
-  readonly editGrams = signal(100);
+  readonly editGrams = signal<number | null>(null);
   readonly editSearching = signal(false);
   readonly editSaving = signal(false);
   deleteEntryModal = signal<DiaryEntry | null>(null);
@@ -64,12 +64,12 @@ export class FoodDiary {
   readonly showMyRecipesModal = signal(false);
   readonly myRecipes = signal<FoodItem[]>([]);
   readonly loadingMyRecipes = signal(false);
-
+  readonly showHelpModal = signal(false);
   readonly editNutrientPreview = computed(() => {
     const food = this.editSelectedFood();
     const grams = this.editGrams();
 
-    if (!food || !Number.isFinite(grams) || grams <= 0 || grams > 10000) {
+    if (!food || grams === null || !Number.isFinite(grams) || grams <= 0 || grams > 10000) {
       return null;
     }
 
@@ -88,7 +88,7 @@ export class FoodDiary {
     const food = this.selectedFood();
     const grams = this.grams();
 
-    if (!food || !Number.isFinite(grams) || grams <= 0) {
+    if (!food || grams === null || !Number.isFinite(grams) || grams <= 0) {
       return null;
     }
 
@@ -304,7 +304,7 @@ export class FoodDiary {
       return;
     }
 
-    if (!Number.isFinite(grams) || grams <= 0 || grams > 10000) {
+    if (grams === null || !Number.isFinite(grams) || grams <= 0 || grams > 10000) {
       this.localError.set(
         'Ingresá una cantidad válida entre 0,1 y 10.000 gramos.'
       );
@@ -462,8 +462,8 @@ export class FoodDiary {
       );
       return;
     }
-
     if (
+      grams === null ||
       !Number.isFinite(grams) ||
       grams <= 0 ||
       grams > 10000
@@ -482,7 +482,6 @@ export class FoodDiary {
     }
 
     this.localError.set(null);
-
     this.diary.addFood(food, grams)
       .pipe(
         takeUntilDestroyed(this.destroyRef)
@@ -506,7 +505,6 @@ export class FoodDiary {
         }
       });
   }
-
   // =========================================================
   // Crear y finalizar grupos
   // =========================================================

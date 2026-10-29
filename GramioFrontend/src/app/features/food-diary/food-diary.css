@@ -1259,6 +1259,90 @@ input:disabled {
     opacity: 0.55;
 }
 
+/* --- BOTONES DE AYUDA Y CONTENEDORES --- */
+.header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+    /* Hereda el margen que antes tenía el h1 solo */
+}
+
+.header-title-row h1 {
+    margin: 0;
+    /* Reseteamos el h1 para que quede centrado con el botón */
+}
+
+.session-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Botón "?" para celulares (Oculto por defecto en PC) */
+.help-icon-mobile {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid #dcebd7;
+    border-radius: 50%;
+    background: #f0f7ec;
+    color: #32764b;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+/* Botón de texto para PC */
+.help-btn-desktop {
+    display: inline-flex;
+    /* Visible en PC */
+    align-items: center;
+    padding: 4px 10px;
+    border: 1px solid #dcebd7;
+    border-radius: 8px;
+    background: #f0f7ec;
+    color: #32764b;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.help-icon-mobile:hover,
+.help-btn-desktop:hover {
+    background: #e1eedc;
+}
+
+/* --- MODAL DE AYUDA --- */
+.help-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    /* Separación entre cada paso */
+}
+
+.help-step strong {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    color: #32764b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.help-step p {
+    margin: 0;
+    color: #617264;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
 /* Aparición suave */
 @keyframes delete-backdrop-in {
     from {
@@ -1676,5 +1760,16 @@ input:disabled {
 
     .entry-nutrients {
         text-align: left;
+    }
+
+    /* Intercambio de botones de ayuda */
+    .help-btn-desktop {
+        display: none;
+        /* Ocultamos el texto largo en el recuadro de jornada */
+    }
+
+    .help-icon-mobile {
+        display: flex;
+        /* Mostramos el "?" al lado del título principal */
     }
 }
