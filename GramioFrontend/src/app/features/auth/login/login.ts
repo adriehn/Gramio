@@ -43,7 +43,7 @@ export class Login {
       });
 
       if (success) {
-        await this.router.navigate(['/perfil']);
+        await this.router.navigate(['/nutricion']);
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

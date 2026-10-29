@@ -2,11 +2,11 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EMPTY, Observable, Subject, catchError, distinctUntilChanged, finalize, of, switchMap, tap, timer } from 'rxjs';
+import { Subject, catchError, distinctUntilChanged, finalize, of, switchMap, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../core/services/food-diary.service';
 import { RecipeCreatorModal } from './recipe-creator-modal/recipe-creator-modal';
-import { CreateRecipePayload } from '../../core/models/recipe.model';
+import { ProfileService } from '../../core/services/profile.service';
 
 @Component({
   selector: 'app-food-diary',
@@ -19,6 +19,7 @@ import { CreateRecipePayload } from '../../core/models/recipe.model';
 export class FoodDiary {
 
   readonly diary = inject(FoodDiaryService);
+  readonly profileService = inject(ProfileService);
   private readonly destroyRef = inject(DestroyRef);
   // 1. Agregá el signal para controlar la visibilidad del modal
   readonly showRecipeModal = signal(false);
@@ -65,6 +66,27 @@ export class FoodDiary {
   readonly myRecipes = signal<FoodItem[]>([]);
   readonly loadingMyRecipes = signal(false);
   readonly showHelpModal = signal(false);
+
+  // Señal computada que cruza el consumo con el objetivo
+  readonly macroProgress = computed(() => {
+    const totals = this.diary.dailyTotals();
+    const target = this.profileService.activeTarget();
+
+    if (!target) return null; // Si no hay objetivo configurado, devolvemos null
+
+    // Función auxiliar para sacar el porcentaje sin pasarse del 100% en la barra visual
+    const calcPct = (current: number, max: number) =>
+      max > 0 ? Math.min(Math.round((current / max) * 100), 100) : 0;
+
+    return {
+      kcal: { current: totals.kcal, max: target.target_kcal, pct: calcPct(totals.kcal, target.target_kcal) },
+      protein: { current: totals.protein, max: target.protein_g, pct: calcPct(totals.protein, target.protein_g) },
+      carbs: { current: totals.carbs, max: target.carbs_g, pct: calcPct(totals.carbs, target.carbs_g) },
+      fat: { current: totals.fat, max: target.fat_g, pct: calcPct(totals.fat, target.fat_g) },
+      fiber: { current: totals.fiber, max: target.fiber_g, pct: calcPct(totals.fiber, target.fiber_g) }
+    };
+  });
+
   readonly editNutrientPreview = computed(() => {
     const food = this.editSelectedFood();
     const grams = this.editGrams();
@@ -106,6 +128,7 @@ export class FoodDiary {
   constructor() {
     this.initializeDiary();
     this.initializeFoodSearch();
+    this.profileService.loadActiveTarget().subscribe();
   }
 
   // =========================================================

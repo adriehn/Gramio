@@ -314,8 +314,93 @@
         <aside class="summary-panel">
             <span class="section-kicker">03 · TU DÍA</span>
             <h2>Totales acumulados</h2>
+
+            @if (macroProgress(); as progress) {
+            <!-- VISTA CON OBJETIVO -->
             <p class="summary-intro">
-                Suma de los alimentos registrados en esta jornada.
+                Progreso respecto a tu perfil metabólico.
+            </p>
+
+            <div class="daily-calories daily-calories-progress">
+
+                <div class="calorie-header">
+                    <div class="values">
+                        <strong>{{ formatNumber(progress.kcal.current) }} / {{ formatNumber(progress.kcal.max)
+                            }}</strong>
+                        <small>kcal</small>
+                    </div>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill kcal-fill" [style.width.%]="progress.kcal.pct"></div>
+                </div>
+            </div>
+
+            <div class="daily-macros">
+                <!-- PROTEÍNAS -->
+                <div class="macro-progress-row">
+                    <div class="macro-progress-header">
+                        <div class="macro-label">
+                            <span class="macro-dot protein"></span>
+                            <span>Proteínas</span>
+                        </div>
+                        <strong>{{ formatNumber(progress.protein.current) }} / {{ formatNumber(progress.protein.max) }}
+                            g</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill protein" [style.width.%]="progress.protein.pct"></div>
+                    </div>
+                </div>
+
+                <!-- CARBOHIDRATOS -->
+                <div class="macro-progress-row">
+                    <div class="macro-progress-header">
+                        <div class="macro-label">
+                            <span class="macro-dot carbs"></span>
+                            <span>Carbohidratos</span>
+                        </div>
+                        <strong>{{ formatNumber(progress.carbs.current) }} / {{ formatNumber(progress.carbs.max) }}
+                            g</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill carbs" [style.width.%]="progress.carbs.pct"></div>
+                    </div>
+                </div>
+
+                <!-- GRASAS -->
+                <div class="macro-progress-row">
+                    <div class="macro-progress-header">
+                        <div class="macro-label">
+                            <span class="macro-dot fat"></span>
+                            <span>Grasas</span>
+                        </div>
+                        <strong>{{ formatNumber(progress.fat.current) }} / {{ formatNumber(progress.fat.max) }}
+                            g</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill fat" [style.width.%]="progress.fat.pct"></div>
+                    </div>
+                </div>
+
+                <!-- FIBRA -->
+                <div class="macro-progress-row">
+                    <div class="macro-progress-header">
+                        <div class="macro-label">
+                            <span class="macro-dot fiber"></span>
+                            <span>Fibra</span>
+                        </div>
+                        <strong>{{ formatNumber(progress.fiber.current) }} / {{ formatNumber(progress.fiber.max) }}
+                            g</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill fiber" [style.width.%]="progress.fiber.pct"></div>
+                    </div>
+                </div>
+            </div>
+            } @else {
+            <!-- VISTA ORIGINAL SIN OBJETIVO -->
+            <p class="summary-intro">
+                Suma de los alimentos registrados. <a routerLink="/profile"
+                    style="color: #32764b; font-weight: 600;">Configurá tu objetivo</a> para ver el progreso.
             </p>
 
             <div class="daily-calories">
@@ -346,6 +431,7 @@
                     <strong>{{ formatNumber(diary.dailyTotals().fiber) }} g</strong>
                 </div>
             </div>
+            }
 
             <div class="summary-footnote">
                 Los nutrientes se estiman a partir de la información del alimento y la cantidad consumida.

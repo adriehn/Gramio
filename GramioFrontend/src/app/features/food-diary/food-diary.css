@@ -1223,13 +1223,126 @@ input:disabled {
     min-height: 42px;
 }
 
+
+/* --- Barras de progreso de Macros --- */
+.daily-macros>.macro-progress-row {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    /* Anula la grilla vieja */
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.macro-progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
+
+.macro-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #637364;
+    font-size: 11px;
+}
+
+.macro-progress-header strong {
+    color: #344d39;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Pista y Relleno */
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e9f0e8;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease-out;
+}
+
+.kcal-fill {
+    background: #32764b;
+}
+
+.progress-fill.protein {
+    background: #40865a;
+}
+
+.progress-fill.carbs {
+    background: #548eb2;
+}
+
+.progress-fill.fat {
+    background: #bd8a32;
+}
+
+.progress-fill.fiber {
+    background: #8a6bb3;
+}
+
+
+/* --- Totales acumulados --- */
+.daily-calories-progress {
+    margin-top: 5px;
+    gap: 5px;
+}
+
+/* --- Reducir aire superior e inferior en la tarjeta de calorías --- */
+/* --- Ajuste compacto y centrado vertical para Calorías con Objetivo --- */
+.daily-calories.daily-calories-progress {
+    padding: 8px 15px !important; /* Menos aire arriba y abajo en el recuadro verde */
+    gap: 8px;                    /* Menos espacio entre el texto y la barra de progreso */
+}
+
+
+
+.daily-calories-progress .calorie-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.daily-calories-progress .calorie-header .title {
+    color: #405b45;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.daily-calories-progress .calorie-header .values {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.daily-calories-progress .calorie-header strong {
+    font-size: 25px;
+    letter-spacing: 0;
+}
+
 /* =========================================
    MEDIA QUERIES CONSOLIDADAS
    ========================================= */
 
 @keyframes delete-backdrop-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes delete-modal-in {
@@ -1237,6 +1350,7 @@ input:disabled {
         opacity: 0;
         transform: translateY(7px) scale(0.98);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1247,9 +1361,11 @@ input:disabled {
     .diary-layout {
         grid-template-columns: minmax(0, 1fr);
     }
+
     .summary-panel {
         position: static;
     }
+
     .daily-macros {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1259,40 +1375,49 @@ input:disabled {
     .diary-page {
         padding: 10px 10px 20px;
     }
+
     .diary-header {
         margin-bottom: 10px;
     }
+
     .diary-header p {
         max-width: 42rem;
         font-size: 10px;
         line-height: 1.2;
     }
+
     .panel,
     .summary-panel,
     .status-card {
         padding: 17px 14px;
         border-radius: 14px;
     }
+
     .macro-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 14px 10px;
     }
+
     .grams-control {
         align-items: flex-start;
         flex-direction: column;
         gap: 8px;
     }
+
     .grams-control>div {
         width: 100%;
     }
+
     .group-form {
         grid-template-columns: minmax(0, 1fr);
         gap: 6px;
     }
+
     .form-field label {
         margin-bottom: 4px;
         font-size: 10px;
     }
+
     .form-field input,
     .form-field select {
         min-height: 38px;
@@ -1300,31 +1425,37 @@ input:disabled {
         font-size: 12px;
         border-radius: 8px;
     }
+
     .group-form .secondary-button {
         grid-column: auto;
         min-height: 40px;
         font-size: 11px;
         padding: 8px;
     }
+
     .entry-row {
         flex-direction: column;
         gap: 4px;
         padding: 8px 0;
     }
+
     .entry-row>div:first-child {
         display: grid;
         grid-template-columns: 1fr auto;
         align-items: start;
         gap: 2px 10px;
     }
+
     .entry-row>div:first-child strong {
         grid-column: 1;
         grid-row: 1;
     }
+
     .entry-row>div:first-child small {
         grid-column: 1;
         grid-row: 2;
     }
+
     .entry-actions {
         grid-column: 2;
         grid-row: 1 / span 2;
@@ -1335,20 +1466,25 @@ input:disabled {
         margin-top: -6px;
         margin-right: -14px;
     }
+
     .entry-row .entry-actions .text-button {
         min-height: auto;
         padding: 6px;
         font-size: 11px;
     }
+
     .entry-row .entry-actions .text-button:last-child {
         padding-right: 0;
     }
+
     .entry-nutrients {
         text-align: left;
     }
+
     .daily-macros {
         grid-template-columns: minmax(0, 1fr);
     }
+
     .modal-backdrop {
         align-items: flex-end;
         justify-content: center;
@@ -1357,6 +1493,7 @@ input:disabled {
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
     }
+
     .diary-modal {
         width: 100%;
         max-height: 90vh;
@@ -1368,40 +1505,49 @@ input:disabled {
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
     }
+
     .modal-actions {
         display: flex;
         flex-direction: column-reverse;
         gap: 10px;
     }
+
     .modal-actions button {
         width: 100%;
         min-height: 47px;
     }
+
     .food-result {
         align-items: flex-start;
         gap: 10px;
         padding: 12px 9px;
     }
+
     .preview-calories {
         align-items: flex-start;
         flex-wrap: wrap;
     }
+
     .meal-card-header {
         flex-wrap: wrap;
     }
+
     .group-actions {
         gap: 8px 14px;
     }
+
     .error-banner {
         right: 12px;
         bottom: max(12px, env(safe-area-inset-bottom));
         width: calc(100% - 24px);
         max-width: none;
     }
+
     .modal-backdrop.delete-entry-backdrop {
         align-items: center;
         padding: 16px;
     }
+
     .diary-modal.delete-entry-modal {
         width: 100%;
         max-width: 370px;
@@ -1409,34 +1555,42 @@ input:disabled {
         padding: 18px;
         border-radius: 15px;
     }
+
     .delete-entry-actions {
         flex-direction: row;
         gap: 8px;
     }
+
     .delete-entry-modal .delete-entry-actions button {
         flex: 1;
         width: auto;
         min-width: 0;
     }
+
     .diary-modal:has(#training-note) {
         width: 100%;
         padding: 24px 19px max(22px, env(safe-area-inset-bottom));
         border-radius: 20px 20px 0 0;
     }
+
     #training-note {
         min-height: 115px;
         font-size: 16px;
     }
+
     .diary-modal:has(#training-note) .modal-actions {
         grid-template-columns: 1fr;
     }
+
     .recipe-create-button {
         transition: none;
     }
+
     .recipe-actions {
         flex-wrap: nowrap;
         gap: 8px;
     }
+
     .recipe-actions button {
         flex: 1;
         min-width: 0;
@@ -1445,27 +1599,33 @@ input:disabled {
         min-height: 38px;
         margin-top: 0;
     }
+
     .help-btn-desktop {
         display: none;
     }
+
     .help-icon-mobile {
         display: flex;
     }
 }
 
 @media (max-width: 380px) {
+
     .panel,
     .summary-panel,
     .status-card {
         padding: 15px 12px;
     }
+
     .meal-card {
         padding: 13px;
     }
+
     .daily-macros>div {
         grid-template-columns: 9px minmax(0, 1fr) minmax(0, auto);
         gap: 7px;
     }
+
     .diary-modal {
         padding-right: 14px;
         padding-left: 14px;
@@ -1473,6 +1633,7 @@ input:disabled {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -1480,6 +1641,7 @@ input:disabled {
         animation-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+
     .delete-entry-backdrop,
     .delete-entry-modal {
         animation: none;
