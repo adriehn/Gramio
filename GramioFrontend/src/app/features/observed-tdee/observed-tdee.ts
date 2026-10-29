@@ -11,11 +11,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { ObservedTdeeService } from '../../../core/services/observed-tdee.service';
+import { ObservedTdeeService } from '../../core/services/observed-tdee.service';
 import {
   ObservedTdeePeriod,
   ObservedTdeeResponse
-} from '../../../core/models/observed-tdee.model';
+} from '../../core/models/observed-tdee.model';
 
 @Component({
   selector: 'app-observed-tdee',

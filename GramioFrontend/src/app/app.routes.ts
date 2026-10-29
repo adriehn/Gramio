@@ -5,7 +5,7 @@ import { RegisterComponent } from '@features/auth/register/register';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/home/home').then(m => m.Home),
+    loadComponent: () => import('./shared/home/home').then(m => m.Home),
     pathMatch: 'full'
   },
   {
@@ -31,7 +31,7 @@ export const routes: Routes = [
     path: 'historial-semanal',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/nutrition/weekly-history/weekly-history')
+      import('./features/weekly-history/weekly-history')
         .then(m => m.WeeklyHistoryComponent),
   }
   , {
@@ -44,7 +44,7 @@ export const routes: Routes = [
     path: 'tdee-observado',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/nutrition/observed-tdee/observed-tdee')
+      import('./features/observed-tdee/observed-tdee')
         .then(m => m.ObservedTdeeComponent)
   },
 

@@ -1,9 +1,11 @@
 
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { WeeklySummaryService } from '../../../core/services/weekly-summary.service';
-import { WeeklySummaryResponse } from '../../../core/models/weekly-summary.model';
+import { Component, inject, OnInit, ChangeDetectorRef, effect } from '@angular/core';
+import { WeeklySummaryService } from '../../core/services/weekly-summary.service';
+import { WeeklySummaryResponse } from '../../core/models/weekly-summary.model';
 import { WeeklySummaryCardsComponent } from './components/weekly-summary-cards/weekly-summary-cards';
 import { WeeklyDaysTableComponent } from './components/weekly-days-table/weekly-days-table';
+import { ProfileService } from '@core/services/profile.service';
+
 @Component({
   selector: 'app-weekly-history',
   standalone: true,
@@ -22,8 +24,22 @@ export class WeeklyHistoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadWeek();
+
   }
 
+  //conectar con Profile Metabolic
+  private readonly profileService = inject(ProfileService);
+  constructor() {
+    effect(() => {
+      const target = this.profileService.activeTarget();
+      if (target) {
+        console.log('[Historial] Objetivo actualizado detectado, recargando semana...');
+        this.loadWeek();
+      }
+    });
+  }
+
+  
   private getMonday(date: Date): string {
     const monday = new Date(date);
     monday.setHours(12, 0, 0, 0);

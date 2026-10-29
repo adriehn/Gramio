@@ -12,11 +12,13 @@
   overflow-wrap: break-word;
 }
 
-:host *, * {
+:host *,
+* {
   box-sizing: border-box;
 }
 
-button, input {
+button,
+input {
   font: inherit;
 }
 
@@ -24,7 +26,8 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-button:focus-visible, input:focus-visible {
+button:focus-visible,
+input:focus-visible {
   outline: 3px solid rgba(68, 133, 85, 0.3);
   outline-offset: 3px;
 }
@@ -66,6 +69,7 @@ button:focus-visible, input:focus-visible {
    ========================================== */
 
 .week-navigation {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,7 +81,8 @@ button:focus-visible, input:focus-visible {
   background: rgba(255, 255, 255, 0.82);
 }
 
-.nav-button, .current-button {
+.nav-button,
+.current-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,7 +98,8 @@ button:focus-visible, input:focus-visible {
   transition: all 0.2s ease;
 }
 
-.nav-button:hover, .current-button:hover {
+.nav-button:hover,
+.current-button:hover {
   border-color: #bdcfbd;
   background: #fff;
   color: #205b35;
@@ -118,10 +124,23 @@ button:focus-visible, input:focus-visible {
 }
 
 .week-current {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+}
+
+.next-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .week-current h2 {
@@ -132,7 +151,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .week-current label {
-  display: none; /* Oculto visualmente pero disponible para accesibilidad */
+  display: none;
+  /* Oculto visualmente pero disponible para accesibilidad */
 }
 
 .week-current input[type="date"] {
@@ -195,28 +215,29 @@ button:focus-visible, input:focus-visible {
     gap: 16px;
     padding: 18px;
   }
-  
-  /* Subimos la fecha actual arriba de todo en mobile */
-  .week-current {
-    order: -1;
-    align-items: stretch;
-    text-align: center;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e2eade;
-  }
-  
+.week-current {
+position: static;
+order: -1;
+transform: none;
+align-items: stretch;
+text-align: center;
+white-space: normal;
+}
+
   .week-current input[type="date"] {
     width: 100%;
     text-align: center;
   }
-  
+
   .next-controls {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  .nav-button, .current-button, .week-navigation > .nav-button {
+  .nav-button,
+  .current-button,
+  .week-navigation>.nav-button {
     width: 100%;
   }
 }
@@ -225,12 +246,14 @@ button:focus-visible, input:focus-visible {
   .weekly-history {
     padding: 28px 18px 38px;
   }
+
   .page-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 15px;
     margin-bottom: 22px;
   }
+
   .page-header h1 {
     font-size: clamp(25px, 6vw, 32px);
     overflow-wrap: anywhere;
@@ -241,14 +264,17 @@ button:focus-visible, input:focus-visible {
   .weekly-history {
     padding: 23px 13px 30px;
   }
+
   .page-header {
     gap: 12px;
     margin-bottom: 19px;
   }
+
   .page-header h1 {
     font-size: 26px;
     letter-spacing: -0.7px;
   }
+
   .week-navigation {
     padding: 16px 14px;
     border-radius: 14px;
@@ -256,7 +282,10 @@ button:focus-visible, input:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
