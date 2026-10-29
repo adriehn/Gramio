@@ -527,7 +527,7 @@ export class FoodDiaryService {
 
     // Cerrar la jornada completa.
 
-    closeSession(trainingNote: string): Observable<void> {
+    closeSession(trainingNote: string, logDate: string): Observable<void> {
         const session = this.session();
 
         if (!session) {
@@ -540,7 +540,8 @@ export class FoodDiaryService {
         return from(
             this.supabase.client.rpc('close_diary_session_with_note', {
                 p_session_id: session.id,
-                p_training_note: trainingNote.trim() || null
+                p_training_note: trainingNote.trim() || null,
+                p_log_date: logDate // Pasamos la fecha a Supabase
             })
         ).pipe(
             tap(({ error }) => {
@@ -604,7 +605,7 @@ export class FoodDiaryService {
         );
     }
     // Obtener los detalles de una receta para editar
-getCustomRecipe(foodId: string): Observable<any> {
+    getCustomRecipe(foodId: string): Observable<any> {
         return from(this.supabase.client.auth.getSession()).pipe(
             switchMap(({ data, error }) => {
                 const token = data.session?.access_token;

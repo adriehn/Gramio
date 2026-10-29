@@ -31,7 +31,7 @@ export class FoodDiary {
   // Grupo de comida activo
   readonly groupType = signal<MealType>('breakfast');
   readonly groupLabel = signal('Desayuno');
-
+  readonly selectedDate = signal<string>(this.getTodayDate());
   // Estados de interfaz
   readonly searching = signal(false);
   readonly localError = signal<string | null>(null);
@@ -403,13 +403,15 @@ export class FoodDiary {
     this.localError.set(null);
     this.closingDay.set(true);
 
-    this.diary.closeSession(this.trainingNote().trim()).pipe(
+    this.diary.closeSession(this.trainingNote().trim(), this.selectedDate()).pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => this.closingDay.set(false))
     ).subscribe({
       next: () => {
         this.showFinishDayModal.set(false);
         this.trainingNote.set('');
+        this.selectedDate.set(this.getTodayDate());
+        this.sessionClosed.set(true);
       },
       error: (error: unknown) => {
         this.localError.set(
@@ -857,4 +859,12 @@ export class FoodDiary {
     this.showMyRecipesModal.set(false);
     this.selectFood(recipe); // Reutilizamos tu función existente
   }
+  private getTodayDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
 }

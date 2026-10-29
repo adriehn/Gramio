@@ -17,13 +17,7 @@
         Preparando tu jornada...
     </div>
     } @else if (diary.session(); as session) {
-    <div class="session-info">
-        <div>
-            <span class="status-dot"></span>
-            <strong>Jornada activa</strong>
-        </div>
-        <span>Vence: {{ session.expires_at | date:'dd/MM/yyyy HH:mm' }}</span>
-    </div>
+
 
     <div class="diary-layout">
         <main class="main-column">
@@ -625,7 +619,9 @@
                 Antes de cerrar, podés dejar una nota sobre tu alimentación,
                 entrenamiento, descanso o cómo te sentiste hoy.
             </p>
-
+            <label for="log-date" style="margin-top: 15px;">Fecha de la jornada</label>
+            <input id="log-date" type="date" [ngModel]="selectedDate()" (ngModelChange)="selectedDate.set($event)"
+                [disabled]="closingDay()" style="margin-bottom: 15px;" />
             <label for="training-note">Nota del día (opcional)</label>
             <textarea id="training-note" name="trainingNote" rows="4" maxlength="1000"
                 placeholder="Ej.: Entrenamiento de pecho y tríceps..." [ngModel]="trainingNote()"

@@ -26,12 +26,12 @@ select:focus-visible {
     outline-offset: 3px;
 }
 
-
 .diary-page {
     width: 100%;
     max-width: 1120px;
     margin-inline: auto;
     padding: 10px 24px 24px;
+    overflow-wrap: anywhere;
 }
 
 .diary-header {
@@ -53,16 +53,7 @@ select:focus-visible {
     margin: 2px 0;
     color: #24583c;
     font-size: clamp(22px, 2.5vw, 28px);
-    /* Mucho más chico */
     font-weight: 800;
-}
-
-.diary-header p {
-    margin: 0;
-    color: #78867a;
-    font-size: 12px;
-    /* Texto descriptivo más chico */
-    line-height: 1.5;
 }
 
 .diary-header p,
@@ -73,43 +64,13 @@ select:focus-visible {
     line-height: 1.7;
 }
 
-.session-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 6px 10px;
-    /* Estilo etiqueta minimalista */
-    border: 1px solid #dcebd7;
-    border-radius: 6px;
-    background: #f5faf1;
-    color: #58705b;
-    font-size: 10px;
-}
-
-.session-info>div {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #57976b;
-    box-shadow: 0 0 0 4px #e0efdc;
-}
-
-
 .diary-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 290px;
     align-items: start;
     gap: 20px;
+    min-width: 0;
 }
-
 
 .main-column {
     display: grid;
@@ -134,7 +95,6 @@ select:focus-visible {
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 8px;
-    /* Antes era 20px. Esto acerca el texto al título */
 }
 
 .panel-heading h2,
@@ -210,6 +170,7 @@ input:disabled {
     color: #879387;
     font-size: 11px;
     line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
 .search-results {
@@ -220,6 +181,7 @@ input:disabled {
     border: 1px solid #e2eade;
     border-radius: 12px;
     background: #fff;
+    min-width: 0;
 }
 
 .food-result {
@@ -235,10 +197,15 @@ input:disabled {
     color: #344d39;
     text-align: left;
     cursor: pointer;
+    min-width: 0;
 }
 
 .food-result:hover {
     background: #f1f7ed;
+}
+
+.food-result>span:first-child {
+    flex: 1;
 }
 
 .food-result>span:first-child,
@@ -266,6 +233,8 @@ input:disabled {
     font-size: 11px;
     font-weight: 750;
     text-align: right;
+    max-width: 42%;
+    white-space: normal;
 }
 
 .empty-results,
@@ -274,12 +243,22 @@ input:disabled {
     color: #879387;
     font-size: 12px;
     line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.empty-state {
+    margin-top: 17px;
+    padding: 15px;
+    border: 1px dashed #dce5dc;
+    border-radius: 11px;
+    text-align: center;
 }
 
 .selected-food {
     margin-top: 19px;
     padding-top: 19px;
     border-top: 1px solid #e7ede4;
+    min-width: 0;
 }
 
 .selected-heading {
@@ -306,13 +285,14 @@ input:disabled {
 }
 
 .text-button {
-    padding: 7px 0;
+    padding: 8px 4px;
     border: 0;
     background: transparent;
     color: #32764b;
     font-size: 11px;
     font-weight: 750;
     cursor: pointer;
+    min-height: 36px;
 }
 
 .text-button:hover {
@@ -442,9 +422,15 @@ input:disabled {
 }
 
 .primary-button:disabled,
-.secondary-button:disabled {
+.secondary-button:disabled,
+.diary-page button:disabled {
     cursor: not-allowed;
     opacity: 0.55;
+}
+
+.diary-page button {
+    max-width: 100%;
+    touch-action: manipulation;
 }
 
 .notice {
@@ -456,9 +442,8 @@ input:disabled {
     color: #7b7047;
     font-size: 11px;
     line-height: 1.7;
+    overflow-wrap: anywhere;
 }
-
-/* Grupos */
 
 .group-form {
     display: grid;
@@ -473,14 +458,6 @@ input:disabled {
 
 .group-form .secondary-button {
     grid-column: 1 / -1;
-}
-
-.empty-state {
-    margin-top: 17px;
-    padding: 15px;
-    border: 1px dashed #dce5dc;
-    border-radius: 11px;
-    text-align: center;
 }
 
 .group-list {
@@ -502,6 +479,7 @@ input:disabled {
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
+    min-width: 0;
 }
 
 .meal-order {
@@ -509,11 +487,6 @@ input:disabled {
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 0.9px;
-}
-
-.meal-card h3 {
-    margin-top: 5px;
-    font-size: 15px;
 }
 
 .group-status {
@@ -547,6 +520,7 @@ input:disabled {
     gap: 12px;
     padding: 12px 0;
     border-top: 1px solid #edf1ea;
+    min-width: 0;
 }
 
 .entry-row>div:first-child,
@@ -574,6 +548,10 @@ input:disabled {
     text-align: right;
 }
 
+.entry-nutrients small {
+    overflow-wrap: anywhere;
+}
+
 .meal-totals {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -583,6 +561,7 @@ input:disabled {
     border-top: 1px solid #e5ece2;
     color: #647564;
     font-size: 11px;
+    min-width: 0;
 }
 
 .meal-totals strong {
@@ -594,13 +573,12 @@ input:disabled {
     color: #829082;
     font-size: 10px;
     line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
 .finish-group {
     margin-top: 10px;
 }
-
-/* Resumen diario */
 
 .summary-panel {
     position: sticky;
@@ -655,12 +633,15 @@ input:disabled {
     gap: 9px;
     color: #637364;
     font-size: 11px;
+    min-width: 0;
 }
 
 .daily-macros strong {
     color: #344d39;
     font-size: 12px;
     font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: anywhere;
 }
 
 .macro-dot {
@@ -692,6 +673,7 @@ input:disabled {
     color: #879387;
     font-size: 10px;
     line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
 .close-day-button {
@@ -720,7 +702,7 @@ input:disabled {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    z-index: 100;
+    z-index: 10000;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -733,6 +715,8 @@ input:disabled {
     box-shadow: 0 10px 35px rgba(40, 50, 40, 0.12);
     font-size: 12px;
     line-height: 1.6;
+    max-width: calc(100vw - 40px);
+    overflow-wrap: anywhere;
 }
 
 .error-banner button {
@@ -744,83 +728,6 @@ input:disabled {
     color: inherit;
     font-size: 20px;
     cursor: pointer;
-}
-
-@media (max-width: 1000px) {
-    .diary-layout {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .summary-panel {
-        position: static;
-    }
-
-    .daily-macros {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 600px) {
-    .diary-page {
-        padding: 23px 13px 32px;
-    }
-
-    .panel,
-    .summary-panel,
-    .status-card {
-        padding: 17px 14px;
-        border-radius: 14px;
-    }
-
-    .session-info {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .macro-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .grams-control {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .grams-control>div {
-        width: 100%;
-    }
-
-    .group-form {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .group-form .secondary-button {
-        grid-column: auto;
-    }
-
-    .entry-row {
-        flex-direction: column;
-    }
-
-    .entry-nutrients {
-        text-align: left;
-    }
-
-    .daily-macros {
-        grid-template-columns: minmax(0, 1fr);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
 }
 
 .group-actions {
@@ -923,218 +830,11 @@ input:disabled {
     cursor: pointer;
 }
 
-.primary-button {
-    background: #287447;
-    color: white;
-}
-
-.secondary-button {
-    background: #e8eee7;
-    color: #26372b;
-}
-
 .danger-button {
     background: #b42318;
     color: white;
 }
 
-@media (max-width: 600px) {
-    .modal-backdrop {
-        align-items: flex-end;
-        padding: 0.5rem;
-    }
-
-    .diary-modal {
-        padding: 1.25rem;
-        border-radius: 16px;
-    }
-
-    .modal-actions {
-        flex-direction: column-reverse;
-    }
-
-    .modal-actions button {
-        width: 100%;
-    }
-}
-
-
-/* Evitar desbordamientos de contenido */
-.diary-page,
-.diary-layout,
-.main-column,
-.panel,
-.summary-panel,
-.meal-card,
-.selected-food,
-.entry-row>div {
-    min-width: 0;
-}
-
-.diary-page {
-    overflow-wrap: anywhere;
-}
-
-.search-results,
-.food-result,
-.entry-row,
-.meal-card-header,
-.meal-totals,
-.daily-macros>div {
-    min-width: 0;
-}
-
-.food-result>span:first-child {
-    flex: 1;
-}
-
-.result-kcal {
-    max-width: 42%;
-    white-space: normal;
-}
-
-/* Mejor comportamiento de los botones */
-.diary-page button {
-    max-width: 100%;
-    touch-action: manipulation;
-}
-
-.diary-page button:disabled {
-    cursor: not-allowed;
-}
-
-.text-button {
-    min-height: 36px;
-    padding: 8px 4px;
-}
-
-/* Los valores nutricionales largos no deben romper la tarjeta */
-.entry-nutrients small,
-.meal-totals small,
-.summary-footnote,
-.hint,
-.notice,
-.empty-state,
-.error-banner {
-    overflow-wrap: anywhere;
-}
-
-.daily-macros strong {
-    text-align: right;
-    overflow-wrap: anywhere;
-}
-
-/* Mensaje de error con espacio para pantallas pequeñas */
-.error-banner {
-    max-width: calc(100vw - 40px);
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 600px) {
-    .diary-page {
-        padding: 20px 12px 32px;
-    }
-
-    .diary-header {
-        margin-bottom: 20px;
-    }
-
-    .diary-header p {
-        max-width: 42rem;
-    }
-
-    .session-info>span {
-        overflow-wrap: anywhere;
-    }
-
-    .food-result {
-        align-items: flex-start;
-        gap: 10px;
-        padding: 12px 9px;
-    }
-
-    .macro-grid {
-        gap: 14px 10px;
-    }
-
-    .preview-calories {
-        align-items: flex-start;
-        flex-wrap: wrap;
-    }
-
-    .meal-card-header {
-        flex-wrap: wrap;
-    }
-
-    .group-actions {
-        gap: 8px 14px;
-    }
-
-    .error-banner {
-        right: 12px;
-        bottom: max(12px, env(safe-area-inset-bottom));
-        width: calc(100% - 24px);
-        max-width: none;
-    }
-
-    /* Modal tipo hoja inferior */
-    .modal-backdrop {
-        align-items: flex-end;
-        justify-content: center;
-        padding: 0;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .diary-modal {
-        width: 100%;
-        max-height: 90vh;
-        max-height: 90dvh;
-        margin-top: auto;
-        padding: 22px 18px max(20px, env(safe-area-inset-bottom));
-        border-radius: 20px 20px 0 0;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .modal-actions {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-
-    .modal-actions button {
-        width: 100%;
-        min-height: 46px;
-    }
-}
-
-@media (max-width: 380px) {
-
-    .panel,
-    .summary-panel,
-    .status-card {
-        padding: 15px 12px;
-    }
-
-    .meal-card {
-        padding: 13px;
-    }
-
-    .daily-macros>div {
-        grid-template-columns: 9px minmax(0, 1fr) minmax(0, auto);
-        gap: 7px;
-    }
-
-    .diary-modal {
-        padding-right: 14px;
-        padding-left: 14px;
-    }
-}
-
-/* Modal compacto: eliminar alimento */
 .delete-entry-backdrop {
     align-items: center;
     justify-content: center;
@@ -1259,18 +959,15 @@ input:disabled {
     opacity: 0.55;
 }
 
-/* --- BOTONES DE AYUDA Y CONTENEDORES --- */
 .header-title-row {
     display: flex;
     align-items: center;
     gap: 12px;
     margin: 4px 0;
-    /* Hereda el margen que antes tenía el h1 solo */
 }
 
 .header-title-row h1 {
     margin: 0;
-    /* Reseteamos el h1 para que quede centrado con el botón */
 }
 
 .session-meta {
@@ -1279,7 +976,6 @@ input:disabled {
     gap: 14px;
 }
 
-/* Botón "?" para celulares (Oculto por defecto en PC) */
 .help-icon-mobile {
     display: none;
     align-items: center;
@@ -1297,10 +993,8 @@ input:disabled {
     transition: background 0.15s ease;
 }
 
-/* Botón de texto para PC */
 .help-btn-desktop {
     display: inline-flex;
-    /* Visible en PC */
     align-items: center;
     padding: 4px 10px;
     border: 1px solid #dcebd7;
@@ -1318,12 +1012,10 @@ input:disabled {
     background: #e1eedc;
 }
 
-/* --- MODAL DE AYUDA --- */
 .help-content {
     display: flex;
     flex-direction: column;
     gap: 18px;
-    /* Separación entre cada paso */
 }
 
 .help-step strong {
@@ -1343,66 +1035,6 @@ input:disabled {
     line-height: 1.65;
 }
 
-/* Aparición suave */
-@keyframes delete-backdrop-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes delete-modal-in {
-    from {
-        opacity: 0;
-        transform: translateY(7px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Mantener el modal compacto en móviles */
-@media (max-width: 600px) {
-    .modal-backdrop.delete-entry-backdrop {
-        align-items: center;
-        padding: 16px;
-    }
-
-    .diary-modal.delete-entry-modal {
-        width: 100%;
-        max-width: 370px;
-        margin: auto;
-        padding: 18px;
-        border-radius: 15px;
-    }
-
-    .delete-entry-actions {
-        flex-direction: row;
-        gap: 8px;
-    }
-
-    .delete-entry-modal .delete-entry-actions button {
-        flex: 1;
-        width: auto;
-        min-width: 0;
-    }
-}
-
-/* Respetar la preferencia de movimiento reducido */
-@media (prefers-reduced-motion: reduce) {
-
-    .delete-entry-backdrop,
-    .delete-entry-modal {
-        animation: none;
-    }
-}
-
-/* Modal de cierre: campo de nota */
 #training-note {
     display: block;
     width: 100%;
@@ -1448,7 +1080,6 @@ input:disabled {
     margin-top: 22px;
 }
 
-/* Etiqueta de la nota */
 .diary-modal label[for="training-note"] {
     display: block;
     margin-top: 20px;
@@ -1458,7 +1089,6 @@ input:disabled {
     font-weight: 750;
 }
 
-/* Modal de cierre */
 .diary-modal:has(#training-note) {
     width: min(100%, 460px);
     padding: 27px;
@@ -1531,40 +1161,6 @@ input:disabled {
     outline-offset: 3px;
 }
 
-
-.recipe-create-area {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.recipe-create-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
-
-    border: 1px solid rgb(16 185 129 / 35%);
-    border-radius: 10px;
-
-    background: #064e3b;
-    color: #d1fae5;
-
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1.5;
-
-    cursor: pointer;
-    transition:
-        background-color 180ms ease,
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        transform 180ms ease;
-}
-
 .recipe-create-area {
     display: flex;
     flex-direction: column;
@@ -1579,17 +1175,13 @@ input:disabled {
     justify-content: center;
     gap: 8px;
     padding: 10px 16px;
-
     border: 1px solid rgb(16 185 129 / 35%);
     border-radius: 10px;
-
     background: #064e3b;
     color: #d1fae5;
-
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1.5;
-
     cursor: pointer;
     transition:
         background-color 180ms ease,
@@ -1631,75 +1223,76 @@ input:disabled {
     min-height: 42px;
 }
 
+/* =========================================
+   MEDIA QUERIES CONSOLIDADAS
+   ========================================= */
+
+@keyframes delete-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes delete-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(7px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 1000px) {
+    .diary-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .summary-panel {
+        position: static;
+    }
+    .daily-macros {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
 
 @media (max-width: 600px) {
     .diary-page {
         padding: 10px 10px 20px;
     }
-
     .diary-header {
         margin-bottom: 10px;
     }
-
     .diary-header p {
         max-width: 42rem;
         font-size: 10px;
         line-height: 1.2;
     }
-
-    .session-info {
-        flex-direction: row;
-        align-items: center;
-        padding: 6px 8px;
-        font-size: 10px;
+    .panel,
+    .summary-panel,
+    .status-card {
+        padding: 17px 14px;
+        border-radius: 14px;
     }
-
-    .diary-modal:has(#training-note) {
-        width: 100%;
-        padding: 24px 19px max(22px, env(safe-area-inset-bottom));
-        border-radius: 20px 20px 0 0;
+    .macro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 10px;
     }
-
-    #training-note {
-        min-height: 115px;
-        font-size: 16px;
-    }
-
-    .diary-modal:has(#training-note) .modal-actions {
-        grid-template-columns: 1fr;
-    }
-
-    .diary-modal:has(#training-note) .modal-actions button {
-        min-height: 47px;
-    }
-
-    .recipe-create-button {
-        transition: none;
-    }
-
-    .recipe-actions {
-        flex-wrap: nowrap;
+    .grams-control {
+        align-items: flex-start;
+        flex-direction: column;
         gap: 8px;
     }
-
-    .recipe-actions button {
-        flex: 1;
-        min-width: 0;
-        padding: 8px 4px;
-        font-size: 11px;
-        min-height: 38px;
-        margin-top: 0;
+    .grams-control>div {
+        width: 100%;
     }
-
     .group-form {
+        grid-template-columns: minmax(0, 1fr);
         gap: 6px;
     }
-
     .form-field label {
         margin-bottom: 4px;
         font-size: 10px;
     }
-
     .form-field input,
     .form-field select {
         min-height: 38px;
@@ -1707,36 +1300,31 @@ input:disabled {
         font-size: 12px;
         border-radius: 8px;
     }
-
     .group-form .secondary-button {
+        grid-column: auto;
         min-height: 40px;
         font-size: 11px;
         padding: 8px;
     }
-
     .entry-row {
         flex-direction: column;
         gap: 4px;
         padding: 8px 0;
     }
-
     .entry-row>div:first-child {
         display: grid;
         grid-template-columns: 1fr auto;
         align-items: start;
         gap: 2px 10px;
     }
-
     .entry-row>div:first-child strong {
         grid-column: 1;
         grid-row: 1;
     }
-
     .entry-row>div:first-child small {
         grid-column: 1;
         grid-row: 2;
     }
-
     .entry-actions {
         grid-column: 2;
         grid-row: 1 / span 2;
@@ -1747,29 +1335,153 @@ input:disabled {
         margin-top: -6px;
         margin-right: -14px;
     }
-
     .entry-row .entry-actions .text-button {
         min-height: auto;
         padding: 6px;
         font-size: 11px;
     }
-
     .entry-row .entry-actions .text-button:last-child {
         padding-right: 0;
     }
-
     .entry-nutrients {
         text-align: left;
     }
-
-    /* Intercambio de botones de ayuda */
+    .daily-macros {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .modal-backdrop {
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+    .diary-modal {
+        width: 100%;
+        max-height: 90vh;
+        max-height: 90dvh;
+        margin-top: auto;
+        padding: 22px 18px max(20px, env(safe-area-inset-bottom));
+        border-radius: 20px 20px 0 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+    .modal-actions {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    .modal-actions button {
+        width: 100%;
+        min-height: 47px;
+    }
+    .food-result {
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 9px;
+    }
+    .preview-calories {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .meal-card-header {
+        flex-wrap: wrap;
+    }
+    .group-actions {
+        gap: 8px 14px;
+    }
+    .error-banner {
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: calc(100% - 24px);
+        max-width: none;
+    }
+    .modal-backdrop.delete-entry-backdrop {
+        align-items: center;
+        padding: 16px;
+    }
+    .diary-modal.delete-entry-modal {
+        width: 100%;
+        max-width: 370px;
+        margin: auto;
+        padding: 18px;
+        border-radius: 15px;
+    }
+    .delete-entry-actions {
+        flex-direction: row;
+        gap: 8px;
+    }
+    .delete-entry-modal .delete-entry-actions button {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+    }
+    .diary-modal:has(#training-note) {
+        width: 100%;
+        padding: 24px 19px max(22px, env(safe-area-inset-bottom));
+        border-radius: 20px 20px 0 0;
+    }
+    #training-note {
+        min-height: 115px;
+        font-size: 16px;
+    }
+    .diary-modal:has(#training-note) .modal-actions {
+        grid-template-columns: 1fr;
+    }
+    .recipe-create-button {
+        transition: none;
+    }
+    .recipe-actions {
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+    .recipe-actions button {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 4px;
+        font-size: 11px;
+        min-height: 38px;
+        margin-top: 0;
+    }
     .help-btn-desktop {
         display: none;
-        /* Ocultamos el texto largo en el recuadro de jornada */
     }
-
     .help-icon-mobile {
         display: flex;
-        /* Mostramos el "?" al lado del título principal */
+    }
+}
+
+@media (max-width: 380px) {
+    .panel,
+    .summary-panel,
+    .status-card {
+        padding: 15px 12px;
+    }
+    .meal-card {
+        padding: 13px;
+    }
+    .daily-macros>div {
+        grid-template-columns: 9px minmax(0, 1fr) minmax(0, auto);
+        gap: 7px;
+    }
+    .diary-modal {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .delete-entry-backdrop,
+    .delete-entry-modal {
+        animation: none;
     }
 }
