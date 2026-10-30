@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../../lib/supabase.js';
+import { supabaseAdmin } from '../../config/supabase.js';
 
 const DAY_COUNT = 7;
 

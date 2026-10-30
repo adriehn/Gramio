@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../../lib/supabase.js';
+import { supabaseAdmin } from '../../config/supabase.js';
 
 export const loginUser = async (req, res, next) => {
   try {

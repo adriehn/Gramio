@@ -1,12 +1,13 @@
-
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
-import nutritionRoutes from './src/modules/nutrition/nutrition.routes.js';
+// --- Imports de Rutas por Dominio ---
 import authRoutes from './src/modules/auth/auth.routes.js';
+import bodyMeasurementsRoutes from './src/modules/body-measurements/body-measurements.routes.js';
+import nutritionRoutes from './src/modules/nutrition-targets/nutrition.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,7 @@ app.use(express.json({ limit: '10kb' }));
 // 5. Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/nutrition', nutritionRoutes);
+app.use('/api/measurements', bodyMeasurementsRoutes);
 
 // 6. Endpoint de salud
 app.get('/health', (req, res) => {

@@ -1,6 +1,6 @@
 
-import { createRecipeSchema } from './nutrition.recipe.schema.js';
-import { NutritionService } from './nutrition.service.js';
+import { createRecipeSchema } from './recipe.schema.js';
+import { NutritionService } from '../nutrition-targets/nutrition.service.js';
 
 export const createCustomRecipe = async (req, res, next) => {
   const validation = createRecipeSchema.safeParse(req.body);

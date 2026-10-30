@@ -1,5 +1,5 @@
 
-import { supabaseAdmin } from '../../lib/supabase.js';
+import { supabaseAdmin } from '../../config/supabase.js';
 
 export class NutritionService {
   static calculateBmr(input) {
