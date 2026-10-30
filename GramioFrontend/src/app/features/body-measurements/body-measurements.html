@@ -12,266 +12,167 @@
   </header>
 
   @if (errorMessage) {
-    <div class="notice notice-error" role="alert">
-      <span>{{ errorMessage }}</span>
-      <button
-        type="button"
-        class="notice-close"
-        aria-label="Cerrar aviso"
-        (click)="errorMessage = ''"
-      >×</button>
-    </div>
+  <div class="notice notice-error" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="notice-close" aria-label="Cerrar aviso" (click)="errorMessage = ''">×</button>
+  </div>
   }
 
   @if (successMessage) {
-    <div class="notice notice-success" role="status">
-      <span>{{ successMessage }}</span>
-      <button
-        type="button"
-        class="notice-close"
-        aria-label="Cerrar aviso"
-        (click)="successMessage = ''"
-      >×</button>
-    </div>
+  <div class="notice notice-success" role="status">
+    <span>{{ successMessage }}</span>
+    <button type="button" class="notice-close" aria-label="Cerrar aviso" (click)="successMessage = ''">×</button>
+  </div>
   }
 
   @if (formVisible) {
-    <section class="panel form-panel" aria-labelledby="measurement-form-title">
-      <div class="panel-heading">
-        <div>
-          <span class="eyebrow">REGISTRO CORPORAL</span>
-          <h2 id="measurement-form-title">
-            {{ editingId ? 'Editar medición' : 'Nueva medición' }}
-          </h2>
-          <p>
-            Completá solo los datos que mediste. Los campos vacíos no se guardan como cero.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          class="icon-button"
-          aria-label="Cerrar formulario"
-          (click)="cancelForm()"
-        >×</button>
+  <section class="panel form-panel" aria-labelledby="measurement-form-title">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">REGISTRO CORPORAL</span>
+        <h2 id="measurement-form-title">
+          {{ editingId ? 'Editar medición' : 'Nueva medición' }}
+        </h2>
+        <p>
+          Completá solo los datos que mediste. Los campos vacíos no se guardan como cero.
+        </p>
       </div>
 
-      <button
-        type="button"
-        class="education-help-button"
-        (click)="openMeasurementEducation()"
-      >
-        <span aria-hidden="true">ⓘ</span>
-        ¿Cómo tomar las medidas?
-      </button>
+      <button type="button" class="icon-button" aria-label="Cerrar formulario" (click)="cancelForm()">×</button>
+    </div>
 
-      <form [formGroup]="form" (ngSubmit)="saveMeasurement()" novalidate>
-        <div class="form-section">
-          <h3>Datos generales</h3>
+    <button type="button" class="education-help-button" (click)="openGuide()">
+      <span aria-hidden="true">ⓘ</span>
+      ¿Cómo tomar las medidas?
+    </button>
 
-          <div class="form-grid">
-            <label class="field">
-              <span>Fecha de medición <b>*</b></span>
-              <input type="date" formControlName="measured_on" required />
+    <form [formGroup]="form" (ngSubmit)="saveMeasurement()" novalidate>
+      <div class="form-section">
+        <h3>Datos generales</h3>
 
-              @if (form.controls.measured_on.touched && form.controls.measured_on.invalid) {
-                <small class="field-error">La fecha es obligatoria.</small>
-              }
-            </label>
-
-            <label class="field">
-              <span>Peso corporal <small>kg</small></span>
-              <input
-                type="number"
-                formControlName="weight_kg"
-                min="20"
-                max="400"
-                step="0.1"
-                placeholder="Ej. 84,5"
-              />
-
-              @if (form.controls.weight_kg.touched && form.controls.weight_kg.invalid) {
-                <small class="field-error">Ingresá un peso entre 20 y 400 kg.</small>
-              }
-            </label>
-
-            <label class="field">
-              <span>Grasa corporal <small>%</small></span>
-              <input
-                type="number"
-                formControlName="body_fat_pct"
-                min="1"
-                max="75"
-                step="0.1"
-                placeholder="Opcional"
-              />
-
-              @if (form.controls.body_fat_pct.touched && form.controls.body_fat_pct.invalid) {
-                <small class="field-error">Ingresá un porcentaje entre 1 y 75.</small>
-              }
-            </label>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Medidas corporales <span>cm</span></h3>
-
-          <div class="form-grid">
-            <label class="field">
-              <span class="field-label-with-help">
-                Cuello
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir el cuello"
-                  title="Cómo medir el cuello"
-                  (click)="openMeasurementEducation('neck_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="neck_cm" min="10" max="100" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Hombros
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir los hombros"
-                  title="Cómo medir los hombros"
-                  (click)="openMeasurementEducation('shoulders_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="shoulders_cm" min="20" max="200" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Pecho
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir el pecho"
-                  title="Cómo medir el pecho"
-                  (click)="openMeasurementEducation('chest_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="chest_cm" min="20" max="200" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Brazo relajado
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir el brazo relajado"
-                  title="Cómo medir el brazo relajado"
-                  (click)="openMeasurementEducation('arm_relaxed_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="arm_relaxed_cm" min="10" max="100" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Brazo flexionado
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir el brazo flexionado"
-                  title="Cómo medir el brazo flexionado"
-                  (click)="openMeasurementEducation('arm_flexed_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="arm_flexed_cm" min="10" max="100" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Cintura
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir la cintura"
-                  title="Cómo medir la cintura"
-                  (click)="openMeasurementEducation('waist_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="waist_cm" min="20" max="200" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Cadera
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir la cadera"
-                  title="Cómo medir la cadera"
-                  (click)="openMeasurementEducation('hip_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="hip_cm" min="20" max="200" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Muslo
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir el muslo"
-                  title="Cómo medir el muslo"
-                  (click)="openMeasurementEducation('thigh_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="thigh_cm" min="20" max="120" step="0.1" placeholder="—" />
-            </label>
-
-            <label class="field">
-              <span class="field-label-with-help">
-                Pantorrilla
-                <button
-                  type="button"
-                  class="field-help-button"
-                  aria-label="Cómo medir la pantorrilla"
-                  title="Cómo medir la pantorrilla"
-                  (click)="openMeasurementEducation('calf_cm')"
-                >ⓘ</button>
-              </span>
-              <input type="number" formControlName="calf_cm" min="10" max="80" step="0.1" placeholder="—" />
-            </label>
-          </div>
-        </div>
-
-        <div class="form-section">
+        <div class="form-grid">
           <label class="field">
-            <span>Notas <small>opcional</small></span>
-            <textarea
-              formControlName="notes"
-              rows="3"
-              maxlength="1000"
-              placeholder="Ej. medición en ayunas, cambios en entrenamiento, cómo te sentiste…"
-            ></textarea>
+            <span>Fecha de medición <b>*</b></span>
+            <input type="date" formControlName="measured_on" required />
+
+            @if (form.controls.measured_on.touched && form.controls.measured_on.invalid) {
+            <small class="field-error">La fecha es obligatoria.</small>
+            }
+          </label>
+
+          <label class="field">
+            <span>Peso corporal <small>kg</small></span>
+            <input type="number" formControlName="weight_kg" min="20" max="400" step="0.1" placeholder="Ej. 84,5" />
+
+            @if (form.controls.weight_kg.touched && form.controls.weight_kg.invalid) {
+            <small class="field-error">Ingresá un peso entre 20 y 400 kg.</small>
+            }
+          </label>
+
+          <label class="field">
+            <span>Grasa corporal <small>%</small></span>
+            <input type="number" formControlName="body_fat_pct" min="1" max="75" step="0.1" placeholder="Opcional" />
+
+            @if (form.controls.body_fat_pct.touched && form.controls.body_fat_pct.invalid) {
+            <small class="field-error">Ingresá un porcentaje entre 1 y 75.</small>
+            }
           </label>
         </div>
+      </div>
 
-        <div class="form-actions">
-          <button type="button" class="button button-secondary" (click)="cancelForm()">
-            Cancelar
-          </button>
+      <div class="form-section">
+        <h3>Medidas corporales <span>cm</span></h3>
 
-          <button type="submit" class="button button-primary" [disabled]="saving">
-            @if (saving) {
-              Guardando…
-            } @else {
-              {{ editingId ? 'Guardar cambios' : 'Guardar medición' }}
-            }
-          </button>
+        <div class="form-grid">
+          <label class="field">
+            <span class="field-label-with-help">
+              Cuello
+            </span>
+            <input type="number" formControlName="neck_cm" min="10" max="100" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Hombros
+
+            </span>
+            <input type="number" formControlName="shoulders_cm" min="20" max="200" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Pecho
+            </span>
+            <input type="number" formControlName="chest_cm" min="20" max="200" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Brazo relajado
+            </span>
+            <input type="number" formControlName="arm_relaxed_cm" min="10" max="100" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Brazo flexionado
+            </span>
+            <input type="number" formControlName="arm_flexed_cm" min="10" max="100" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Cintura
+            </span>
+            <input type="number" formControlName="waist_cm" min="20" max="200" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Cadera
+            </span>
+            <input type="number" formControlName="hip_cm" min="20" max="200" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Muslo
+            </span>
+            <input type="number" formControlName="thigh_cm" min="20" max="120" step="0.1" placeholder="—" />
+          </label>
+
+          <label class="field">
+            <span class="field-label-with-help">
+              Pantorrilla
+            </span>
+            <input type="number" formControlName="calf_cm" min="10" max="80" step="0.1" placeholder="—" />
+          </label>
         </div>
-      </form>
-    </section>
+      </div>
+
+      <div class="form-section">
+        <label class="field">
+          <span>Notas <small>opcional</small></span>
+          <textarea formControlName="notes" rows="3" maxlength="1000"
+            placeholder="Ej. medición en ayunas, cambios en entrenamiento, cómo te sentiste…"></textarea>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="button button-secondary" (click)="cancelForm()">
+          Cancelar
+        </button>
+
+        <button type="submit" class="button button-primary" [disabled]="saving">
+          @if (saving) {
+          Guardando…
+          } @else {
+          {{ editingId ? 'Guardar cambios' : 'Guardar medición' }}
+          }
+        </button>
+      </div>
+    </form>
+  </section>
   }
 
   <section class="panel chart-panel">
@@ -286,7 +187,7 @@
         <span>Métrica</span>
         <select [value]="selectedMetric" (change)="setMetric($any($event.target).value)">
           @for (metric of metricOptions; track metric.key) {
-            <option [value]="metric.key">{{ metric.label }}</option>
+          <option [value]="metric.key">{{ metric.label }}</option>
           }
         </select>
       </label>
@@ -300,187 +201,130 @@
     </div>
 
     @if (chartPoints.length) {
-      <div class="chart-summary">
-        <div>
-          <span>Último valor del período</span>
-          <strong>{{ formatValue(lastChartValue, selectedMetricOption.unit) }}</strong>
-        </div>
-
-        <div>
-          <span>Cambio en el período</span>
-          <strong
-            [class.positive]="chartChange !== null && chartChange < 0"
-            [class.negative]="chartChange !== null && chartChange > 0"
-          >
-            {{ formatDifference(chartChange, selectedMetricOption.unit) }}
-          </strong>
-        </div>
-
-        <div>
-          <span>Registros graficados</span>
-          <strong>{{ chartPoints.length }}</strong>
-        </div>
+    <div class="chart-summary">
+      <div>
+        <span>Último valor del período</span>
+        <strong>{{ formatValue(lastChartValue, selectedMetricOption.unit) }}</strong>
       </div>
 
-      <div
-        class="chart-wrap"
-        role="group"
-        [attr.aria-label]="'Gráfico de ' + selectedMetricOption.label + ' con ' + chartPoints.length + ' registros'"
-      >
-        <svg
-          viewBox="0 0 600 230"
-          preserveAspectRatio="xMidYMid meet"
-          class="trend-chart"
-          role="img"
-          aria-label="Gráfico de evolución de medidas corporales"
-        >
-          <defs>
-            <linearGradient id="measurementAreaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#47966b" stop-opacity="0.22" />
-              <stop offset="100%" stop-color="#47966b" stop-opacity="0.015" />
-            </linearGradient>
-
-            <linearGradient id="measurementLineGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#65a875" />
-              <stop offset="100%" stop-color="#287249" />
-            </linearGradient>
-          </defs>
-
-          <line x1="49" y1="34" x2="49" y2="178" class="chart-axis" />
-          <line x1="49" y1="178" x2="582" y2="178" class="chart-axis" />
-
-          @for (tick of chartTicks; track tick.value) {
-            <line
-              x1="49"
-              [attr.y1]="tick.y"
-              x2="582"
-              [attr.y2]="tick.y"
-              class="chart-gridline"
-            />
-
-            <text
-              x="41"
-              [attr.y]="tick.y + 3.5"
-              class="chart-axis-label"
-              text-anchor="end"
-            >{{ tick.label }}</text>
-          }
-
-          @if (chartPoints.length > 1) {
-            <path class="chart-area" [attr.d]="chartAreaPath" />
-            <polyline class="chart-line" [attr.points]="chartPolyline" />
-          }
-
-          @if (activeChartPoint; as active) {
-            <line
-              class="chart-active-guide"
-              [attr.x1]="active.x"
-              y1="34"
-              [attr.x2]="active.x"
-              y2="178"
-            />
-          }
-
-          @for (point of chartPoints; track point.date) {
-            <circle
-              class="chart-dot-halo"
-              [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
-              [attr.cx]="point.x"
-              [attr.cy]="point.y"
-              [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 10 : 0"
-            />
-
-            <circle
-              class="chart-dot"
-              [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
-              [attr.cx]="point.x"
-              [attr.cy]="point.y"
-              [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 6 : 4"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="formatDate(point.date) + ': ' + formatValue(point.value, selectedMetricOption.unit)"
-              [attr.aria-pressed]="selectedChartDate === point.date"
-              (mouseenter)="onChartPointEnter(point.date)"
-              (mouseleave)="onChartPointLeave()"
-              (focus)="onChartPointFocus(point.date)"
-              (blur)="onChartPointBlur()"
-              (click)="selectChartPoint(point.date)"
-              (keydown)="onChartPointKeydown($event, point.date)"
-            >
-              <title>{{ formatDate(point.date) }}: {{ formatValue(point.value, selectedMetricOption.unit) }}</title>
-            </circle>
-          }
-
-          @if (activeChartPoint; as active) {
-            <g class="chart-tooltip" pointer-events="none">
-              <rect
-                class="chart-tooltip-bg"
-                [attr.x]="active.tooltipX"
-                [attr.y]="active.tooltipY"
-                width="154"
-                height="44"
-                rx="8"
-              />
-
-              <text
-                class="chart-tooltip-date"
-                [attr.x]="active.tooltipX + 77"
-                [attr.y]="active.tooltipY + 17"
-                text-anchor="middle"
-              >{{ formatDate(active.date) }}</text>
-
-              <text
-                class="chart-tooltip-value"
-                [attr.x]="active.tooltipX + 77"
-                [attr.y]="active.tooltipY + 34"
-                text-anchor="middle"
-              >{{ formatValue(active.value, selectedMetricOption.unit) }}</text>
-            </g>
-          }
-
-          @for (dateLabel of chartDateLabels; track dateLabel.x; let i = $index) {
-            <text
-              [attr.x]="dateLabel.x"
-              y="203"
-              class="chart-date-label"
-              [attr.text-anchor]="i === 0 ? 'start' : i === chartDateLabels.length - 1 ? 'end' : 'middle'"
-            >{{ dateLabel.label }}</text>
-          }
-        </svg>
+      <div>
+        <span>Cambio en el período</span>
+        <strong [class.positive]="chartChange !== null && chartChange < 0"
+          [class.negative]="chartChange !== null && chartChange > 0">
+          {{ formatDifference(chartChange, selectedMetricOption.unit) }}
+        </strong>
       </div>
 
-      <div class="chart-legend">
-        <span class="legend-dot"></span>
-        <span>{{ selectedMetricOption.label }} ({{ selectedMetricOption.unit }})</span>
-        <span class="legend-unit">{{ chartPoints.length }} registros</span>
+      <div>
+        <span>Registros graficados</span>
+        <strong>{{ chartPoints.length }}</strong>
       </div>
+    </div>
 
-      <div class="chart-extremes">
-        <span>
-          <i class="extreme-mark extreme-min"></i>
-          Mínimo:
-          <strong>{{ formatValue(chartMin, selectedMetricOption.unit) }}</strong>
-        </span>
+    <div class="chart-wrap" role="group"
+      [attr.aria-label]="'Gráfico de ' + selectedMetricOption.label + ' con ' + chartPoints.length + ' registros'">
+      <svg viewBox="0 0 600 230" preserveAspectRatio="xMidYMid meet" class="trend-chart" role="img"
+        aria-label="Gráfico de evolución de medidas corporales">
+        <defs>
+          <linearGradient id="measurementAreaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#47966b" stop-opacity="0.22" />
+            <stop offset="100%" stop-color="#47966b" stop-opacity="0.015" />
+          </linearGradient>
 
-        <span>
-          <i class="extreme-mark extreme-max"></i>
-          Máximo:
-          <strong>{{ formatValue(chartMax, selectedMetricOption.unit) }}</strong>
-        </span>
-      </div>
+          <linearGradient id="measurementLineGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#65a875" />
+            <stop offset="100%" stop-color="#287249" />
+          </linearGradient>
+        </defs>
 
-      <p class="chart-footnote">
-        Los puntos representan registros reales; no se interpolan datos faltantes.
-        Una subida o bajada aislada no determina por sí sola un cambio de grasa o músculo.
-      </p>
+        <line x1="49" y1="34" x2="49" y2="178" class="chart-axis" />
+        <line x1="49" y1="178" x2="582" y2="178" class="chart-axis" />
+
+        @for (tick of chartTicks; track tick.value) {
+        <line x1="49" [attr.y1]="tick.y" x2="582" [attr.y2]="tick.y" class="chart-gridline" />
+
+        <text x="41" [attr.y]="tick.y + 3.5" class="chart-axis-label" text-anchor="end">{{ tick.label }}</text>
+        }
+
+        @if (chartPoints.length > 1) {
+        <path class="chart-area" [attr.d]="chartAreaPath" />
+        <polyline class="chart-line" [attr.points]="chartPolyline" />
+        }
+
+        @if (activeChartPoint; as active) {
+        <line class="chart-active-guide" [attr.x1]="active.x" y1="34" [attr.x2]="active.x" y2="178" />
+        }
+
+        @for (point of chartPoints; track point.date) {
+        <circle class="chart-dot-halo"
+          [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date" [attr.cx]="point.x"
+          [attr.cy]="point.y" [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 10 : 0" />
+
+        <circle class="chart-dot" [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
+          [attr.cx]="point.x" [attr.cy]="point.y"
+          [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 6 : 4" tabindex="0"
+          role="button"
+          [attr.aria-label]="formatDate(point.date) + ': ' + formatValue(point.value, selectedMetricOption.unit)"
+          [attr.aria-pressed]="selectedChartDate === point.date" (mouseenter)="onChartPointEnter(point.date)"
+          (mouseleave)="onChartPointLeave()" (focus)="onChartPointFocus(point.date)" (blur)="onChartPointBlur()"
+          (click)="selectChartPoint(point.date)" (keydown)="onChartPointKeydown($event, point.date)">
+          <title>{{ formatDate(point.date) }}: {{ formatValue(point.value, selectedMetricOption.unit) }}</title>
+        </circle>
+        }
+
+        @if (activeChartPoint; as active) {
+        <g class="chart-tooltip" pointer-events="none">
+          <rect class="chart-tooltip-bg" [attr.x]="active.tooltipX" [attr.y]="active.tooltipY" width="154" height="44"
+            rx="8" />
+
+          <text class="chart-tooltip-date" [attr.x]="active.tooltipX + 77" [attr.y]="active.tooltipY + 17"
+            text-anchor="middle">{{ formatDate(active.date) }}</text>
+
+          <text class="chart-tooltip-value" [attr.x]="active.tooltipX + 77" [attr.y]="active.tooltipY + 34"
+            text-anchor="middle">{{ formatValue(active.value, selectedMetricOption.unit) }}</text>
+        </g>
+        }
+
+        @for (dateLabel of chartDateLabels; track dateLabel.x; let i = $index) {
+        <text [attr.x]="dateLabel.x" y="203" class="chart-date-label"
+          [attr.text-anchor]="i === 0 ? 'start' : i === chartDateLabels.length - 1 ? 'end' : 'middle'">{{
+          dateLabel.label }}</text>
+        }
+      </svg>
+    </div>
+
+    <div class="chart-legend">
+      <span class="legend-dot"></span>
+      <span>{{ selectedMetricOption.label }} ({{ selectedMetricOption.unit }})</span>
+      <span class="legend-unit">{{ chartPoints.length }} registros</span>
+    </div>
+
+    <div class="chart-extremes">
+      <span>
+        <i class="extreme-mark extreme-min"></i>
+        Mínimo:
+        <strong>{{ formatValue(chartMin, selectedMetricOption.unit) }}</strong>
+      </span>
+
+      <span>
+        <i class="extreme-mark extreme-max"></i>
+        Máximo:
+        <strong>{{ formatValue(chartMax, selectedMetricOption.unit) }}</strong>
+      </span>
+    </div>
+
+    <p class="chart-footnote">
+      Los puntos representan registros reales; no se interpolan datos faltantes.
+      Una subida o bajada aislada no determina por sí sola un cambio de grasa o músculo.
+    </p>
     } @else {
-      <div class="empty-state compact-empty">
-        <span class="empty-icon">⌁</span>
-        <h3>Todavía no hay datos para este gráfico</h3>
-        <p>
-          Guardá mediciones de {{ selectedMetricOption.label.toLocaleLowerCase() }} y aparecerán acá.
-        </p>
-      </div>
+    <div class="empty-state compact-empty">
+      <span class="empty-icon">⌁</span>
+      <h3>Todavía no hay datos para este gráfico</h3>
+      <p>
+        Guardá mediciones de {{ selectedMetricOption.label.toLocaleLowerCase() }} y aparecerán acá.
+      </p>
+    </div>
     }
   </section>
 
@@ -494,69 +338,66 @@
     </div>
 
     @if (measurements.length >= 2) {
-      <div class="compare-selects">
-        <label class="field">
-          <span>Desde</span>
-          <select [(ngModel)]="compareFromId" [ngModelOptions]="{standalone: true}">
-            @for (item of measurements; track item.id) {
-              <option [value]="item.id">{{ formatDate(item.measured_on) }}</option>
-            }
-          </select>
-        </label>
+    <div class="compare-selects">
+      <label class="field">
+        <span>Desde</span>
+        <select [(ngModel)]="compareFromId" [ngModelOptions]="{standalone: true}">
+          @for (item of measurements; track item.id) {
+          <option [value]="item.id">{{ formatDate(item.measured_on) }}</option>
+          }
+        </select>
+      </label>
 
-        <label class="field">
-          <span>Hasta</span>
-          <select [(ngModel)]="compareToId" [ngModelOptions]="{standalone: true}">
-            @for (item of measurements; track item.id) {
-              <option [value]="item.id">{{ formatDate(item.measured_on) }}</option>
-            }
-          </select>
-        </label>
-      </div>
+      <label class="field">
+        <span>Hasta</span>
+        <select [(ngModel)]="compareToId" [ngModelOptions]="{standalone: true}">
+          @for (item of measurements; track item.id) {
+          <option [value]="item.id">{{ formatDate(item.measured_on) }}</option>
+          }
+        </select>
+      </label>
+    </div>
 
-      @if (comparisonFrom && comparisonTo && comparisonFrom.id === comparisonTo.id) {
-        <p class="inline-hint">Elegí dos fechas distintas para comparar los cambios.</p>
-      } @else {
-        <div class="comparison-table-wrap">
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th>Medida</th>
-                <th>{{ comparisonFrom ? formatShortDate(comparisonFrom.measured_on) : 'Desde' }}</th>
-                <th>{{ comparisonTo ? formatShortDate(comparisonTo.measured_on) : 'Hasta' }}</th>
-                <th>Diferencia</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              @for (row of comparisonMetrics; track row.option.key) {
-                <tr>
-                  <td>{{ row.option.label }}</td>
-                  <td>{{ formatValue(row.from, row.option.unit) }}</td>
-                  <td>{{ formatValue(row.to, row.option.unit) }}</td>
-                  <td>
-                    @if (row.difference !== null) {
-                      <span
-                        class="difference-pill"
-                        [class.positive]="row.difference < 0"
-                        [class.negative]="row.difference > 0"
-                      >{{ formatDifference(row.difference, row.option.unit) }}</span>
-                    } @else {
-                      <span class="muted">—</span>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
+    @if (comparisonFrom && comparisonTo && comparisonFrom.id === comparisonTo.id) {
+    <p class="inline-hint">Elegí dos fechas distintas para comparar los cambios.</p>
     } @else {
-      <div class="empty-state compact-empty">
-        <span class="empty-icon">↔</span>
-        <h3>Necesitás al menos dos registros</h3>
-        <p>Cuando tengas más de una medición, vas a poder comparar los cambios entre fechas.</p>
-      </div>
+    <div class="comparison-table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Medida</th>
+            <th>{{ comparisonFrom ? formatShortDate(comparisonFrom.measured_on) : 'Desde' }}</th>
+            <th>{{ comparisonTo ? formatShortDate(comparisonTo.measured_on) : 'Hasta' }}</th>
+            <th>Diferencia</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (row of comparisonMetrics; track row.option.key) {
+          <tr>
+            <td>{{ row.option.label }}</td>
+            <td>{{ formatValue(row.from, row.option.unit) }}</td>
+            <td>{{ formatValue(row.to, row.option.unit) }}</td>
+            <td>
+              @if (row.difference !== null) {
+              <span class="difference-pill" [class.positive]="row.difference < 0"
+                [class.negative]="row.difference > 0">{{ formatDifference(row.difference, row.option.unit) }}</span>
+              } @else {
+              <span class="muted">—</span>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+    } @else {
+    <div class="empty-state compact-empty">
+      <span class="empty-icon">↔</span>
+      <h3>Necesitás al menos dos registros</h3>
+      <p>Cuando tengas más de una medición, vas a poder comparar los cambios entre fechas.</p>
+    </div>
     }
   </section>
 
@@ -572,8 +413,34 @@
   </aside>
 </main>
 
-<app-body-measurement-education
-  [open]="educationVisible"
-  [metric]="educationMetric"
-  (closed)="closeMeasurementEducation()"
-/>
+@if (showGuideImages) {
+<div class="education-backdrop" (click)="closeGuide()">
+  <section class="education-modal images-modal" (click)="$event.stopPropagation()">
+    <header class="education-header">
+      <div>
+        <h2>Cómo tomar tus medidas</h2>
+        <p>Usá estas referencias para medirte siempre en el mismo lugar.</p>
+      </div>
+      <button type="button" class="education-close" (click)="closeGuide()">×</button>
+    </header>
+
+    <div class="education-content gallery-content">
+      <div class="gallery-image-wrapper">
+        <img [src]="guideImages[currentImageIndex]" alt="Guía de medición corporal" class="guide-img" />
+      </div>
+      <!-- Boton del modal para pasar imagenes -->
+      <!-- 
+      <div class="gallery-controls">
+        <button type="button" class="gallery-nav" [disabled]="currentImageIndex === 0" (click)="prevImage()">❮</button>
+
+        <span class="gallery-counter">{{ currentImageIndex + 1 }} / {{ guideImages.length }}</span>
+
+        <button type="button" class="gallery-nav" [disabled]="currentImageIndex === guideImages.length - 1"
+          (click)="nextImage()">❯</button>
+    </div>      -->
+
+    </div>
+  </section>
+</div>
+
+}

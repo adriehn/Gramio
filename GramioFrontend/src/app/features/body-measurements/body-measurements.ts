@@ -2,21 +2,10 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
-import {
-  BodyMeasurement,
-  BodyMeasurementMetric,
-  BodyMeasurementWrite,
-  MeasurementMetricOption
-} from '../../core/models/body-measurement.model';
+import { BodyMeasurement, BodyMeasurementMetric, BodyMeasurementWrite, MeasurementMetricOption, ChartPoint, ChartTick } from '../../core/models/body-measurement.model';
 import { BodyMeasurementService } from '../../core/services/body-measurement.service';
-import { BodyMeasurementEducation } from './body-measuremen-education/body-measuremen-education';
 
 type MeasurementForm = FormGroup<{
   measured_on: FormControl<string>;
@@ -34,24 +23,10 @@ type MeasurementForm = FormGroup<{
   notes: FormControl<string>;
 }>;
 
-interface ChartPoint {
-  x: number;
-  y: number;
-  label: string;
-  date: string;
-  value: number;
-}
-
-interface ChartTick {
-  value: number;
-  y: number;
-  label: string;
-}
-
 @Component({
   selector: 'app-body-measurements',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, BodyMeasurementEducation],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './body-measurements.html',
   styleUrl: './body-measurements.css'
 })
@@ -75,8 +50,13 @@ export class BodyMeasurements implements OnInit {
   showDeleteConfirmId: string | null = null;
   hoveredChartDate: string | null = null;
   selectedChartDate: string | null = null;
-  educationVisible = false;
-  educationMetric: string | null = null;
+
+  //Modal de Medicion
+  showGuideImages = false;
+  currentImageIndex = 0;
+  guideImages = [
+    '/medicion_corporal.jpg',
+  ];
   /** El mes se representa siempre con el día 1. */
   selectedMonth = this.firstDayOfMonth(new Date());
 
@@ -801,15 +781,28 @@ export class BodyMeasurements implements OnInit {
 
     return fallback;
   }
-
-
-  openMeasurementEducation(metric: string | null = null): void {
-    this.educationMetric = metric;
-    this.educationVisible = true;
+  openGuide(): void {
+    this.currentImageIndex = 0;
+    this.showGuideImages = true;
   }
 
-  closeMeasurementEducation(): void {
-    this.educationVisible = false;
-    this.educationMetric = null;
+  closeGuide(): void {
+    this.showGuideImages = false;
   }
+
+  //Metodos para agregar mas imagenes al modal.
+  /*
+    nextImage(): void {
+      if (this.currentImageIndex < this.guideImages.length - 1) {
+        this.currentImageIndex++;
+      }
+    }
+  
+    prevImage(): void {
+      if (this.currentImageIndex > 0) {
+        this.currentImageIndex--;
+      }
+    }
+      */
+
 }

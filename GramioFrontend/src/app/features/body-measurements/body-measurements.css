@@ -1760,32 +1760,7 @@ h3 {
   line-height: 1.7;
 }
 
-@media (max-width: 480px) {
-  .chart-wrap {
-    margin-top: 9px;
-    border-radius: 10px;
-  }
 
-  .chart-axis-label,
-  .chart-date-label {
-    font-size: 10px;
-  }
-
-  .chart-extremes {
-    gap: 10px 16px;
-    font-size: 10px;
-  }
-
-  .chart-footnote {
-    font-size: 10px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chart-dot {
-    transition: none;
-  }
-}
 
 .field-label-with-help {
   display: flex;
@@ -1834,4 +1809,172 @@ h3 {
   font-size: 0.86rem;
   font-weight: 650;
   cursor: pointer;
+}
+
+/* Modal de imágenes */
+.education-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.56);
+  backdrop-filter: blur(5px);
+  overflow-y: auto;
+
+}
+
+.images-modal {
+  width: min(100%, 700px);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.gallery-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px; /* Reducimos el espacio entre imagen y botones */
+  padding: 16px 22px 20px;
+  overflow-y: auto;
+}
+.gallery-image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.gallery-nav {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #e5e9e5;
+  border-radius: 50%;
+  background: #f5f7f4;
+  color: #35463a;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.gallery-nav:hover:not(:disabled) {
+  background: #eaf0e9;
+}
+
+.gallery-nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.gallery-counter {
+  color: #68736b;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  min-width: 45px;
+  text-align: center;
+}
+
+.guide-img {
+  max-width: 100%;
+  max-height: 65vh; 
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid #e5e9e5;
+}
+
+.education-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 22px 14px; /* Antes tenía 24px arriba */
+  border-bottom: 1px solid #e5e9e5;
+}
+
+.education-close {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e5e9e5;
+  border-radius: 12px;
+  background: #f5f7f4;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .chart-wrap {
+    margin-top: 9px;
+    border-radius: 10px;
+  }
+
+  .chart-axis-label,
+  .chart-date-label {
+    font-size: 10px;
+  }
+
+  .chart-extremes {
+    gap: 10px 16px;
+    font-size: 10px;
+  }
+
+  .chart-footnote {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-dot {
+    transition: none;
+  }
+}
+
+/* Optimización estricta para Mobile */
+@media (max-width: 600px) {
+  .education-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .images-modal {
+    max-height: 96dvh; /* Dejamos que ocupe casi toda la pantalla si hace falta */
+    border-radius: 22px 22px 0 0;
+  }
+  
+  .education-header {
+    padding: 14px 16px 12px; /* Mucho menos aire arriba */
+  }
+
+  .education-header h2 {
+    font-size: 1.3rem; /* Achicamos apenitas el título para ganar espacio */
+  }
+  
+  .gallery-content {
+    padding: 12px 16px max(16px, env(safe-area-inset-bottom)); /* Menos padding lateral y abajo */
+    gap: 12px;
+  }
+  
+  .guide-img {
+    max-height: 75vh; /* Permitimos que la imagen sea mucho más alta */
+  }
+
+  .gallery-controls {
+    padding-top: 4px;
+  }
 }

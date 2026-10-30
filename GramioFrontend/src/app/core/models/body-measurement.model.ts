@@ -41,3 +41,16 @@ export interface MeasurementMetricOption {
   shortLabel: string;
   unit: 'kg' | '%' | 'cm';
 }
+export interface ChartPoint {
+  x: number;
+  y: number;
+  label: string;
+  date: string;
+  value: number;
+}
+
+export interface ChartTick {
+  value: number;
+  y: number;
+  label: string;
+}
