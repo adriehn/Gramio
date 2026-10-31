@@ -30,22 +30,22 @@ export class WeeklyDaysTableComponent {
     });
   }
 
+  dayName(value: string): string {
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    return date.toLocaleDateString('es-AR', {
+      weekday: 'long',
+    });
+  }
+
   statusLabel(status: string | null): string {
     if (!status) return 'Sin datos';
 
     const normalized = status.toLowerCase();
 
-    if (normalized.includes('adequate') || normalized.includes('adecuad')) {
-      return 'Adecuada';
-    }
-
-    if (normalized.includes('low') || normalized.includes('bajo')) {
-      return 'Baja';
-    }
-
-    if (normalized.includes('high') || normalized.includes('alto')) {
-      return 'Alta';
-    }
+    if (normalized === 'optimal') return 'Óptima';
+    if (normalized === 'low') return 'Baja';
 
     return status;
   }

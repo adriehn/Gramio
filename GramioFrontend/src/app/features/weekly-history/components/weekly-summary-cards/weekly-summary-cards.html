@@ -1,20 +1,20 @@
+
 <section class="summary-grid">
-  <!-- TARJETA DE CALORÍAS -->
+
+  <!-- CALORÍAS -->
   <article class="summary-card">
     <span class="card-label">Promedio diario de calorías</span>
 
     <div class="main-value">
       @if (averages().kcal != null) {
-        {{ format(averages().kcal) }}
-        <span>kcal</span>
+        {{ format(averages().kcal) }} <span>kcal</span>
       } @else {
         —
       }
     </div>
 
     <p class="card-detail">
-      Objetivo:
-      {{ format(activeTargetKcal()) }} kcal/día
+      Objetivo histórico: {{ format(targetKcal()) }} kcal/día
     </p>
 
     @if (calorieDifference() !== null) {
@@ -25,22 +25,20 @@
     }
   </article>
 
-  <!-- TARJETA DE PROTEÍNAS -->
+  <!-- PROTEÍNAS -->
   <article class="summary-card">
     <span class="card-label">Promedio diario de proteínas</span>
 
     <div class="main-value">
       @if (averages().proteinG != null) {
-        {{ format(averages().proteinG, 1) }}
-        <span>g</span>
+        {{ format(averages().proteinG, 1) }}<span>g</span>
       } @else {
         —
       }
     </div>
 
     <p class="card-detail">
-      Objetivo:
-      {{ format(activeProteinG(), 0) }} g/día
+      Objetivo histórico: {{ format(targetProteinG(), 1) }} g/día
     </p>
 
     @if (proteinDifference() !== null) {
@@ -51,7 +49,79 @@
     }
   </article>
 
-  <!-- TARJETA DE REGISTRO SEMANAL -->
+  <!-- CARBOHIDRATOS -->
+  <article class="summary-card">
+    <span class="card-label">Promedio diario de carbohidratos</span>
+
+    <div class="main-value">
+      @if (averages().carbsG != null) {
+        {{ format(averages().carbsG, 1) }}<span>g</span>
+      } @else {
+        —
+      }
+    </div>
+
+    <p class="card-detail">
+      Objetivo histórico: {{ format(targetCarbsG(), 1) }} g/día
+    </p>
+
+    @if (carbsDifference() !== null) {
+      <p class="difference">
+        {{ carbsDifference()! > 0 ? '+' : '' }}{{ format(carbsDifference()!, 1) }}
+        g respecto al objetivo
+      </p>
+    }
+  </article>
+
+  <!-- GRASAS -->
+  <article class="summary-card">
+    <span class="card-label">Promedio diario de grasas</span>
+
+    <div class="main-value">
+      @if (averages().fatG != null) {
+        {{ format(averages().fatG, 1) }}<span>g</span>
+      } @else {
+        —
+      }
+    </div>
+
+    <p class="card-detail">
+      Objetivo histórico: {{ format(targetFatG(), 1) }} g/día
+    </p>
+
+    @if (fatDifference() !== null) {
+      <p class="difference">
+        {{ fatDifference()! > 0 ? '+' : '' }}{{ format(fatDifference()!, 1) }}
+        g respecto al objetivo
+      </p>
+    }
+  </article>
+
+  <!-- FIBRA -->
+  <article class="summary-card">
+    <span class="card-label">Promedio diario de fibra</span>
+
+    <div class="main-value">
+      @if (averages().fiberG != null) {
+        {{ format(averages().fiberG, 1) }}<span>g</span>
+      } @else {
+        —
+      }
+    </div>
+
+    <p class="card-detail">
+      Objetivo histórico: {{ format(targetFiberG(), 1) }} g/día
+    </p>
+
+    @if (fiberDifference() !== null) {
+      <p class="difference">
+        {{ fiberDifference()! > 0 ? '+' : '' }}{{ format(fiberDifference()!, 1) }}
+        g respecto al objetivo
+      </p>
+    }
+  </article>
+
+  <!-- REGISTRO SEMANAL -->
   <article class="summary-card progress-card">
     <span class="card-label">Registro semanal</span>
 
@@ -77,4 +147,5 @@
       ></div>
     </div>
   </article>
+
 </section>

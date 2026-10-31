@@ -1,3 +1,4 @@
+
 :host {
   display: block;
   min-width: 0;
@@ -8,6 +9,10 @@
 
 *, :host * {
   box-sizing: border-box;
+}
+
+.table-section {
+  min-width: 0;
 }
 
 .section-heading {
@@ -34,26 +39,21 @@
   margin: 8px 0 20px;
 }
 
-.table-section {
-  min-width: 0;
-}
-
 .table-wrapper {
+  width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
   border: 1px solid #e2eade;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 5px 22px rgba(44, 76, 49, 0.045);
-  width: 100%;
-  overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
-  min-width: 950px;
+  min-width: 1050px;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12px;
@@ -82,12 +82,12 @@ td {
   vertical-align: middle;
 }
 
-tbody tr td {
-  border-bottom: 0;
-}
-
 tbody tr {
   background: #f9fbf7;
+}
+
+tbody tr:not(:last-child) td,
+tbody tr:not(:last-child) th {
   border-bottom: 1px solid #edf1e9;
 }
 
@@ -106,11 +106,25 @@ tbody tr {
   font-size: 10px;
 }
 
-.empty-day {
-  color: #a0aaa0;
+.nutrient-cell {
+  white-space: nowrap;
+  color: #354e39;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.target-value {
+  color: #879387;
   font-size: 11px;
-  font-style: italic;
+  font-weight: 500;
+}
+
+.empty-day {
   background: #fbfcfa;
+}
+
+.empty-day .day-name {
+  color: #8d998e;
 }
 
 .muted {
@@ -126,6 +140,12 @@ tbody tr {
   overflow-wrap: anywhere;
 }
 
+.empty-message {
+  padding: 25px;
+  text-align: center;
+  color: #879387;
+}
+
 .table-footnote {
   padding-top: 18px;
   margin: 13px 0 0;
@@ -138,12 +158,19 @@ tbody tr {
   .table-wrapper {
     border-radius: 15px;
   }
+
   .section-heading {
     align-items: flex-start;
     gap: 9px;
     margin-bottom: 15px;
   }
+
   .section-heading h2 {
     font-size: 16px;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
   }
 }

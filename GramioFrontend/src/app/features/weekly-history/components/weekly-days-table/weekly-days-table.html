@@ -3,7 +3,7 @@
   <div class="section-heading">
     <div>
       <h2>Detalle diario</h2>
-      <p>Valores registrados para cada día de la semana.</p>
+      <p>Consumo registrado frente a los objetivos de cada jornada.</p>
     </div>
   </div>
 
@@ -13,10 +13,10 @@
         <tr>
           <th scope="col">Día</th>
           <th scope="col">Kcal</th>
-          <th scope="col">Proteínas</th>
-          <th scope="col">Carbohidratos</th>
-          <th scope="col">Grasas</th>
-          <th scope="col">Fibra</th>
+          <th scope="col">Proteínas (g)</th>
+          <th scope="col">Carbohidratos (g)</th>
+          <th scope="col">Grasas (g)</th>
+          <th scope="col">Fibra (g)</th>
           <th scope="col">Estado proteico</th>
           <th scope="col">Entrenamiento / notas</th>
         </tr>
@@ -26,15 +26,42 @@
         @for (day of days(); track day.date) {
           <tr [class.empty-day]="!day.hasNutritionData">
             <th scope="row">
-              <span class="day-name">{{ day.dayName }}</span>
+              <span class="day-name">{{ dayName(day.date) }}</span>
               <span class="day-date">{{ formatDate(day.date) }}</span>
             </th>
 
-            <td>{{ format(day.kcal) }}</td>
-            <td>{{ format(day.proteinG, 1) }} g</td>
-            <td>{{ format(day.carbsG, 1) }} g</td>
-            <td>{{ format(day.fatG, 1) }} g</td>
-            <td>{{ format(day.fiberG, 1) }} g</td>
+            @if (day.hasNutritionData) {
+              <td class="nutrient-cell">
+                {{ format(day.kcal) }}
+                <span class="target-value">/ {{ format(day.targetKcal) }}</span>
+              </td>
+
+              <td class="nutrient-cell">
+                {{ format(day.proteinG, 1) }}
+                <span class="target-value">/ {{ format(day.targetProteinG, 1) }}</span>
+              </td>
+
+              <td class="nutrient-cell">
+                {{ format(day.carbsG, 1) }}
+                <span class="target-value">/ {{ format(day.targetCarbsG, 1) }}</span>
+              </td>
+
+              <td class="nutrient-cell">
+                {{ format(day.fatG, 1) }}
+                <span class="target-value">/ {{ format(day.targetFatG, 1) }}</span>
+              </td>
+
+              <td class="nutrient-cell">
+                {{ format(day.fiberG, 1) }}
+                <span class="target-value">/ {{ format(day.targetFiberG, 1) }}</span>
+              </td>
+            } @else {
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+            }
 
             <td>
               @if (day.hasNutritionData) {
@@ -60,7 +87,7 @@
   </div>
 
   <p class="table-footnote">
-    Los días sin registros se muestran para mantener la semana completa,
-    pero no se incluyen en los promedios.
+    Los valores se muestran como consumo / objetivo histórico.
+    Los días sin registros no se incluyen en los promedios.
   </p>
 </section>

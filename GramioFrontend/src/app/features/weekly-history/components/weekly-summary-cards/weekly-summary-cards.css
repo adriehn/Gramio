@@ -170,23 +170,23 @@
      font-size: 17px;
    }
 
-   .card-detail {
-     padding-top: 7px;
-     font-size: 10px;
-   }
+  .card-detail {
+    padding-top: 6px;
+    font-size: 9px;
+  }
 
-   .difference {
-     font-size: 10px;
-   }
+  .difference {
+    font-size: 9px;
+  }
 
-   .progress-track {
-     height: 5px;
-     margin-top: 4px;
-   }
- }
+  .progress-track {
+    height: 4px;
+    margin-top: 3px;
+  }
+}
 
- @media (prefers-reduced-motion: reduce) {
-   .progress-fill {
-     transition: none;
-   }
- }
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+}

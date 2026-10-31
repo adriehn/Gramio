@@ -1,6 +1,6 @@
-import { Component, computed, inject, input } from '@angular/core';
+
+import { Component, computed, input } from '@angular/core';
 import { WeeklyAverages } from '@core/models/weekly-summary.model';
-import { ProfileService } from '@core/services/profile.service';
 
 @Component({
   selector: 'app-weekly-summary-cards',
@@ -13,12 +13,6 @@ export class WeeklySummaryCardsComponent {
   registeredDays = input.required<number>();
   totalDays = input(7);
 
-  private readonly profileService = inject(ProfileService);
-
-  constructor() {
-    this.profileService.loadActiveTarget().subscribe();
-  }
-
   format(value: number | null | undefined, decimals = 0): string {
     if (value == null) return '—';
 
@@ -28,31 +22,56 @@ export class WeeklySummaryCardsComponent {
     });
   }
 
-  // Objetivo de calorías real y reactivo
-  readonly activeTargetKcal = computed(() => {
-    const currentTarget = this.profileService.activeTarget();
-    return currentTarget?.target_kcal ?? this.averages().targetKcal;
-  });
+  // Todos los objetivos provienen de los registros históricos.
+  readonly targetKcal = computed(() => this.averages().targetKcal);
+  readonly targetProteinG = computed(() => this.averages().targetProteinG);
+  readonly targetCarbsG = computed(() => this.averages().targetCarbsG);
+  readonly targetFatG = computed(() => this.averages().targetFatG);
+  readonly targetFiberG = computed(() => this.averages().targetFiberG);
 
-  // Objetivo de proteínas real y reactivo
-  readonly activeProteinG = computed(() => {
-    const currentTarget = this.profileService.activeTarget();
-    return currentTarget?.protein_g ?? this.averages().targetProteinG;
-  });
-
-  // Diferencia de calorías basada en el objetivo activo
+  // Diferencias entre el promedio de consumo y el objetivo histórico.
   readonly calorieDifference = computed(() => {
-    const kcal = this.averages().kcal;
-    const target = this.activeTargetKcal();
-    if (kcal == null || target == null) return null;
-    return Math.round(kcal - target);
+    const average = this.averages().kcal;
+    const target = this.targetKcal();
+
+    if (average == null || target == null) return null;
+
+    return average - target;
   });
 
-  // Diferencia de proteínas basada en el objetivo activo
   readonly proteinDifference = computed(() => {
-    const protein = this.averages().proteinG;
-    const target = this.activeProteinG();
-    if (protein == null || target == null) return null;
-    return Math.round(protein - target);
+    const average = this.averages().proteinG;
+    const target = this.targetProteinG();
+
+    if (average == null || target == null) return null;
+
+    return average - target;
+  });
+
+  readonly carbsDifference = computed(() => {
+    const average = this.averages().carbsG;
+    const target = this.targetCarbsG();
+
+    if (average == null || target == null) return null;
+
+    return average - target;
+  });
+
+  readonly fatDifference = computed(() => {
+    const average = this.averages().fatG;
+    const target = this.targetFatG();
+
+    if (average == null || target == null) return null;
+
+    return average - target;
+  });
+
+  readonly fiberDifference = computed(() => {
+    const average = this.averages().fiberG;
+    const target = this.targetFiberG();
+
+    if (average == null || target == null) return null;
+
+    return average - target;
   });
 }
