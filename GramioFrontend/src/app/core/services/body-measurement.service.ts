@@ -1,15 +1,15 @@
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  BodyMeasurement,
-  BodyMeasurementWrite
-} from '../models/body-measurement.model';
+import { environment } from '../../../environments/environment';
+
+import { BodyMeasurement, BodyMeasurementWrite } from '../models/body-measurement.model';
 
 @Injectable({ providedIn: 'root' })
 export class BodyMeasurementService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/api/measurements'; // Ajustá a tu entorno
+  private readonly apiUrl = `${environment.apiUrl}/api/measurements`;
 
   getMeasurements(): Observable<BodyMeasurement[]> {
     return this.http.get<BodyMeasurement[]>(this.apiUrl);

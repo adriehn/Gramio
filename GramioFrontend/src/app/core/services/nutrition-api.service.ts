@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { MetabolicInput, CalculatedTarget } from '../models/nutrition.model';
-import { environment } from '../../../environments/environment'; // ej: apiUrl: 'http://localhost:3000/api'
+import { environment } from '../../../environments/environment'; 
 
 @Injectable({
   providedIn: 'root'
