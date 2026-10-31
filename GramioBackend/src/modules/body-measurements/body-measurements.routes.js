@@ -1,11 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../../middlewares/auth.middleware.js';
-import {
-  getMeasurements,
-  createMeasurement,
-  updateMeasurement,
-  deleteMeasurement
-} from './body-measurements.controller.js';
+import {getMeasurements,createMeasurement,updateMeasurement,deleteMeasurement} from './body-measurements.controller.js';
 
 const router = Router();
 
