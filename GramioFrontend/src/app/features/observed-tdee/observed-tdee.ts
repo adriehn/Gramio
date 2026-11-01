@@ -22,7 +22,7 @@ export class ObservedTdeeComponent {
   readonly errorMessage = signal('');
   readonly data = signal<ObservedTdeeResponse | null>(null);
   readonly selectedPeriod = signal<14 | 28>(28);
-
+  readonly activeModal = signal<'general' | 'ingesta' | 'tdee' | 'tendencia' | null>(null);
   readonly selectedResult = () => {
     const response = this.data();
 
@@ -125,5 +125,13 @@ export class ObservedTdeeComponent {
     }
 
     return 'Ocurrió un error inesperado al cargar los datos.';
+  }
+
+  openModal(modalId: 'general' | 'ingesta' | 'tdee' | 'tendencia'): void {
+    this.activeModal.set(modalId);
+  }
+
+  closeModal(): void {
+    this.activeModal.set(null);
   }
 }
