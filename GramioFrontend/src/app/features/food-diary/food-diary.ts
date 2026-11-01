@@ -270,10 +270,6 @@ export class FoodDiary {
     // Efecto para reaccionar si el objetivo cambia en otra pantalla o pestaña
     effect(() => {
       const target = this.profileService.activeTarget();
-      if (target) {
-        // Forzamos la actualización de los cómputos de progreso
-        console.log('Nuevo objetivo detectado en el diario:', target);
-      }
     });
   }
 

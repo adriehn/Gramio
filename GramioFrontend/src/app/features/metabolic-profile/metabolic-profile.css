@@ -1,7 +1,9 @@
-﻿
-:host {
+﻿:host {
   display: block;
+  width: 100%;
+  min-width: 0;
   min-height: calc(100vh - 76px);
+  overflow-wrap: break-word;
   color: #263b2d;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background:
@@ -32,9 +34,24 @@ select:focus-visible {
   outline-offset: 3px;
 }
 
+/* ==========================================
+   ESTILOS BASE (ESCRITORIO)
+   ========================================== */
+
+.profile-page,
+.profile-layout,
+.settings-card,
+.summary-card,
+.field,
+.nutrient-setting,
+.summary-footer {
+  min-width: 0;
+}
+
 .profile-page {
-  width: min(100%, 1200px);
-  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
   padding: 38px 24px 56px;
 }
 
@@ -114,14 +131,13 @@ select:focus-visible {
 
 .profile-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.9fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.9fr);
   align-items: start;
   gap: 24px;
 }
 
 .settings-card,
 .summary-card {
-  min-width: 0;
   border: 1px solid #e2eade;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.95);
@@ -199,7 +215,6 @@ select:focus-visible {
 
 .field {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   align-items: stretch;
 }
@@ -277,7 +292,6 @@ select:focus-visible {
 }
 
 /* Configuración de nutrientes */
-
 .nutrient-settings {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -285,7 +299,6 @@ select:focus-visible {
 }
 
 .nutrient-setting {
-  min-width: 0;
   padding: 14px 12px;
   border: 1px solid #e5ece2;
   border-radius: 13px;
@@ -346,21 +359,10 @@ select:focus-visible {
   border-radius: 50%;
 }
 
-.protein-dot {
-  background: #40865a;
-}
-
-.fat-dot {
-  background: #bd8a32;
-}
-
-.carbs-dot {
-  background: #548eb2;
-}
-
-.fiber-dot {
-  background: #8a6bb3;
-}
+.protein-dot { background: #40865a; }
+.fat-dot { background: #bd8a32; }
+.carbs-dot { background: #548eb2; }
+.fiber-dot { background: #8a6bb3; }
 
 .learning-note {
   display: flex;
@@ -401,7 +403,6 @@ select:focus-visible {
 }
 
 /* Resumen calculado */
-
 .summary-card {
   display: flex;
   flex-direction: column;
@@ -497,12 +498,6 @@ select:focus-visible {
   color: #365c3d;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
-}
-
-.metric-help {
-  width: 19px;
-  height: 19px;
-  font-size: 10px;
 }
 
 .goal-indicator {
@@ -680,7 +675,6 @@ select:focus-visible {
 }
 
 /* Mensajes */
-
 .error-message,
 .success-message {
   margin-top: 15px;
@@ -714,8 +708,7 @@ select:focus-visible {
   overflow-wrap: anywhere;
 }
 
-/* Modal educativo */
-
+/* Modal */
 .modal-backdrop {
   position: fixed;
   z-index: 1000;
@@ -773,13 +766,13 @@ select:focus-visible {
   width: 38px;
   height: 38px;
   margin: -4px -5px 0 0;
-  padding: 0;
+  padding: 0 0 2px 0;
   border: 1px solid #e1e9df;
   border-radius: 11px;
   background: #f7f9f5;
   color: #536655;
   font-size: 27px;
-  line-height: 1;
+  line-height: 0;
   cursor: pointer;
 }
 
@@ -974,318 +967,14 @@ select:focus-visible {
   }
 }
 
-/* Tablets */
-
-@media (max-width: 1000px) {
-  .profile-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .summary-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
-    align-items: start;
-    gap: 24px;
-  }
-
-  .summary-footer {
-    padding-top: 0;
-    border-top: 0;
-  }
-
-  .summary-footer > p {
-    margin-top: 3px;
-  }
-}
-
-@media (max-width: 720px) {
-  .profile-page {
-    padding: 28px 18px 38px;
-  }
-
-  .page-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .page-header p {
-    max-width: 520px;
-  }
-
-  .education-link {
-    min-height: 42px;
-  }
-
-  .profile-layout {
-    gap: 18px;
-  }
-
-  .settings-card {
-    padding: 22px;
-  }
-
-  .nutrient-settings {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .summary-card {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 22px;
-  }
-
-  .summary-footer {
-    padding-top: 18px;
-    border-top: 1px solid #e7ede4;
-  }
-
-  .calorie-number {
-    font-size: 39px;
-  }
-}
-
-/* Celulares */
-
-@media (max-width: 480px) {
-  .profile-page {
-    padding: 23px 13px 30px;
-  }
-
-  .page-header {
-    margin-bottom: 21px;
-  }
-
-  .page-header h1 {
-    font-size: 27px;
-  }
-
-  .page-header p {
-    font-size: 13px;
-  }
-
-  .settings-card,
-  .summary-card {
-    border-radius: 15px;
-  }
-
-  .settings-card {
-    padding: 18px 14px;
-  }
-
-  .form-section + .form-section {
-    margin-top: 22px;
-    padding-top: 21px;
-  }
-
-  .section-heading {
-    margin-bottom: 15px;
-  }
-
-  .section-heading h2 {
-    font-size: 16px;
-  }
-
-  .fields-grid,
-  .fields-grid-two {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px 10px;
-  }
-
-  .field-full {
-    grid-column: 1 / -1;
-  }
-
-  .field label {
-    font-size: 11px;
-  }
-
-  .field input,
-  .field select {
-    min-height: 44px;
-    padding: 9px 8px;
-    font-size: 12px;
-  }
-
-  .field-hint {
-    font-size: 10px;
-  }
-
-  .nutrient-settings {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .nutrient-setting {
-    padding: 13px;
-  }
-
-  .nutrient-setting-heading {
-    margin-bottom: 9px;
-  }
-
-  .nutrient-setting select {
-    min-height: 42px;
-    font-size: 12px;
-  }
-
-  .nutrient-setting .field-hint {
-    min-height: 0;
-  }
-
-  .learning-note {
-    flex-wrap: wrap;
-    gap: 9px;
-    padding: 12px;
-  }
-
-  .learning-note p {
-    min-width: 0;
-    font-size: 11px;
-  }
-
-  .learning-note .inline-info {
-    margin-left: 34px;
-  }
-
-  .summary-card {
-    padding: 19px 15px;
-  }
-
-  .summary-card h2 {
-    font-size: 19px;
-  }
-
-  .calorie-number {
-    font-size: 37px;
-  }
-
-  .macro-row {
-    padding: 12px 10px;
-  }
-
-  .macro-name {
-    gap: 6px;
-    font-size: 11px;
-  }
-
-  .macro-row > strong {
-    font-size: 12px;
-  }
-
-  .distribution-card {
-    padding: 12px 10px;
-  }
-
-  .modal-backdrop {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .education-modal {
-    width: 100%;
-    max-height: 90vh;
-    max-height: 90dvh;
-    border-radius: 20px 20px 0 0;
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
-    animation: modal-sheet-in 0.22s ease-out;
-  }
-
-  .modal-header {
-    padding: 19px 18px 16px;
-  }
-
-  .modal-header h2 {
-    font-size: 20px;
-  }
-
-  .modal-close {
-    width: 36px;
-    height: 36px;
-  }
-
-  .modal-body {
-    padding: 19px 18px 24px;
-  }
-
-  .modal-intro {
-    font-size: 13px;
-    line-height: 1.75;
-  }
-
-  .education-points {
-    gap: 12px;
-  }
-
-  .education-points li {
-    font-size: 12px;
-    line-height: 1.75;
-  }
-
-  .modal-footer {
-    padding: 12px 18px max(12px, env(safe-area-inset-bottom));
-  }
-
-  .modal-done {
-    min-height: 46px;
-  }
-}
-
 @keyframes modal-sheet-in {
   from { transform: translateY(18px); }
   to { transform: translateY(0); }
 }
 
-/* Accesibilidad: reducir movimiento */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-
-
 /* ==========================================
-   RESPONSIVE Y ANCHO DEL CONTENIDO
+   RESPONSIVE (MEDIA QUERIES)
    ========================================== */
-
-/* Evitar desbordamientos horizontales */
-:host {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  overflow-wrap: break-word;
-}
-
-.profile-page,
-.profile-layout,
-.settings-card,
-.summary-card,
-.field,
-.nutrient-setting,
-.summary-footer {
-  min-width: 0;
-}
-
-/* Escritorio: contenido centrado y ancho controlado */
-.profile-page {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding: 38px 24px 56px;
-}
-
-.profile-layout {
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.9fr);
-  gap: 24px;
-}
 
 /* Pantallas medianas y tablets */
 @media (max-width: 1000px) {
@@ -1635,6 +1324,7 @@ select:focus-visible {
     border-left: 0;
     border-radius: 18px 18px 0 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: modal-sheet-in 0.22s ease-out;
   }
 
   .modal-header {

@@ -108,19 +108,33 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  :host {
+    /* Rompe el fixed para que fluya naturalmente al final de la página */
+    position: static;
+    pointer-events: auto; 
+  }
+
+  .footer-reveal-zone {
+    /* Ocultamos la zona de activación porque ya no hay hover */
+    display: none;
+  }
+
+  .hover-footer {
+    position: static;
+    /* Anulamos la animación y lo dejamos siempre visible */
+    transform: translateY(0);
+    /* Opcional: quitamos la sombra superior para que se funda mejor con el final */
+    box-shadow: none; 
+    height: 50px; /* Un poco más de altura para mejor área de toque en mobile */
+  }
+
   .footer-content {
-    padding: 0 12px;
+    padding: 0 16px;
     gap: 8px;
   }
 
   .footer-copy {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hover-footer {
-    transition: none;
   }
 }
