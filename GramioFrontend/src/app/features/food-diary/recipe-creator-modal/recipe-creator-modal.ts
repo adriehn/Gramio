@@ -3,26 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CreateRecipePayload } from '../../../core/models/recipe.model';
-import { FoodDiaryService, FoodItem } from '../../../core/services/food-diary.service';
+import { CreateRecipePayload,RecipeMacros,RecipeLine } from '../../../core/models/recipe.model';
+import { FoodDiaryService } from '../../../core/services/food-diary.service';
+import {  FoodItem } from '@core/models/food-diary.model';
 
-interface RecipeMacros {
-  kcal_100: number;
-  protein_100: number;
-  carbs_100: number;
-  fat_100: number;
-  fiber_100: number;
-}
 
-interface RecipeLine {
-  key: number;
-  name: string;
-  source: 'database' | 'manual';
-  quantity_g: number;
-  food_id?: string;
-  macros: RecipeMacros;
-  manual_macros?: RecipeMacros;
-}
 
 @Component({
   selector: 'app-recipe-creator-modal',

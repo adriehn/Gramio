@@ -4,64 +4,8 @@ import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { environment } from '../../../environments/environment';
 import { CreateRecipePayload } from '../models/recipe.model';
+import { MealType, FoodItem, DiarySession, MealGroup, DiaryEntry, FoodHistoryItem } from '../models/food-diary.model';
 
-export type MealType =
-    | 'breakfast'
-    | 'lunch'
-    | 'snack'
-    | 'dinner'
-    | 'other';
-
-// 1. En food-diary.service.ts, actualiza la interfaz:
-export interface FoodItem {
-    id: string;
-    name: string;
-    brand: string | null;
-    category: string | null;
-    kcal_100: number;
-    protein_100: number;
-    carbs_100: number;
-    fat_100: number;
-    fiber_100: number;
-    user_id?: string;
-    is_custom?: boolean;
-}
-
-export interface DiarySession {
-    id: string;
-    user_id: string;
-    started_at: string;
-    expires_at: string;
-    status: 'open' | 'closed' | 'expired';
-}
-
-export interface MealGroup {
-    id: string;
-    session_id: string;
-    user_id: string;
-    meal_type: MealType;
-    label: string;
-    group_order: number;
-    status: 'open' | 'closed';
-    created_at: string;
-    closed_at: string | null;
-}
-
-export interface DiaryEntry {
-    id: string;
-    session_id: string | null;
-    meal_group_id: string | null;
-    food_id: string | null;
-    name: string;
-    quantity_g: number;
-    kcal: number;
-    protein_g: number;
-    carbs_g: number;
-    fat_g: number;
-    fiber_g: number;
-    log_date: string;
-    created_at: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class FoodDiaryService {
@@ -900,6 +844,53 @@ export class FoodDiaryService {
                     ...item,
                     is_custom: true
                 })) as FoodItem[];
+            })
+        );
+    }
+    // Obtener el historial/ranking de comidas del usuario
+    getFoodHistory(): Observable<FoodHistoryItem[]> {
+        return from(this.supabase.client.auth.getUser()).pipe(
+            switchMap(({ data, error }) => {
+                if (error || !data.user) {
+                    throw new Error('No se pudo verificar tu sesión para cargar el historial.');
+                }
+
+                // Consultamos todos los logs del usuario
+                return from(
+                    this.supabase.client
+                        .from('daily_logs')
+                        .select('name, quantity_g, food_id')
+                        .eq('user_id', data.user.id)
+                );
+            }),
+            map(({ data, error }) => {
+                if (error) {
+                    throw new Error(`Error al cargar el historial: ${error.message}`);
+                }
+
+                if (!data || data.length === 0) return [];
+
+                // Agrupamos en memoria
+                const historyMap = new Map<string, FoodHistoryItem>();
+
+                data.forEach(log => {
+                    const itemName = log.name.trim();
+                    const existing = historyMap.get(itemName);
+
+                    if (existing) {
+                        existing.timesEaten += 1;
+                        existing.totalGrams += Number(log.quantity_g);
+                    } else {
+                        historyMap.set(itemName, {
+                            name: itemName,
+                            category: log.food_id ? 'Alimento guardado' : 'Registro manual',
+                            timesEaten: 1,
+                            totalGrams: Number(log.quantity_g)
+                        });
+                    }
+                });
+
+                return Array.from(historyMap.values());
             })
         );
     }

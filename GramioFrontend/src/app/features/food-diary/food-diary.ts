@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, catchError, distinctUntilChanged, finalize, of, switchMap, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FoodDiaryService, DiaryEntry, FoodItem, MealGroup, MealType } from '../../core/services/food-diary.service';
 import { RecipeCreatorModal } from './recipe-creator-modal/recipe-creator-modal';
 import { ProfileService } from '../../core/services/profile.service';
 import { effect } from '@angular/core';
+import { FoodDiaryService } from '../../core/services/food-diary.service';
+import { DiaryEntry, FoodItem, MealGroup, MealType, FoodHistoryItem } from '../../core/models/food-diary.model';
 @Component({
   selector: 'app-food-diary',
   standalone: true,
@@ -66,6 +67,143 @@ export class FoodDiary {
   readonly myRecipes = signal<FoodItem[]>([]);
   readonly loadingMyRecipes = signal(false);
   readonly showHelpModal = signal(false);
+  //señales para el ranking
+  readonly showLabelModal = signal(false);
+  readonly showHistoryModal = signal(false);
+  readonly historyFilter = signal<'count' | 'grams'>('count');
+  readonly historyData = signal<FoodHistoryItem[]>([]);
+  readonly loadingHistory = signal(false);
+  // --- MODAL CARGAR ETIQUETA ---
+  readonly manualName = signal('');
+  readonly manualQuantity = signal<number | null>(null);
+  readonly manualKcal = signal<number | null>(null);
+  readonly manualProtein = signal<number | null>(null);
+  readonly manualCarbs = signal<number | null>(null);
+  readonly manualFat = signal<number | null>(null);
+  readonly manualFiber = signal<number | null>(null);
+  readonly manualSaving = signal(false);
+
+
+
+  readonly filteredHistory = computed(() => {
+    const filter = this.historyFilter();
+    const items = [...this.historyData()];
+
+    if (filter === 'count') {
+      return items.sort((a, b) => b.timesEaten - a.timesEaten);
+    } else {
+      return items.sort((a, b) => b.totalGrams - a.totalGrams);
+    }
+  });
+
+  //Modal Etiqueta Manual
+  openLabelModal(): void {
+    this.localError.set(null);
+    this.manualName.set('');
+    this.manualQuantity.set(null);
+    this.manualKcal.set(null);
+    this.manualProtein.set(null);
+    this.manualCarbs.set(null);
+    this.manualFat.set(null);
+    this.manualFiber.set(null);
+    this.showLabelModal.set(true);
+  }
+
+  toNullableNumber(value: unknown): number | null {
+    if (value === '' || value === null || value === undefined) return null;
+    if (typeof value === 'string') {
+      value = value.replace(',', '.');
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  }
+
+  saveManualLabel(): void {
+    if (this.manualSaving()) return;
+
+    const name = this.manualName().trim();
+    const portion = this.manualQuantity();
+
+    if (!name) {
+      this.localError.set('Ingresá el nombre del producto.');
+      return;
+    }
+
+    if (!portion || portion <= 0) {
+      this.localError.set('La porción debe ser mayor que cero.');
+      return;
+    }
+
+    this.manualSaving.set(true);
+    this.localError.set(null);
+
+    // Calculamos el factor para llevarlo a 100g
+    const factor = 100 / portion;
+    const round100g = (val: number | null) => Math.round((val || 0) * factor * 10) / 10;
+
+    const macros = {
+      kcal_100: round100g(this.manualKcal()),
+      protein_100: round100g(this.manualProtein()),
+      carbs_100: round100g(this.manualCarbs()),
+      fat_100: round100g(this.manualFat()),
+      fiber_100: round100g(this.manualFiber())
+    };
+
+    // Reutilizamos el endpoint de recetas pero con un solo ingrediente manual (comportamiento idéntico al manual tab)
+    const payload: any = {
+      name: name,
+      ingredients: [
+        {
+          source: 'manual',
+          quantity_g: 100,
+          manual_name: name,
+          manual_macros: macros
+        }
+      ],
+      is_cooked: false
+    };
+
+    this.diary.createRecipe(payload)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.manualSaving.set(false))
+      )
+      .subscribe({
+        next: (createdFood) => {
+          this.showLabelModal.set(false);
+          // Seleccionamos automáticamente el alimento creado para que el usuario pueda agregarlo a su grupo
+          this.selectFood(createdFood);
+        },
+        error: (error: unknown) => {
+          this.localError.set(
+            this.getErrorMessage(error, 'No se pudo guardar la etiqueta manual.')
+          );
+        }
+      });
+  }
+  //Modal Ver Historial
+  openHistoryModal(): void {
+    this.localError.set(null);
+    this.loadingHistory.set(true);
+    this.showHistoryModal.set(true);
+
+    this.diary.getFoodHistory()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loadingHistory.set(false))
+      )
+      .subscribe({
+        next: (history) => {
+          this.historyData.set(history);
+        },
+        error: (error: unknown) => {
+          this.localError.set(
+            this.getErrorMessage(error, 'No se pudo cargar el historial.')
+          );
+          this.showHistoryModal.set(false);
+        }
+      });
+  }
 
   // Señal computada que cruza el consumo con el objetivo
   readonly macroProgress = computed(() => {

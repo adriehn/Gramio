@@ -28,3 +28,20 @@ export interface CreateRecipePayload {
   is_cooked?: boolean;
   cooked_weight_g?: number | null;
 }
+export interface RecipeMacros {
+  kcal_100: number;
+  protein_100: number;
+  carbs_100: number;
+  fat_100: number;
+  fiber_100: number;
+}
+
+export interface RecipeLine {
+  key: number;
+  name: string;
+  source: 'database' | 'manual';
+  quantity_g: number;
+  food_id?: string;
+  macros: RecipeMacros;
+  manual_macros?: RecipeMacros;
+}

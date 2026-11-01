@@ -31,14 +31,13 @@
                     </div>
                 </div>
 
-                <!-- CREAR RECETA PROPIA -->
+                <!-- 4 BOTONES PRINCIPALES AFUERA -->
                 <div class="recipe-create-area">
                     <p class="hint">
-                        ¿Preparaste una comida con varios ingredientes? Creá tu receta
-                        para calcular sus nutrientes y reutilizarla en tu registro.
+                        Organizá tus registros, creá recetas o consultá tus hábitos más frecuentes.
                     </p>
 
-                    <div class="recipe-actions">
+                    <div class="recipe-actions main-four-buttons">
                         <button type="button" class="recipe-create-button" (click)="openRecipeModal()"
                             [disabled]="diary.loading()">
                             <span aria-hidden="true">＋</span>
@@ -48,6 +47,16 @@
                         <button type="button" class="secondary-button recipe-secondary-button" (click)="openMyRecipes()"
                             [disabled]="diary.loading()">
                             Ver mis recetas
+                        </button>
+
+                        <button type="button" class="secondary-button recipe-secondary-button"
+                            (click)="openLabelModal()" [disabled]="diary.loading()">
+                            Cargar etiqueta
+                        </button>
+
+                        <button type="button" class="secondary-button recipe-secondary-button"
+                            (click)="openHistoryModal()" [disabled]="diary.loading()">
+                            Ver tu historial
                         </button>
                     </div>
                 </div>
@@ -732,6 +741,7 @@
         (created)="onRecipeCreated($event)">
     </app-recipe-creator-modal>
     }
+
     <!-- MODAL: ELIMINAR RECETA PERSONALIZADA -->
     @if (deletingCustomRecipe(); as food) {
     <div class="modal-backdrop delete-entry-backdrop" (click)="cancelDeleteCustomRecipe()">
@@ -764,6 +774,7 @@
         </section>
     </div>
     }
+
     <!-- MODAL: VER MIS RECETAS -->
     @if (showMyRecipesModal()) {
     <div class="modal-backdrop" (click)="showMyRecipesModal.set(false)">
@@ -809,6 +820,168 @@
         </section>
     </div>
     }
+
+    <!-- MODAL: CARGAR ETIQUETA MANUAL -->
+    @if (showLabelModal()) {
+    <div class="modal-backdrop" (click)="showLabelModal.set(false)">
+        <section class="diary-modal" role="dialog" aria-modal="true" aria-labelledby="label-modal-title"
+            (click)="$event.stopPropagation()">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div>
+                    <span class="section-kicker">NUEVO ALIMENTO</span>
+                    <h2 id="label-modal-title" style="margin: 0; color: #2b4e35; font-size: 21px; font-weight: 800;">
+                        Cargar etiqueta</h2>
+                </div>
+                <button type="button" aria-label="Cerrar" (click)="showLabelModal.set(false)"
+                    style="background: transparent; border: 0; font-size: 26px; color: #78867a; cursor: pointer; padding: 0; line-height: 1;"
+                    [disabled]="manualSaving()">×</button>
+            </div>
+
+            <p style="color: #78867a; font-size: 12px; margin-bottom: 20px; line-height: 1.5;">
+                Ingresá los nutrientes para la porción que indique el paquete. Calcularemos los valores por 100 g
+                automáticamente y se guardará en tus alimentos.
+            </p>
+
+            <form (ngSubmit)="saveManualLabel()" style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="form-field">
+                    <label for="manual-name">Nombre del producto</label>
+                    <input id="manual-name" type="text" [ngModel]="manualName()"
+                        (ngModelChange)="manualName.set($event)" name="manualName" maxlength="120"
+                        placeholder="Ej. Harina integral marca X" [disabled]="manualSaving()" autocomplete="off" />
+                </div>
+
+                <div class="form-field">
+                    <label for="manual-quantity">Porción en gramos (g)</label>
+                    <input id="manual-quantity" type="number" min="0.1" step="0.1" [ngModel]="manualQuantity()"
+                        (ngModelChange)="manualQuantity.set(toNullableNumber($event))" name="manualQuantity"
+                        placeholder="Ej. 30" [disabled]="manualSaving()" />
+                </div>
+
+                <div class="manual-macro-grid">
+                    <div class="form-field">
+                        <label for="manual-kcal">Kcal</label>
+                        <input id="manual-kcal" type="number" min="0" step="0.1" placeholder="0"
+                            [ngModel]="manualKcal()" (ngModelChange)="manualKcal.set(toNullableNumber($event))"
+                            name="manualKcal" [disabled]="manualSaving()" />
+                    </div>
+                    <div class="form-field">
+                        <label for="manual-protein">Prot (g)</label>
+                        <input id="manual-protein" type="number" min="0" step="0.1" placeholder="0"
+                            [ngModel]="manualProtein()" (ngModelChange)="manualProtein.set(toNullableNumber($event))"
+                            name="manualProtein" [disabled]="manualSaving()" />
+                    </div>
+                    <div class="form-field">
+                        <label for="manual-carbs">Carbs (g)</label>
+                        <input id="manual-carbs" type="number" min="0" step="0.1" placeholder="0"
+                            [ngModel]="manualCarbs()" (ngModelChange)="manualCarbs.set(toNullableNumber($event))"
+                            name="manualCarbs" [disabled]="manualSaving()" />
+                    </div>
+                    <div class="form-field">
+                        <label for="manual-fat">Grasas (g)</label>
+                        <input id="manual-fat" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualFat()"
+                            (ngModelChange)="manualFat.set(toNullableNumber($event))" name="manualFat"
+                            [disabled]="manualSaving()" />
+                    </div>
+                    <div class="form-field">
+                        <label for="manual-fiber">Fibra (g)</label>
+                        <input id="manual-fiber" type="number" min="0" step="0.1" placeholder="0"
+                            [ngModel]="manualFiber()" (ngModelChange)="manualFiber.set(toNullableNumber($event))"
+                            name="manualFiber" [disabled]="manualSaving()" />
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 15px;">
+                    <button type="button" class="secondary-button" (click)="showLabelModal.set(false)"
+                        [disabled]="manualSaving()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="primary-button"
+                        [disabled]="manualSaving() || !manualName().trim() || !manualQuantity()">
+                        {{ manualSaving() ? 'Guardando...' : 'Guardar y usar' }}
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+    }
+
+    <!-- MODAL: VER TU HISTORIAL / RANKING CON FILTROS Y SCROLL -->
+    @if (showHistoryModal()) {
+    <div class="modal-backdrop" (click)="showHistoryModal.set(false)">
+        <section class="diary-modal history-modal-container" role="dialog" aria-modal="true"
+            aria-labelledby="history-title" (click)="$event.stopPropagation()">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 id="history-title"
+                    style="margin: 0; color: #2b4e35; font-size: 21px; font-weight: 800; letter-spacing: -0.5px;">
+                    Historial y Ranking de Comidas
+                </h2>
+                <button type="button" aria-label="Cerrar" (click)="showHistoryModal.set(false)"
+                    style="background: transparent; border: 0; font-size: 26px; color: #78867a; cursor: pointer; padding: 0; line-height: 1;">
+                    ×
+                </button>
+            </div>
+
+            <p style="color: #78867a; font-size: 12px; margin-bottom: 15px;">
+                Visualizá las comidas que más consumiste ordenadas por frecuencia o cantidad de gramos.
+            </p>
+
+            <!-- Filtros interactivos -->
+            <div class="history-filters" style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button type="button" class="recipe-tabs button" [class.active]="historyFilter() === 'count'"
+                    (click)="historyFilter.set('count')"
+                    style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #d4e4d0; background: #f0f7ec; color: #32764b; font-weight: 750; font-size: 11px;">
+                    Por cantidad de veces
+                </button>
+                <button type="button" class="recipe-tabs button" [class.active]="historyFilter() === 'grams'"
+                    (click)="historyFilter.set('grams')"
+                    style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #d4e4d0; background: #f0f7ec; color: #32764b; font-weight: 750; font-size: 11px;">
+                    Por cantidad de gramos
+                </button>
+            </div>
+
+            <!-- Contenedor scrolleable con los elementos -->
+            <div class="scrollable-history-list"
+                style="max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                @if (loadingHistory()) {
+                <p class="hint" role="status" style="text-align: center; margin: 30px 0;">Cargando tu historial...</p>
+                } @else {
+                @for (item of filteredHistory(); track item.name) {
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1px solid #dcebd7; border-radius: 12px; background: #fff;">
+                    <div>
+                        <strong style="font-size: 13px; color: #2b4e35; display: block;">{{ item.name }}</strong>
+                        <small style="color: #839083; font-size: 11px;">{{ item.category || 'Alimento registrado'
+                            }}</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 12px; font-weight: 800; color: #32764b; display: block;">
+                            @if (historyFilter() === 'count') {
+                            {{ item.timesEaten }} veces
+                            } @else {
+                            {{ item.totalGrams | number:'1.0-0' }} g
+                            }
+                        </span>
+                    </div>
+                </div>
+                } @empty {
+                <div class="empty-state" style="padding: 30px; text-align: center;">
+                    Todavía no hay registros en tu historial.
+                </div>
+                }
+                }
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="button" class="primary-button" (click)="showHistoryModal.set(false)">
+                    Cerrar
+                </button>
+            </div>
+        </section>
+    </div>
+    }
+
     <!-- MODAL: CÓMO FUNCIONA (AYUDA) -->
     @if (showHelpModal()) {
     <div class="modal-backdrop" (click)="showHelpModal.set(false)">

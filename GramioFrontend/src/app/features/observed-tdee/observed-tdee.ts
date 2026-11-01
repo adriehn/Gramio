@@ -1,21 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  signal
-} from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 import { ObservedTdeeService } from '../../core/services/observed-tdee.service';
-import {
-  ObservedTdeePeriod,
-  ObservedTdeeResponse
-} from '../../core/models/observed-tdee.model';
+import { ObservedTdeePeriod, ObservedTdeeResponse } from '../../core/models/observed-tdee.model';
 
 @Component({
   selector: 'app-observed-tdee',

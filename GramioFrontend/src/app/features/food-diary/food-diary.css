@@ -1301,8 +1301,10 @@ input:disabled {
 /* --- Reducir aire superior e inferior en la tarjeta de calorías --- */
 /* --- Ajuste compacto y centrado vertical para Calorías con Objetivo --- */
 .daily-calories.daily-calories-progress {
-    padding: 8px 15px !important; /* Menos aire arriba y abajo en el recuadro verde */
-    gap: 8px;                    /* Menos espacio entre el texto y la barra de progreso */
+    padding: 8px 15px !important;
+    /* Menos aire arriba y abajo en el recuadro verde */
+    gap: 8px;
+    /* Menos espacio entre el texto y la barra de progreso */
 }
 
 
@@ -1329,6 +1331,39 @@ input:disabled {
 .daily-calories-progress .calorie-header strong {
     font-size: 25px;
     letter-spacing: 0;
+}
+
+/* --- Grilla para Modal de Etiqueta Manual --- */
+.manual-macro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 10px;
+    margin-top: 6px;
+}
+
+/* --- Estilos para los 4 botones principales en Sección 1 --- */
+.main-four-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+    .main-four-buttons {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.history-modal-container {
+    width: min(100%, 500px) !important;
+}
+
+.history-filters button.active {
+    background: #32764b !important;
+    color: #fff !important;
+    border-color: #32764b !important;
 }
 
 /* =========================================
