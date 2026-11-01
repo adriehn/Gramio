@@ -49,9 +49,9 @@
                             Ver mis recetas
                         </button>
 
-                        <button type="button" class="secondary-button recipe-secondary-button"
+                        <button type="button" class="recipe-create-button"
                             (click)="openLabelModal()" [disabled]="diary.loading()">
-                            Cargar etiqueta
+                            +Nuevo alimento
                         </button>
 
                         <button type="button" class="secondary-button recipe-secondary-button"
@@ -823,7 +823,7 @@
 
     <!-- MODAL: CARGAR ETIQUETA MANUAL -->
     @if (showLabelModal()) {
-    <div class="modal-backdrop" (click)="showLabelModal.set(false)">
+    <div class="modal-backdrop" >
         <section class="diary-modal" role="dialog" aria-modal="true" aria-labelledby="label-modal-title"
             (click)="$event.stopPropagation()">
 
