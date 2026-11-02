@@ -1,125 +1,480 @@
-﻿
-<div class="home-container">
-  <section class="hero-card">
-    <span class="badge">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        aria-hidden="true"
-      >
-        <path d="M11 20A7 7 0 0 1 4 13c0-4 4-8 9-9-1 5-1 8-5 11" />
-        <path d="M11 20c0-5 3-9 8-11 1 5-2 10-8 11Z" />
-      </svg>
-      Gestión nutricional y pesajes
-    </span>
+<div #pageRoot class="home">
 
-    <h1 class="hero-title">
-      Controlá tu progreso,
-      <span class="title-highlight">alcanzá tus objetivos.</span>
+  <!-- ======================================
+       HERO
+  ======================================= -->
+
+  <section class="hero wrap">
+
+    <h1 class="hero-title display">
+      <span class="line"><span class="line-in">Tu progreso</span></span>
+      <span class="line"><span class="line-in">no se adivina.</span></span>
+      <span class="line"><span class="line-in">Se comprende.</span></span>
     </h1>
 
-    <p class="hero-description">
-      Calculá tu gasto metabólico, definí tus objetivos calóricos y
-      registrá tus progresos con herramientas diseñadas para acompañar
-      tu evolución.
-    </p>
+    <div class="hero-foot">
 
-    <div class="actions">
-      @if (auth.isAuthenticated()) {
-        <a routerLink="/perfil" class="btn-primary">
-          Ir a mi perfil metabólico
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <path d="M5 12h14m-7-7 7 7-7 7" />
-          </svg>
-        </a>
-      } @else {
-        <a routerLink="/registro" class="btn-primary">
-          Comenzar ahora
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true">
-            <path d="M5 12h14m-7-7 7 7-7 7" />
-          </svg>
-        </a>
+      <p class="hero-description">
+        Conocé tu gasto energético real, organizá tu nutrición y entendé
+        cómo responde tu cuerpo a lo largo del tiempo. Decisiones respaldadas
+        por tus propios datos.
+      </p>
 
-        <a routerLink="/login" class="btn-secondary">
-          Ya tengo cuenta
-        </a>
-      }
+      <div class="hero-actions">
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/perfil" class="btn btn-primary">Ver mi perfil metabólico</a>
+        } @else {
+          <a routerLink="/registro" class="btn btn-primary">Comenzar ahora</a>
+          <a routerLink="/login" class="btn btn-secondary">Ya tengo cuenta</a>
+        }
+      </div>
+
     </div>
 
-    <div class="hero-note">
-      <span class="status-dot"></span>
-      <span>Tu progreso, tus datos, tus objetivos.</span>
+    <!-- GRÁFICO PRINCIPAL: pesaje diario vs. tendencia -->
+
+    <figure class="chart-box">
+
+      <div class="chart-cell">
+
+        <figcaption class="chart-head">
+          <strong>Peso diario y tendencia</strong>
+          <span class="legend">
+            <span><i class="key key-dot"></i>Pesaje del día</span>
+            <span><i class="key key-line"></i>Tendencia</span>
+            <span><i class="key key-bar"></i>Ingesta</span>
+          </span>
+        </figcaption>
+
+        <div class="chart-body">
+
+          <div class="y-axis" aria-hidden="true">
+            @for (tick of demo.yTicks; track tick.label) {
+              <span [style.top.%]="tick.top">{{ tick.label }}</span>
+            }
+          </div>
+
+          <div class="plot">
+
+            @for (tick of demo.yTicks; track tick.label) {
+              <i class="grid-line" [style.top.%]="tick.top"></i>
+            }
+
+            <div class="chart-reveal">
+              <svg
+                class="plot-svg"
+                viewBox="0 0 1000 400"
+                preserveAspectRatio="none"
+                role="img"
+                [attr.aria-label]="demo.ariaLabel"
+              >
+                <path class="dots" [attr.d]="demo.dotsPath" />
+                <path class="trend" [attr.d]="demo.trendPath" />
+              </svg>
+            </div>
+
+            <span
+              class="end-marker"
+              [style.left.%]="demo.end.left"
+              [style.top.%]="demo.end.top"
+            ></span>
+
+            <div
+              class="chart-note"
+              [class.is-flipped]="demo.note.flip"
+              [class.is-dimmed]="hoverInfo()"
+              [style.left.%]="demo.note.left"
+              [style.top.%]="demo.note.top"
+            >
+              <span>{{ demo.note.text }}</span>
+            </div>
+
+            @if (hoverInfo(); as h) {
+              <i class="cursor-line" [style.left.%]="h.left"></i>
+              <i class="cursor-dot cursor-dot-weight" [style.left.%]="h.left" [style.top.%]="h.weightTop"></i>
+              <i class="cursor-dot cursor-dot-trend" [style.left.%]="h.left" [style.top.%]="h.trendTop"></i>
+
+              <div class="tip" [class.is-flipped]="h.flip" [style.left.%]="h.left">
+                <b>{{ h.day.date }}</b>
+                <span>Pesaje <em>{{ h.day.weightLabel }} kg</em></span>
+                <span>Tendencia <em>{{ h.day.trendLabel }} kg</em></span>
+                <span>Ingesta <em>{{ h.day.intakeLabel }} kcal</em></span>
+              </div>
+            }
+
+            <div
+              class="hit"
+              tabindex="0"
+              role="group"
+              aria-label="Explorar el gráfico día por día con las flechas del teclado"
+              (pointermove)="onChartPointer($event)"
+              (pointerdown)="onChartPointer($event)"
+              (pointerleave)="onChartLeave()"
+              (blur)="onChartLeave()"
+              (keydown)="onChartKey($event)"
+            ></div>
+
+          </div>
+
+          <div class="intake-label" aria-hidden="true">kcal</div>
+
+          <div class="intake">
+            <div class="chart-reveal">
+              <svg viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true">
+                <path class="bars" [attr.d]="demo.barsPath" />
+              </svg>
+            </div>
+            @if (hoverInfo(); as h) {
+              <i class="cursor-line" [style.left.%]="h.left"></i>
+            }
+          </div>
+
+          <div class="x-axis" aria-hidden="true">
+            @for (tick of demo.xTicks; track tick.label) {
+              <span [style.left.%]="tick.left" [style.transform]="'translateX(' + tick.shift + ')'">{{ tick.label }}</span>
+            }
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Resultado, con el formato de una etiqueta nutricional -->
+
+      <aside class="label-cell" aria-label="Cálculo del gasto energético observado">
+
+        <h2 class="label-title display">Tu gasto energético</h2>
+        <p class="label-sub">Últimos 28 días, datos ilustrativos</p>
+
+        <i class="rule rule-thick"></i>
+
+        <dl class="label-rows">
+          <div>
+            <dt>Ingesta media</dt>
+            <dd>{{ demo.stats.avgIntake }} kcal</dd>
+          </div>
+          <div>
+            <dt>Cambio en la tendencia</dt>
+            <dd>{{ demo.stats.delta }} kg</dd>
+          </div>
+          <div>
+            <dt>Energía que aportó tu cuerpo</dt>
+            <dd>{{ demo.stats.fromBody }} kcal</dd>
+          </div>
+        </dl>
+
+        <i class="rule rule-mid"></i>
+
+        <div class="label-total">
+          <span>Gasto observado</span>
+          <strong class="display">{{ demo.stats.tdee }}</strong>
+          <small>kcal por día</small>
+        </div>
+
+        <p class="label-foot">
+          Tendencia de peso: {{ demo.stats.weekly }} kg por semana.
+        </p>
+
+      </aside>
+
+    </figure>
+
+  </section>
+
+
+  <!-- ======================================
+       INTRODUCCIÓN
+  ======================================= -->
+
+  <section class="intro">
+    <div class="wrap intro-grid">
+
+      <h2 class="intro-title display">
+        No necesitás más suposiciones.
+      </h2>
+
+      <p class="intro-text">
+        Las fórmulas ofrecen un punto de partida. Tus registros permiten
+        entender qué sucede realmente. Gramio conecta alimentación,
+        actividad y evolución corporal para convertir información en
+        conocimiento.
+      </p>
+
     </div>
   </section>
 
-  <section class="features-section" aria-label="Funcionalidades de Gramio">
-    <div class="section-heading">
-      <span class="section-eyebrow">Todo en un solo lugar</span>
-      <h2>Herramientas para tu progreso</h2>
-      <p>Información clara para tomar mejores decisiones.</p>
-    </div>
 
-    <div class="features-grid">
-      <article class="feature-card">
-        <div class="feature-icon icon-green">
-          <svg xmlns="http://www.w3.org/2000/svg"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="1.8" aria-hidden="true">
-            <rect x="5" y="3" width="14" height="18" rx="2" />
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M9 7h6m-6 4h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6" />
-          </svg>
-        </div>
+  <!-- ======================================
+       STORYTELLING
+  ======================================= -->
 
-        <span class="feature-number">01 / METABOLISMO</span>
-        <h3>Fórmulas metabólicas</h3>
-        <p>
-          Estimá tu metabolismo basal con métodos como Mifflin-St Jeor,
-          Harris-Benedict o Katch-McArdle, según los datos disponibles.
-        </p>
-      </article>
+  <section class="story">
+    <div class="story-stage wrap">
 
-      <article class="feature-card">
-        <div class="feature-icon icon-blue">
-          <svg xmlns="http://www.w3.org/2000/svg"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="1.8" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M13 2 4 14h7l-1 8 10-12h-7l1-8Z" />
-          </svg>
-        </div>
+      <div class="story-progress-wrap" aria-hidden="true">
+        <div class="progress-track"><i class="progress-bar"></i></div>
+        <ol class="story-progress">
+          <li class="is-active"><b>1</b> Registrá</li>
+          <li><b>2</b> Analizá</li>
+          <li><b>3</b> Evolucioná</li>
+        </ol>
+      </div>
 
-        <span class="feature-number">02 / OBJETIVOS</span>
-        <h3>Objetivos personalizados</h3>
-        <p>
-          Organizá tus objetivos calóricos y consultá la distribución
-          de proteínas, grasas y fibra según tu planificación.
-        </p>
-      </article>
+      <div class="story-steps">
 
-      <article class="feature-card">
-        <div class="feature-icon icon-amber">
-          <svg xmlns="http://www.w3.org/2000/svg"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="1.8" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M3 3v18h18M7 14l4-4 4 4 6-7" />
-          </svg>
-        </div>
+        <!-- PASO 1 -->
 
-        <span class="feature-number">03 / SEGUIMIENTO</span>
-        <h3>Diario de pesajes</h3>
-        <p>
-          Registrá tu peso y observá su evolución a lo largo del tiempo
-          para comparar la tendencia con tus objetivos.
-        </p>
-      </article>
+        <article class="story-step">
+
+          <div class="step-copy">
+            <h2 class="display">Cada comida cuenta.</h2>
+            <p>
+              Organizá tus alimentos, creá recetas y registrá tus consumos.
+              Construí un historial nutricional que puedas analizar.
+            </p>
+          </div>
+
+          <div class="sheet">
+            <h3 class="sheet-title display">Diario del miércoles</h3>
+            <p class="sheet-sub">5 comidas registradas, ejemplo ilustrativo</p>
+
+            <i class="rule rule-thick"></i>
+
+            <ul class="sheet-rows">
+              <li><span><b>Desayuno</b>Avena con banana y nueces</span><em>438 kcal</em></li>
+              <li><span><b>Almuerzo</b>Milanesa de pollo al horno con ensalada</span><em>488 kcal</em></li>
+              <li><span><b>Merienda</b>Yogur griego con frutas</span><em>221 kcal</em></li>
+              <li><span><b>Cena</b>Bife con puré de calabaza</span><em>522 kcal</em></li>
+              <li><span><b>Colación</b>Mix de frutos secos</span><em>182 kcal</em></li>
+            </ul>
+
+            <i class="rule rule-mid"></i>
+
+            <div class="sheet-total">
+              <span>Total del día</span>
+              <strong class="display">1.851 <small>kcal</small></strong>
+            </div>
+
+            <div class="macro-bar" aria-hidden="true">
+              <i class="m-protein" style="width: 29%"></i>
+              <i class="m-carbs" style="width: 38%"></i>
+              <i class="m-fats" style="width: 33%"></i>
+            </div>
+
+            <ul class="macro-list">
+              <li><i class="swatch m-protein"></i>Proteínas<b>134 g</b></li>
+              <li><i class="swatch m-carbs"></i>Carbohidratos<b>178 g</b></li>
+              <li><i class="swatch m-fats"></i>Grasas<b>67 g</b></li>
+            </ul>
+          </div>
+
+        </article>
+
+        <!-- PASO 2 -->
+
+        <article class="story-step">
+
+          <div class="step-copy">
+            <h2 class="display">Entendé tu metabolismo.</h2>
+            <p>
+              Configurá tus objetivos y compará las estimaciones del TDEE y
+              los macronutrientes con la respuesta que observás en tus
+              registros a lo largo del tiempo.
+            </p>
+          </div>
+
+          <div class="sheet">
+            <h3 class="sheet-title display">Gasto energético</h3>
+            <p class="sheet-sub">Fórmula frente a tus registros, ejemplo ilustrativo</p>
+
+            <i class="rule rule-thick"></i>
+
+            <div class="compare">
+
+              <div class="compare-row">
+                <div class="compare-head">
+                  <span>Estimado con fórmula</span>
+                  <b>{{ demo.stats.estimated }} kcal</b>
+                </div>
+                <div class="track"><i class="bar bar-est" [style.width.%]="demo.stats.estWidth"></i></div>
+              </div>
+
+              <div class="compare-row">
+                <div class="compare-head">
+                  <span>Observado en tus registros</span>
+                  <b>{{ demo.stats.tdee }} kcal</b>
+                </div>
+                <div class="track"><i class="bar bar-obs" [style.width.%]="demo.stats.obsWidth"></i></div>
+              </div>
+
+            </div>
+
+            <i class="rule rule-mid"></i>
+
+            <div class="sheet-total">
+              <span>Diferencia</span>
+              <strong class="display">{{ demo.stats.diff }} <small>kcal por día</small></strong>
+            </div>
+
+            <p class="sheet-foot">
+              La fórmula es el punto de partida. Tus registros muestran
+              cuánto gastás en realidad.
+            </p>
+          </div>
+
+        </article>
+
+        <!-- PASO 3 -->
+
+        <article class="story-step">
+
+          <div class="step-copy">
+            <h2 class="display">Tu progreso tiene contexto.</h2>
+            <p>
+              Seguí la evolución de tu peso, observá tendencias y evaluá si
+              tus objetivos están alineados con los resultados obtenidos.
+            </p>
+          </div>
+
+          <div class="sheet">
+            <h3 class="sheet-title display">Variación semanal</h3>
+            <p class="sheet-sub">Tendencia de peso en 8 semanas, ejemplo ilustrativo</p>
+
+            <i class="rule rule-thick"></i>
+
+            <div class="weeks" aria-hidden="true">
+              @for (week of demo.weeks; track week.name) {
+                <div class="week">
+                  <span class="week-value">{{ week.label }}</span>
+                  <i class="week-bar" [class.is-up]="week.up" [style.height.rem]="week.height"></i>
+                  <span class="week-name">{{ week.name }}</span>
+                </div>
+              }
+            </div>
+
+            <i class="rule rule-mid"></i>
+
+            <div class="sheet-total">
+              <span>Variación del período</span>
+              <strong class="display">{{ demo.stats.period }} <small>kg</small></strong>
+            </div>
+
+            <p class="sheet-foot">
+              Un pesaje aislado no cambia la tendencia. Mirá períodos completos.
+            </p>
+          </div>
+
+        </article>
+
+      </div>
+
     </div>
   </section>
+
+
+  <!-- ======================================
+       FUNCIONALIDADES
+  ======================================= -->
+
+  <section class="features">
+    <div class="wrap">
+
+      <h2 class="features-title display">
+        Todo conectado. Un solo objetivo.
+      </h2>
+
+      <p class="features-intro">
+        Herramientas que trabajan en conjunto para ayudarte a interpretar
+        tu evolución.
+      </p>
+
+      <div class="feature-list">
+
+        <article class="feature-row">
+          <h3 class="display">Gasto energético observado</h3>
+          <div>
+            <p>
+              Relacioná tu ingesta calórica con la evolución de tu peso para
+              estimar tu gasto energético a partir de datos registrados.
+            </p>
+            <p class="io"><b>Entra</b> ingesta y peso <b>Sale</b> tu gasto energético</p>
+          </div>
+        </article>
+
+        <article class="feature-row">
+          <h3 class="display">Diario y recetas</h3>
+          <div>
+            <p>
+              Registrá tus comidas, gestioná alimentos, creá recetas propias
+              y mantené un historial nutricional organizado.
+            </p>
+            <p class="io"><b>Entra</b> comidas y recetas <b>Sale</b> un historial para analizar</p>
+          </div>
+        </article>
+
+        <article class="feature-row">
+          <h3 class="display">Perfiles metabólicos</h3>
+          <div>
+            <p>
+              Definí tus objetivos de calorías y macronutrientes y usá
+              referencias cuantitativas para evaluar tu planificación.
+            </p>
+            <p class="io"><b>Entra</b> tus objetivos <b>Sale</b> referencias para evaluar tu plan</p>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================
+       FILOSOFÍA
+  ======================================= -->
+
+  <section class="philosophy">
+    <div class="wrap">
+
+      <h2 class="philosophy-quote display">
+        La información no cambia tus resultados. Las decisiones que tomás
+        con ella, sí.
+      </h2>
+
+      <p class="philosophy-text">
+        Entender tu cuerpo es un proceso. Gramio te brinda herramientas
+        para observarlo con mayor claridad.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================
+       CIERRE
+  ======================================= -->
+
+  <section class="closing">
+    <div class="wrap closing-grid">
+
+      <h2 class="closing-title display">
+        Dejá de adivinar. Empezá a comprender.
+      </h2>
+
+      <div class="closing-side">
+        <p>
+          Construí tu historial, conocé tus tendencias y tomá decisiones
+          con información.
+        </p>
+
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/perfil" class="btn btn-light">Ir a mi perfil metabólico</a>
+        } @else {
+          <a routerLink="/registro" class="btn btn-light">Comenzar con Gramio</a>
+        }
+      </div>
+
+    </div>
+  </section>
+
 </div>

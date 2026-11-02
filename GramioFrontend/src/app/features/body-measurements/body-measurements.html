@@ -223,74 +223,158 @@
 
     <div class="chart-wrap" role="group"
       [attr.aria-label]="'Gráfico de ' + selectedMetricOption.label + ' con ' + chartPoints.length + ' registros'">
-      <svg viewBox="0 0 600 230" preserveAspectRatio="xMidYMid meet" class="trend-chart" role="img"
-        aria-label="Gráfico de evolución de medidas corporales">
-        <defs>
-          <linearGradient id="measurementAreaGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#47966b" stop-opacity="0.22" />
-            <stop offset="100%" stop-color="#47966b" stop-opacity="0.015" />
-          </linearGradient>
+      <svg
+  [attr.viewBox]="'0 0 ' + chartLayout.width + ' ' + chartLayout.height"
+  preserveAspectRatio="xMidYMid meet"
+  class="trend-chart"
+  role="img"
+  aria-label="Gráfico de evolución de medidas corporales">
 
-          <linearGradient id="measurementLineGradient" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#65a875" />
-            <stop offset="100%" stop-color="#287249" />
-          </linearGradient>
-        </defs>
+  <defs>
+    <linearGradient id="measurementAreaGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#47966b" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#47966b" stop-opacity="0.015" />
+    </linearGradient>
 
-        <line x1="49" y1="34" x2="49" y2="178" class="chart-axis" />
-        <line x1="49" y1="178" x2="582" y2="178" class="chart-axis" />
+    <linearGradient id="measurementLineGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#65a875" />
+      <stop offset="100%" stop-color="#287249" />
+    </linearGradient>
+  </defs>
 
-        @for (tick of chartTicks; track tick.value) {
-        <line x1="49" [attr.y1]="tick.y" x2="582" [attr.y2]="tick.y" class="chart-gridline" />
+  <!-- Ejes -->
+  <line
+    [attr.x1]="chartLayout.axisLeft"
+    [attr.y1]="chartLayout.plotTop"
+    [attr.x2]="chartLayout.axisLeft"
+    [attr.y2]="chartLayout.plotBottom"
+    class="chart-axis" />
 
-        <text x="41" [attr.y]="tick.y + 3.5" class="chart-axis-label" text-anchor="end">{{ tick.label }}</text>
-        }
+  <line
+    [attr.x1]="chartLayout.axisLeft"
+    [attr.y1]="chartLayout.plotBottom"
+    [attr.x2]="chartLayout.axisRight"
+    [attr.y2]="chartLayout.plotBottom"
+    class="chart-axis" />
 
-        @if (chartPoints.length > 1) {
-        <path class="chart-area" [attr.d]="chartAreaPath" />
-        <polyline class="chart-line" [attr.points]="chartPolyline" />
-        }
+  <!-- Escala vertical -->
+  @for (tick of chartTicks; track tick.value) {
+    <line
+      [attr.x1]="chartLayout.axisLeft"
+      [attr.y1]="tick.y"
+      [attr.x2]="chartLayout.axisRight"
+      [attr.y2]="tick.y"
+      class="chart-gridline" />
 
-        @if (activeChartPoint; as active) {
-        <line class="chart-active-guide" [attr.x1]="active.x" y1="34" [attr.x2]="active.x" y2="178" />
-        }
+    <text
+      [attr.x]="chartLayout.axisLabelX"
+      [attr.y]="tick.y + 3.5"
+      class="chart-axis-label"
+      text-anchor="end">
+      {{ tick.label }}
+    </text>
+  }
 
-        @for (point of chartPoints; track point.date) {
-        <circle class="chart-dot-halo"
-          [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date" [attr.cx]="point.x"
-          [attr.cy]="point.y" [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 10 : 0" />
+  <!-- Área y línea -->
+  @if (chartPoints.length > 1) {
+    <path class="chart-area" [attr.d]="chartAreaPath" />
+    <polyline class="chart-line" [attr.points]="chartPolyline" />
+  }
 
-        <circle class="chart-dot" [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
-          [attr.cx]="point.x" [attr.cy]="point.y"
-          [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 6 : 4" tabindex="0"
-          role="button"
-          [attr.aria-label]="formatDate(point.date) + ': ' + formatValue(point.value, selectedMetricOption.unit)"
-          [attr.aria-pressed]="selectedChartDate === point.date" (mouseenter)="onChartPointEnter(point.date)"
-          (mouseleave)="onChartPointLeave()" (focus)="onChartPointFocus(point.date)" (blur)="onChartPointBlur()"
-          (click)="selectChartPoint(point.date)" (keydown)="onChartPointKeydown($event, point.date)">
-          <title>{{ formatDate(point.date) }}: {{ formatValue(point.value, selectedMetricOption.unit) }}</title>
-        </circle>
-        }
+  <!-- Guía del punto seleccionado -->
+  @if (activeChartPoint; as active) {
+    <line
+      class="chart-active-guide"
+      [attr.x1]="active.x"
+      [attr.y1]="chartLayout.plotTop"
+      [attr.x2]="active.x"
+      [attr.y2]="chartLayout.plotBottom" />
+  }
 
-        @if (activeChartPoint; as active) {
-        <g class="chart-tooltip" pointer-events="none">
-          <rect class="chart-tooltip-bg" [attr.x]="active.tooltipX" [attr.y]="active.tooltipY" width="154" height="44"
-            rx="8" />
+  <!-- Puntos interactivos -->
+  @for (point of chartPoints; track point.date) {
+    <circle
+      class="chart-dot-halo"
+      [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
+      [attr.cx]="point.x"
+      [attr.cy]="point.y"
+      [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 10 : 0" />
 
-          <text class="chart-tooltip-date" [attr.x]="active.tooltipX + 77" [attr.y]="active.tooltipY + 17"
-            text-anchor="middle">{{ formatDate(active.date) }}</text>
+    <!-- Área táctil invisible -->
+    <circle
+      class="chart-dot-hit"
+      [attr.cx]="point.x"
+      [attr.cy]="point.y"
+      r="13"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="formatDate(point.date) + ': ' + formatValue(point.value, selectedMetricOption.unit)"
+      [attr.aria-pressed]="selectedChartDate === point.date"
+      (mouseenter)="onChartPointEnter(point.date)"
+      (mouseleave)="onChartPointLeave()"
+      (focus)="onChartPointFocus(point.date)"
+      (blur)="onChartPointBlur()"
+      (click)="selectChartPoint(point.date)"
+      (keydown)="onChartPointKeydown($event, point.date)">
 
-          <text class="chart-tooltip-value" [attr.x]="active.tooltipX + 77" [attr.y]="active.tooltipY + 34"
-            text-anchor="middle">{{ formatValue(active.value, selectedMetricOption.unit) }}</text>
-        </g>
-        }
+      <title>
+        {{ formatDate(point.date) }}:
+        {{ formatValue(point.value, selectedMetricOption.unit) }}
+      </title>
+    </circle>
 
-        @for (dateLabel of chartDateLabels; track dateLabel.x; let i = $index) {
-        <text [attr.x]="dateLabel.x" y="203" class="chart-date-label"
-          [attr.text-anchor]="i === 0 ? 'start' : i === chartDateLabels.length - 1 ? 'end' : 'middle'">{{
-          dateLabel.label }}</text>
-        }
-      </svg>
+    <!-- Círculo visible -->
+    <circle
+      class="chart-dot"
+      [class.active]="hoveredChartDate === point.date || selectedChartDate === point.date"
+      [attr.cx]="point.x"
+      [attr.cy]="point.y"
+      [attr.r]="hoveredChartDate === point.date || selectedChartDate === point.date ? 6 : 4" />
+  }
+
+  <!-- Tooltip -->
+  @if (activeChartPoint; as active) {
+    <g class="chart-tooltip" pointer-events="none">
+      <rect
+        class="chart-tooltip-bg"
+        [attr.x]="active.tooltipX"
+        [attr.y]="active.tooltipY"
+        [attr.width]="active.tooltipWidth"
+        [attr.height]="active.tooltipHeight"
+        rx="8" />
+
+      <text
+        class="chart-tooltip-date"
+        [attr.x]="active.tooltipX + active.tooltipWidth / 2"
+        [attr.y]="active.tooltipY + 16"
+        text-anchor="middle">
+        {{ formatDate(active.date) }}
+      </text>
+
+      <text
+        class="chart-tooltip-value"
+        [attr.x]="active.tooltipX + active.tooltipWidth / 2"
+        [attr.y]="active.tooltipY + 32"
+        text-anchor="middle">
+        {{ formatValue(active.value, selectedMetricOption.unit) }}
+      </text>
+    </g>
+  }
+
+  <!-- Fechas -->
+  @for (dateLabel of chartDateLabels; track dateLabel.x; let i = $index) {
+    <text
+      [attr.x]="dateLabel.x"
+      [attr.y]="chartLayout.dateLabelY"
+      class="chart-date-label"
+      [attr.text-anchor]="
+        i === 0 ? 'start' :
+        i === chartDateLabels.length - 1 ? 'end' : 'middle'
+      ">
+      {{ dateLabel.label }}
+    </text>
+  }
+</svg>
     </div>
 
     <div class="chart-legend">

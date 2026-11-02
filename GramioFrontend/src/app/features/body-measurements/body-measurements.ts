@@ -1,7 +1,7 @@
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, HostListener } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { BodyMeasurement, BodyMeasurementMetric, BodyMeasurementWrite, MeasurementMetricOption, ChartPoint, ChartTick } from '../../core/models/body-measurement.model';
@@ -50,7 +50,61 @@ export class BodyMeasurements implements OnInit {
   showDeleteConfirmId: string | null = null;
   hoveredChartDate: string | null = null;
   selectedChartDate: string | null = null;
+  isMobileChart =
+    typeof window !== 'undefined' && window.innerWidth <= 600;
 
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    const mobile = window.innerWidth <= 600;
+
+    if (this.isMobileChart !== mobile) {
+      this.isMobileChart = mobile;
+      this.hoveredChartDate = null;
+      this.selectedChartDate = null;
+      this.cdr.markForCheck();
+    }
+  }
+  get chartLayout() {
+    if (this.isMobileChart) {
+      return {
+        width: 360,
+        height: 250,
+
+        axisLeft: 42,
+        axisRight: 350,
+        axisLabelX: 35,
+
+        plotLeft: 46,
+        plotRight: 344,
+        plotTop: 26,
+        plotBottom: 194,
+
+        dateLabelY: 230,
+
+        tooltipWidth: 132,
+        tooltipHeight: 42
+      };
+    }
+
+    return {
+      width: 600,
+      height: 230,
+
+      axisLeft: 49,
+      axisRight: 582,
+      axisLabelX: 41,
+
+      plotLeft: 58,
+      plotRight: 572,
+      plotTop: 34,
+      plotBottom: 178,
+
+      dateLabelY: 203,
+
+      tooltipWidth: 154,
+      tooltipHeight: 44
+    };
+  }
   //Modal de Medicion
   showGuideImages = false;
   currentImageIndex = 0;
@@ -153,6 +207,8 @@ export class BodyMeasurements implements OnInit {
   get activeChartPoint(): (ChartPoint & {
     tooltipX: number;
     tooltipY: number;
+    tooltipWidth: number;
+    tooltipHeight: number;
   }) | null {
     const activeDate = this.hoveredChartDate ?? this.selectedChartDate;
 
@@ -162,34 +218,32 @@ export class BodyMeasurements implements OnInit {
 
     if (!point) return null;
 
-    const tooltipWidth = 154;
-    const tooltipHeight = 44;
+    const layout = this.chartLayout;
     const margin = 8;
-    const viewBoxWidth = 600;
-    const viewBoxHeight = 230;
 
     const tooltipX = Math.max(
       margin,
       Math.min(
-        viewBoxWidth - tooltipWidth - margin,
-        point.x - tooltipWidth / 2
+        layout.width - layout.tooltipWidth - margin,
+        point.x - layout.tooltipWidth / 2
       )
     );
 
-    const tooltipY = point.y - tooltipHeight - 12 >= margin
-      ? point.y - tooltipHeight - 12
+    const tooltipY = point.y - layout.tooltipHeight - 12 >= margin
+      ? point.y - layout.tooltipHeight - 12
       : Math.min(
-        viewBoxHeight - tooltipHeight - margin,
+        layout.height - layout.tooltipHeight - margin,
         point.y + 14
       );
 
     return {
       ...point,
       tooltipX,
-      tooltipY
+      tooltipY,
+      tooltipWidth: layout.tooltipWidth,
+      tooltipHeight: layout.tooltipHeight
     };
   }
-
   onChartPointEnter(date: string): void {
     this.hoveredChartDate = date;
   }
@@ -470,136 +524,135 @@ export class BodyMeasurements implements OnInit {
       ?? this.metricOptions[0];
   }
 
-  get chartPoints(): ChartPoint[] {
-    const rows = this.chartMeasurements;
+get chartPoints(): ChartPoint[] {
+  const rows = this.chartMeasurements;
 
-    if (!rows.length) return [];
+  if (!rows.length) return [];
 
-    const values = rows.map(row =>
-      this.metricValue(row, this.selectedMetric)!
-    );
+  const values = rows.map(row =>
+    this.metricValue(row, this.selectedMetric)!
+  );
 
-    const min = Math.min(...values);
-    const max = Math.max(...values);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
 
-    // Evita una escala degenerada cuando todos los valores son iguales.
-    const padding = max === min
-      ? Math.max(Math.abs(max) * 0.04, 1)
-      : (max - min) * 0.18;
+  const padding = max === min
+    ? Math.max(Math.abs(max) * 0.04, 1)
+    : (max - min) * 0.18;
 
-    const low = min - padding;
-    const high = max + padding;
+  const low = min - padding;
+  const high = max + padding;
 
-    // Coordenadas coherentes con el viewBox del SVG.
-    const plotLeft = 58;
-    const plotRight = 572;
-    const plotTop = 34;
-    const plotBottom = 178;
-    const plotWidth = plotRight - plotLeft;
-    const plotHeight = plotBottom - plotTop;
-    const valueRange = high - low;
+  const layout = this.chartLayout;
 
-    return rows.map((row, index) => {
-      const value = values[index];
+  const plotWidth = layout.plotRight - layout.plotLeft;
+  const plotHeight = layout.plotBottom - layout.plotTop;
+  const valueRange = high - low;
 
-      const x = rows.length === 1
-        ? (plotLeft + plotRight) / 2
-        : plotLeft + (index / (rows.length - 1)) * plotWidth;
+  return rows.map((row, index) => {
+    const value = values[index];
 
-      const y = plotBottom -
-        ((value - low) / valueRange) * plotHeight;
+    const x = rows.length === 1
+      ? (layout.plotLeft + layout.plotRight) / 2
+      : layout.plotLeft + (index / (rows.length - 1)) * plotWidth;
 
-      return {
-        x,
-        y,
-        value,
-        date: row.measured_on,
-        label: this.formatShortDate(row.measured_on)
-      };
-    });
-  }
+    const y = layout.plotBottom -
+      ((value - low) / valueRange) * plotHeight;
+
+    return {
+      x,
+      y,
+      value,
+      date: row.measured_on,
+      label: this.formatShortDate(row.measured_on)
+    };
+  });
+}
   get chartPolyline(): string {
     return this.chartPoints
       .map(point => `${point.x},${point.y}`)
       .join(' ');
   }
 
-  get chartAreaPath(): string {
-    const points = this.chartPoints;
+get chartAreaPath(): string {
+  const points = this.chartPoints;
 
-    if (points.length < 2) return '';
+  if (points.length < 2) return '';
 
-    const first = points[0];
-    const last = points[points.length - 1];
-    const baseline = 178;
+  const first = points[0];
+  const last = points[points.length - 1];
+  const baseline = this.chartLayout.plotBottom;
 
-    return [
-      `M ${first.x},${baseline}`,
-      ...points.map(point => `L ${point.x},${point.y}`),
-      `L ${last.x},${baseline}`,
-      'Z'
-    ].join(' ');
-  }
+  return [
+    `M ${first.x},${baseline}`,
+    ...points.map(point => `L ${point.x},${point.y}`),
+    `L ${last.x},${baseline}`,
+    'Z'
+  ].join(' ');
+}
 
-  get chartTicks(): ChartTick[] {
-    const points = this.chartPoints;
+get chartTicks(): ChartTick[] {
+  const points = this.chartPoints;
 
-    if (!points.length) return [];
+  if (!points.length) return [];
 
-    const values = points.map(point => point.value);
-    const min = Math.min(...values);
-    const max = Math.max(...values);
+  const values = points.map(point => point.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
 
-    const padding = max === min
-      ? Math.max(Math.abs(max) * 0.04, 1)
-      : (max - min) * 0.18;
+  const padding = max === min
+    ? Math.max(Math.abs(max) * 0.04, 1)
+    : (max - min) * 0.18;
 
-    const low = min - padding;
-    const high = max + padding;
+  const low = min - padding;
+  const high = max + padding;
 
-    const plotTop = 34;
-    const plotBottom = 178;
-    const tickCount = 5;
+  const layout = this.chartLayout;
+  const tickCount = 5;
 
-    return Array.from({ length: tickCount }, (_, index) => {
-      const ratio = index / (tickCount - 1);
-      const value = high - (high - low) * ratio;
-      const y = plotTop + ratio * (plotBottom - plotTop);
+  return Array.from({ length: tickCount }, (_, index) => {
+    const ratio = index / (tickCount - 1);
+    const value = high - (high - low) * ratio;
 
-      return {
-        value,
-        y,
-        label: value.toLocaleString('es-AR', {
-          maximumFractionDigits: 1
-        })
-      };
-    });
-  }
+    const y = layout.plotTop +
+      ratio * (layout.plotBottom - layout.plotTop);
 
-  get chartDateLabels(): Array<{ x: number; label: string }> {
-    const points = this.chartPoints;
+    return {
+      value,
+      y,
+      label: value.toLocaleString('es-AR', {
+        maximumFractionDigits: 1
+      })
+    };
+  });
+}
 
-    if (!points.length) return [];
+get chartDateLabels(): Array<{ x: number; label: string }> {
+  const points = this.chartPoints;
 
-    if (points.length <= 5) {
-      return points.map(point => ({
-        x: point.x,
-        label: point.label
-      }));
-    }
+  if (!points.length) return [];
 
-    const indexes = [...new Set([
-      0,
-      Math.round((points.length - 1) / 3),
-      Math.round((points.length - 1) * 2 / 3),
-      points.length - 1
-    ])];
+  const maxLabels = this.isMobileChart ? 4 : 5;
 
-    return indexes.map(index => ({
-      x: points[index].x,
-      label: points[index].label
+  if (points.length <= maxLabels) {
+    return points.map(point => ({
+      x: point.x,
+      label: point.label
     }));
   }
+
+  const indexes = Array.from(
+    { length: maxLabels },
+    (_, index) => Math.round(
+      index * (points.length - 1) / (maxLabels - 1)
+    )
+  );
+
+  return [...new Set(indexes)].map(index => ({
+    x: points[index].x,
+    label: points[index].label
+  }));
+}
 
   get chartMin(): number | null {
     const values = this.chartPoints.map(point => point.value);

@@ -1,13 +1,7 @@
 
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, defer, from, of } from 'rxjs';
-import {
-  catchError,
-  finalize,
-  map,
-  switchMap
-} from 'rxjs';
-
+import {catchError,finalize,map,switchMap} from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { MetabolicTargetRecord } from '../models/target.model';
 import { normalizeAppError } from '../utils/error-handler.util';
