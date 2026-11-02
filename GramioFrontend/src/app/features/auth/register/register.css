@@ -1,4 +1,3 @@
-
 :host {
   display: block;
   min-height: 100%;
@@ -63,7 +62,7 @@ h1 {
   letter-spacing: -0.04em;
 }
 
-.register-header > p:last-child {
+.register-header>p:last-child {
   margin: 0;
   color: #68766b;
   line-height: 1.6;
@@ -266,5 +265,41 @@ input::placeholder {
   .register-card {
     padding: 24px 18px;
     border-radius: 17px;
+  }
+}
+
+.register-loading {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.register-loading p {
+  margin: 0;
+  color: #64715f;
+  font-size: 0.95rem;
+}
+
+.loading-indicator {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e3eadf;
+  border-top-color: #4d8b45;
+  border-radius: 50%;
+  animation: register-spin 0.75s linear infinite;
+}
+
+@keyframes register-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-indicator {
+    animation-duration: 2s;
   }
 }

@@ -29,6 +29,7 @@ export class RegisterComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
+  readonly isInitializing = signal(true);
   readonly isSubmitting = signal(false);
   readonly isGoogleRegistration = signal(false);
 
@@ -48,10 +49,12 @@ export class RegisterComponent implements OnInit {
   heightCm: number | null = null;
 
   async ngOnInit(): Promise<void> {
-    // Ya no dependemos exclusivamente de ?google=1.
-    // Comprobamos si existe una sesión Google cada vez que
-    // se abre la pantalla de registro.
-    await this.handleGoogleCallback();
+    try {
+      await this.handleGoogleCallback();
+    } finally {
+      // Recién ahora permitimos mostrar el formulario.
+      this.isInitializing.set(false);
+    }
   }
 
   private async handleGoogleCallback(): Promise<void> {
@@ -65,8 +68,6 @@ export class RegisterComponent implements OnInit {
 
       const user = data.session?.user;
 
-      // Si no hay sesión y tampoco estamos regresando de Google,
-      // dejamos funcionar normalmente el registro tradicional.
       if (!user) {
         if (isGoogleCallback) {
           throw new Error(
@@ -115,8 +116,6 @@ export class RegisterComponent implements OnInit {
         Number(metadata['height_cm']) <= 250;
 
       if (hasCompleteProfile) {
-        // Aunque los metadatos estén completos, comprobamos que
-        // también exista el registro correspondiente en profiles.
         await this.saveProfile(user.id, {
           display_name: this.displayName.trim(),
           sex: this.sex,
@@ -131,7 +130,6 @@ export class RegisterComponent implements OnInit {
       // Usuario Google que todavía debe completar sus datos.
       this.isGoogleRegistration.set(true);
 
-      // Limpiamos el parámetro de callback.
       if (isGoogleCallback) {
         await this.router.navigate([], {
           relativeTo: this.route,
@@ -150,11 +148,6 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  /**
-   * Crea o actualiza el perfil del usuario autenticado.
-   * La política RLS "own profile" permite operar únicamente
-   * sobre el registro cuyo id coincide con auth.uid().
-   */
   private async saveProfile(
     userId: string,
     profile: {
@@ -221,7 +214,6 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    // Las contraseñas solamente se exigen para el registro tradicional.
     if (!this.isGoogleRegistration()) {
       if (!this.password) {
         this.errorMessage.set('Ingresá una contraseña.');
@@ -275,7 +267,6 @@ export class RegisterComponent implements OnInit {
       };
 
       if (this.isGoogleRegistration()) {
-        // 1. Actualizamos los metadatos de Supabase Auth.
         const { data, error } =
           await this.supabase.auth.updateUser({
             data: profileMetadata
@@ -289,7 +280,6 @@ export class RegisterComponent implements OnInit {
           );
         }
 
-        // 2. Creamos o actualizamos su fila en public.profiles.
         await this.saveProfile(data.user.id, {
           ...profileMetadata,
           height_cm: Number(profileMetadata.height_cm)
@@ -303,7 +293,6 @@ export class RegisterComponent implements OnInit {
         return;
       }
 
-      // Registro tradicional: conserva el comportamiento existente.
       const { data, error } = await this.supabase.auth.signUp({
         email: this.email.trim(),
         password: this.password,
