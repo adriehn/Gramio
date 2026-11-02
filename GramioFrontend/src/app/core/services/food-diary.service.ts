@@ -35,6 +35,7 @@ export class FoodDiaryService {
     );
 
     // Buscar alimentos disponibles para registrar o editar.
+    // Buscar alimentos ignorando tildes y mayúsculas/minúsculas.
     searchFoods(term: string): Observable<FoodItem[]> {
         const query = term.trim();
 
@@ -42,15 +43,11 @@ export class FoodDiaryService {
             return from([[] as FoodItem[]]);
         }
 
-        const lowerQuery = query.toLowerCase();
-
         return from(
             this.supabase.client
-                .from('foods')
-                .select('id,name,brand,category,kcal_100,protein_100,carbs_100,fat_100,fiber_100,user_id')
-                .eq('is_archived', false)
-                .ilike('name', `%${query}%`)
-                .limit(50)
+                .rpc('search_foods', {
+                    p_term: query
+                })
         ).pipe(
             map(({ data, error }) => {
                 if (error) {
@@ -59,30 +56,15 @@ export class FoodDiaryService {
                     );
                 }
 
-                // MAPEO DINÁMICO: Evaluamos si es receta propia
-                const items = (data ?? []).map(item => ({
+                const items = (data ?? []).map((item: FoodItem) => ({
                     ...item,
                     is_custom: item.category === 'recipe'
                 })) as FoodItem[];
 
-                return items
-                    .sort((a, b) => {
-                        const aName = a.name.toLowerCase();
-                        const bName = b.name.toLowerCase();
-
-                        const aStarts = aName.startsWith(lowerQuery);
-                        const bStarts = bName.startsWith(lowerQuery);
-
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-
-                        return aName.localeCompare(bName);
-                    })
-                    .slice(0, 10);
+                return items.slice(0, 10);
             })
         );
     }
-
     // Obtener un alimento concreto para abrir el modal de edición.
     getFoodById(foodId: string): Observable<FoodItem> {
         return from(
