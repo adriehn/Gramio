@@ -45,8 +45,6 @@ export class Login {
       if (success) {
         await this.router.navigate(['/nutricion']);
       }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
     } finally {
       this.isSubmitting.set(false);
     }
@@ -69,9 +67,19 @@ export class Login {
         ...this.credentials,
         email: this.credentials.email.trim()
       });
-    } catch (error) {
-      console.error('Error al registrarse:', error);
     } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
+  async handleGoogleLogin(): Promise<void> {
+    if (this.isSubmitting()) return;
+
+    this.isSubmitting.set(true);
+
+    const success = await this.auth.signInWithGoogle();
+
+    if (!success) {
       this.isSubmitting.set(false);
     }
   }

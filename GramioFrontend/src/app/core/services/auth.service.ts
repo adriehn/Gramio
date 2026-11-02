@@ -190,9 +190,9 @@ export class AuthService implements OnDestroy {
       return false;
     }
   }
-   /**
- * Actualiza email del usuario
- */
+  /**
+* Actualiza email del usuario
+*/
   async updateEmail(email: string): Promise<boolean> {
     this.clearError();
     try {
@@ -218,4 +218,35 @@ export class AuthService implements OnDestroy {
     this.authSubscription?.unsubscribe();
     this.authSubscription = null;
   }
+
+  //Registro con Google
+ async signInWithGoogle(): Promise<boolean> {
+  this.clearError();
+
+  try {
+    const { error } = await this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/registro?google=1`,
+        queryParams: {
+          prompt: 'select_account'
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    return true;
+  } catch (err) {
+    this.currentError.set(
+      normalizeAppError(
+        err,
+        'No fue posible iniciar sesión con Google.'
+      )
+    );
+
+    return false;
+  }
+}
+
 }
