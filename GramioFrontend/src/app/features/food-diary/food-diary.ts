@@ -298,9 +298,6 @@ export class FoodDiary {
     this.searchTerms$
       .pipe(
         distinctUntilChanged(),
-
-        // Cada nuevo término cancela la búsqueda anterior,
-        // incluso mientras todavía está esperando el debounce.
         switchMap(term => {
           const normalizedTerm = term.trim();
 

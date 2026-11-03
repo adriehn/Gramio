@@ -1,281 +1,26 @@
 ﻿
-/* =========================================
-   GRAMIO — LOGIN
-========================================= */
-
 :host {
   display: block;
+  min-height: 100%;
   width: 100%;
-  min-width: 0;
+  color: #24352a;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  color: #24352d;
 }
 
-/* Contenedor principal */
-:host > div {
+/* Página */
+
+.login-page {
   box-sizing: border-box;
   position: relative;
   isolation: isolate;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: calc(100vh - 80px);
 
-  width: 100%;
-  min-height: 85vh;
-  padding: 40px 20px;
+  display: grid;
+  place-items: center;
 
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(198, 222, 187, 0.48) 0%,
-      rgba(244, 247, 240, 0) 68%
-    ),
-    #f4f7f0;
-}
+  padding: 36px 18px;
 
-/* Luz ambiental detrás de la tarjeta */
-:host > div::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-
-  width: min(480px, 90%);
-  height: 420px;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  border-radius: 50%;
-  background: rgba(150, 190, 137, 0.22);
-  filter: blur(65px);
-  pointer-events: none;
-}
-
-/* Tarjeta del login */
-:host > div > div {
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1;
-
-  display: block;
-  flex: 0 1 430px;
-
-  width: 100%;
-  max-width: 430px;
-  min-width: 0;
-  margin: 0 auto;
-  padding: 36px 32px;
-
-  background: #ffffff;
-  border: 1px solid #e2eade;
-  border-radius: 24px;
-
-  box-shadow:
-    0 24px 60px rgba(44, 76, 49, 0.12),
-    0 4px 14px rgba(44, 76, 49, 0.05);
-
-  animation: gramio-appear 0.35s ease-out both;
-}
-
-/* Encabezado */
-:host h2 {
-  margin: 0;
-  color: #24583c;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -1.2px;
-}
-
-:host header p {
-  margin-top: 10px;
-  color: #78867a;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* Etiquetas */
-:host label {
-  display: block;
-  margin-bottom: 8px;
-
-  color: #4b6252;
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-/* Campos */
-:host input {
-  box-sizing: border-box;
-  display: block;
-  width: 100%;
-  min-width: 0;
-  min-height: 49px;
-  padding: 13px 15px;
-
-  border: 1px solid #dce5dc;
-  border-radius: 11px;
-
-  background: #f8faf7;
-  color: #24352d;
-
-  font-family: inherit;
-  font-size: 14px;
-
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-:host input::placeholder {
-  color: #a4afa5;
-}
-
-:host input:hover {
-  border-color: #bdcfbd;
-}
-
-:host input:focus {
-  border-color: #57976b;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(87, 151, 107, 0.12);
-}
-
-/* Espaciado entre campos */
-:host form > div + div {
-  margin-top: 20px;
-}
-
-/* Error */
-:host form [role="alert"] {
-  padding: 13px 15px;
-  border: 1px solid #f1caca;
-  border-radius: 10px;
-  background: #fff3f1;
-  color: #b44242;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-/* Botones */
-:host form > div:last-child {
-  display: flex;
-  gap: 12px;
-  padding-top: 8px;
-}
-
-:host button {
-  box-sizing: border-box;
-  flex: 1;
-  min-width: 0;
-  min-height: 48px;
-  padding: 12px 10px;
-
-  border: 0;
-  border-radius: 11px;
-
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-
-  transition: transform 0.18s ease, background 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-:host button[type="submit"] {
-  background: #32764b;
-  color: #ffffff;
-  box-shadow: 0 5px 12px rgba(50, 118, 75, 0.16);
-}
-
-:host button[type="submit"]:hover:not(:disabled) {
-  background: #28643e;
-  box-shadow: 0 7px 17px rgba(50, 118, 75, 0.22);
-  transform: translateY(-2px);
-}
-
-:host button[routerLink] {
-  border: 1px solid #dce6dc;
-  background: #ffffff;
-  color: #376047;
-}
-
-:host button[routerLink]:hover:not(:disabled) {
-  background: #f0f6ef;
-  border-color: #b9d0bb;
-  transform: translateY(-2px);
-}
-
-:host button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-:host button:focus-visible,
-:host input:focus-visible {
-  outline: 3px solid rgba(69, 139, 88, 0.35);
-  outline-offset: 3px;
-}
-
-/* Animación */
-@keyframes gramio-appear {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  :host > div {
-    min-height: 85vh;
-    padding: 24px 16px;
-  }
-
-  :host > div > div {
-    flex-basis: 430px;
-    padding: 30px 22px;
-    border-radius: 20px;
-  }
-
-  :host h2 {
-    font-size: 28px;
-  }
-
-  :host form > div:last-child {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  :host button {
-    flex: auto;
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :host > div > div {
-    animation: none;
-  }
-
-  :host button,
-  :host input {
-    transition: none;
-  }
-}
-
-/* Fondo ambiental desenfocado */
-:host > div {
   background:
     radial-gradient(
       ellipse at 50% 45%,
@@ -296,31 +41,392 @@
     #f4f7f0;
 }
 
-/* Halo verde difuminado */
-:host > div::before {
+/* Iluminación ambiental */
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+
   width: min(650px, 110%);
   height: 560px;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
 
   background: rgba(151, 190, 135, 0.24);
   filter: blur(100px);
   opacity: 0.9;
+
+  pointer-events: none;
 }
 
-/* Manchas de luz suaves en el fondo */
-:host > div::after {
-  content: "";
+.login-page::after {
+  content: '';
   position: absolute;
   z-index: -1;
 
   width: 300px;
   height: 300px;
-  top: auto;
-  right: auto;
+
   bottom: -100px;
   left: -80px;
 
   border-radius: 50%;
   background: rgba(174, 207, 157, 0.28);
   filter: blur(75px);
+
   pointer-events: none;
+}
+
+/* Tarjeta */
+
+.login-card {
+  box-sizing: border-box;
+
+  width: min(100%, 520px);
+  padding: clamp(24px, 5vw, 40px);
+
+  background: #fff;
+  border: 1px solid #e1e9de;
+  border-radius: 22px;
+
+  box-shadow: 0 18px 50px rgb(37 75 47 / 8%);
+
+  animation: login-appear 0.4s ease-out both;
+}
+
+/* Marca */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 30px;
+
+  color: #24583c;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+
+  place-items: center;
+
+  border-radius: 12px;
+
+  color: #fff;
+  background: #32764b;
+}
+
+/* Encabezado */
+
+.login-header {
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+
+  color: #32764b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.login-header h1 {
+  margin: 0 0 10px;
+
+  color: #1f3828;
+  font-size: clamp(1.8rem, 5vw, 2.25rem);
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+
+.login-header > p:last-child {
+  margin: 0;
+
+  color: #68766b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Formulario */
+
+.login-card form {
+  display: grid;
+  gap: 17px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field label {
+  color: #304638;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.field input {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 47px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #d8e2d5;
+  border-radius: 10px;
+
+  outline: none;
+
+  color: #24352a;
+  background: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.field input::placeholder {
+  color: #9aa69b;
+}
+
+.field input:hover {
+  border-color: #bdcfbd;
+}
+
+.field input:focus {
+  border-color: #32764b;
+  box-shadow: 0 0 0 3px rgb(50 118 75 / 13%);
+}
+
+/* Botón principal */
+
+.submit-button {
+  width: 100%;
+  min-height: 49px;
+
+  margin-top: 4px;
+  padding: 12px 18px;
+
+  border: 0;
+  border-radius: 11px;
+
+  color: #fff;
+  background: #32764b;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #24583c;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgb(50 118 75 / 16%);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Mensajes */
+
+.feedback {
+  margin: 0;
+  padding: 11px 13px;
+
+  border-radius: 9px;
+
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  color: #9c2929;
+  background: #fff0ef;
+  border: 1px solid #f3cfcb;
+}
+
+/* Separador Google */
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin: 24px 0 18px;
+}
+
+.login-divider span {
+  flex: 1;
+  height: 1px;
+  background: #e2e8e2;
+}
+
+.login-divider small {
+  color: #89958c;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+}
+
+/* Botón Google */
+
+.google-button {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 0 18px;
+
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+
+  background: #fff;
+  color: #3c4043;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.12);
+
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.google-button:hover:not(:disabled) {
+  background: #f8faff;
+  border-color: #c5c9ce;
+  box-shadow: 0 2px 5px rgba(60, 64, 67, 0.18);
+}
+
+.google-button:active:not(:disabled) {
+  background: #f1f3f4;
+}
+
+.google-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.google-button img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Registro */
+
+.register-prompt {
+  margin: 23px 0 0;
+
+  color: #68766b;
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.register-prompt a {
+  color: #32764b;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.register-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* Accesibilidad */
+
+.login-card button:focus-visible,
+.login-card input:focus-visible {
+  outline: 3px solid rgb(50 118 75 / 25%);
+  outline-offset: 3px;
+}
+
+/* Animación */
+
+@keyframes login-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 420px) {
+  .login-page {
+    min-height: calc(100vh - 60px);
+    padding: 18px 12px;
+  }
+
+  .login-card {
+    padding: 24px 18px;
+    border-radius: 17px;
+  }
+
+  .login-header h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card {
+    animation: none;
+  }
+
+  .login-card button,
+  .login-card input {
+    transition: none;
+  }
 }
