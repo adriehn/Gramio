@@ -35,5 +35,5 @@ const ingredientSchema = z.discriminatedUnion('source', [
 export const createRecipeSchema = z.object({
   name: z.string().trim().min(1).max(120),
   ingredients: z.array(ingredientSchema).min(1).max(100),
-  is_cooked: z.boolean().optional()
+  final_weight_g: z.number().finite().positive().optional()
 }).strict();

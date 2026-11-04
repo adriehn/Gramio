@@ -1,4 +1,3 @@
-
 import { supabaseAdmin } from '../../config/supabase.js';
 
 export class NutritionService {
@@ -94,7 +93,7 @@ export class NutritionService {
   static async createCustomRecipe(userId, recipePayload) {
     if (!userId) throw new Error('Usuario no autenticado');
 
-    const { name, ingredients, is_cooked } = recipePayload;
+    const { name, ingredients, final_weight_g } = recipePayload;
 
     let totalWeight = 0, totalKcal = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalFiber = 0;
 
@@ -135,10 +134,9 @@ export class NutritionService {
 
     if (totalWeight <= 0) throw new Error('El peso total no puede ser cero.');
 
-    // Cálculo del rendimiento (yield) y la concentración por evaporación
-    const finalYieldG = is_cooked ? totalWeight * 0.90 : totalWeight;
-    const evaporationMultiplier = is_cooked ? 1.10 : 1.0;
-    const to100g = (val) => Math.round((val / totalWeight) * 100 * evaporationMultiplier * 10) / 10;
+    // Cálculo del rendimiento (yield) exacto basado en el peso final
+    const finalYieldG = final_weight_g !== undefined && final_weight_g > 0 ? final_weight_g : totalWeight;
+    const to100g = (val) => Math.round((val / finalYieldG) * 100 * 10) / 10;
 
     const kcal_100 = to100g(totalKcal);
     const protein_100 = to100g(totalProtein);
@@ -166,7 +164,7 @@ export class NutritionService {
         user_id: userId,
         food_id: foodData.id,
         name: name.trim(),
-        yield_g: Math.round(finalYieldG) // Solución al constraint not-null
+        yield_g: Math.round(finalYieldG)
       })
       .select('id').single();
 
@@ -182,8 +180,6 @@ export class NutritionService {
         quantity_g: ing.quantity_g,
         food_id: isManual ? null : ing.food_id,
         manual_name: isManual ? (ing.manual_name || ing.name || 'Ingrediente manual').trim() : null,
-
-        // La restricción exige estas columnas exactas para manuales (y null para base de datos)
         kcal_100: isManual ? (ing.manual_macros?.kcal_100 || 0) : null,
         protein_100: isManual ? (ing.manual_macros?.protein_100 || 0) : null,
         carbs_100: isManual ? (ing.manual_macros?.carbs_100 || 0) : null,
@@ -210,7 +206,7 @@ export class NutritionService {
     };
   }
 
-  //Eliminar receta personalizada
+  // Eliminar receta personalizada
   static async deleteCustomRecipe(userId, foodId) {
     if (!userId) throw new Error('Usuario no autenticado');
 
@@ -252,7 +248,6 @@ export class NutritionService {
     }
 
     // 5. SOFT DELETE: En lugar de .delete(), archivamos el alimento en 'foods'.
-    // Esto evita el error 500 si la receta ya fue registrada en daily_logs.
     const { error: delError } = await supabaseAdmin
       .from('foods')
       .update({ is_archived: true })
@@ -296,11 +291,7 @@ export class NutritionService {
 
     if (ingErr) throw new Error('Error al cargar los ingredientes.');
 
-    // 4. Deducir si estaba marcada como cocinada (peso final menor al inicial)
-    const totalQuantity = ingredients.reduce((sum, ing) => sum + Number(ing.quantity_g), 0);
-    const is_cooked = recipe.yield_g < totalQuantity;
-
-    // 5. Mapear al formato exacto que espera tu modal frontend
+    // 4. Mapear al formato exacto que espera tu modal frontend
     const mappedIngredients = ingredients.map(ing => {
       const isDb = ing.source === 'database';
 
@@ -331,7 +322,7 @@ export class NutritionService {
     return {
       food_id: food.id,
       name: food.name,
-      is_cooked,
+      final_weight_g: recipe.yield_g,
       ingredients: mappedIngredients
     };
   }
@@ -345,7 +336,7 @@ export class NutritionService {
     const { data: recipe } = await supabaseAdmin.from('recipes').select('id').eq('food_id', foodId).single();
     if (!recipe) throw new Error('Detalles de receta no encontrados.');
 
-    const { name, ingredients, is_cooked } = recipePayload;
+    const { name, ingredients, final_weight_g } = recipePayload;
     let totalWeight = 0, totalKcal = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0, totalFiber = 0;
 
     const dbIngredientIds = ingredients.filter(i => i.source === 'database').map(i => i.food_id);
@@ -359,7 +350,6 @@ export class NutritionService {
       if (dbFoods) dbFoods.forEach(f => dbFoodsMap.set(f.id, f));
     }
 
-    // Cálculo de macros idéntico a la creación
     ingredients.forEach(ing => {
       const q = ing.quantity_g || 0;
       totalWeight += q;
@@ -385,9 +375,8 @@ export class NutritionService {
 
     if (totalWeight <= 0) throw new Error('El peso total no puede ser cero.');
 
-    const finalYieldG = is_cooked ? totalWeight * 0.90 : totalWeight;
-    const evaporationMultiplier = is_cooked ? 1.10 : 1.0;
-    const to100g = (val) => Math.round((val / totalWeight) * 100 * evaporationMultiplier * 10) / 10;
+    const finalYieldG = final_weight_g !== undefined && final_weight_g > 0 ? final_weight_g : totalWeight;
+    const to100g = (val) => Math.round((val / finalYieldG) * 100 * 10) / 10;
 
     const kcal_100 = to100g(totalKcal);
     const protein_100 = to100g(totalProtein);
