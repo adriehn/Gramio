@@ -25,7 +25,7 @@ export interface RecipeIngredient {
 export interface CreateRecipePayload {
   name: string;
   ingredients: RecipeIngredient[];
-  is_cooked?: boolean;
+ final_weight_g?: number;
   cooked_weight_g?: number | null;
 }
 export interface RecipeMacros {

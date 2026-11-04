@@ -3,11 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, catchError, debounceTime, distinctUntilChanged, finalize, of, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CreateRecipePayload,RecipeMacros,RecipeLine } from '../../../core/models/recipe.model';
+import { CreateRecipePayload, RecipeMacros, RecipeLine } from '../../../core/models/recipe.model';
 import { FoodDiaryService } from '../../../core/services/food-diary.service';
-import {  FoodItem } from '@core/models/food-diary.model';
-
-
+import { FoodItem } from '@core/models/food-diary.model';
 
 @Component({
   selector: 'app-recipe-creator-modal',
@@ -21,14 +19,21 @@ export class RecipeCreatorModal implements OnInit {
   private readonly searchTerms$ = new Subject<string>();
   private nextLineKey = 0;
 
-  // APIs modernas de Angular 17/18+ para Inputs y Outputs
   readonly editFoodId = input<string | null>(null);
   readonly close = output<void>();
   readonly created = output<FoodItem>();
 
   readonly name = signal('');
   readonly mode = signal<'database' | 'manual'>('database');
-  readonly isCooked = signal(false);
+
+  // Estados para el manejo del rendimiento
+  readonly yieldMode = signal<'raw' | 'pct' | 'manual'>('raw');
+  readonly evaporationPct = signal<number>(10);
+  readonly manualYieldG = signal<number | null>(null);
+  
+  // Estado para el modal de info
+  readonly showYieldInfo = signal(false);
+
   readonly loadingRecipe = signal(false);
   readonly searchTerm = signal('');
   readonly results = signal<FoodItem[]>([]);
@@ -58,52 +63,34 @@ export class RecipeCreatorModal implements OnInit {
     const nutrients = lines.reduce(
       (total, line) => {
         const factor = line.quantity_g / 100;
-
         total.kcal += line.macros.kcal_100 * factor;
         total.protein += line.macros.protein_100 * factor;
         total.carbs += line.macros.carbs_100 * factor;
         total.fat += line.macros.fat_100 * factor;
         total.fiber += line.macros.fiber_100 * factor;
-
         return total;
       },
       { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
     );
 
-    // Estima una pérdida del 10 % del peso al cocinar.
-    const cookedWeight = this.isCooked()
-      ? totalWeight * 0.9
-      : totalWeight;
-
-    if (cookedWeight <= 0) {
-      return {
-        weight: 0,
-        kcal: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-        // Valores totales en 0
-        totalKcal: 0,
-        totalProtein: 0,
-        totalCarbs: 0,
-        totalFat: 0,
-        totalFiber: 0
-      };
+    let finalWeight = totalWeight;
+    if (this.yieldMode() === 'pct') {
+      finalWeight = totalWeight * (1 - (this.evaporationPct() / 100));
+    } else if (this.yieldMode() === 'manual' && this.manualYieldG()) {
+      finalWeight = this.manualYieldG()!;
     }
 
-    // Normaliza los nutrientes según el peso final estimado.
-    const to100g = (value: number): number =>
-      (value / cookedWeight) * 100;
+    if (finalWeight <= 0) finalWeight = totalWeight || 1;
+
+    const to100g = (value: number): number => (value / finalWeight) * 100;
 
     return {
-      weight: cookedWeight,
+      weight: finalWeight,
       kcal: to100g(nutrients.kcal),
       protein: to100g(nutrients.protein),
       carbs: to100g(nutrients.carbs),
       fat: to100g(nutrients.fat),
       fiber: to100g(nutrients.fiber),
-      // Valores totales de la mezcla
       totalKcal: nutrients.kcal,
       totalProtein: nutrients.protein,
       totalCarbs: nutrients.carbs,
@@ -119,6 +106,10 @@ export class RecipeCreatorModal implements OnInit {
     }
   }
 
+  setYieldMode(mode: 'raw' | 'pct' | 'manual'): void {
+    this.yieldMode.set(mode);
+  }
+
   private loadRecipeForEditing(foodId: string): void {
     this.loadingRecipe.set(true);
     this.error.set(null);
@@ -128,7 +119,6 @@ export class RecipeCreatorModal implements OnInit {
       .subscribe({
         next: (data) => {
           this.name.set(data.name);
-          this.isCooked.set(data.is_cooked);
 
           const newLines = data.ingredients.map((ing: any) => ({
             key: this.nextLineKey++,
@@ -141,6 +131,15 @@ export class RecipeCreatorModal implements OnInit {
           }));
 
           this.lines.set(newLines);
+
+          const rawWeight = newLines.reduce((sum: number, ing: any) => sum + Number(ing.quantity_g), 0);
+          
+          if (data.final_weight_g && data.final_weight_g < rawWeight) {
+            this.yieldMode.set('manual');
+            this.manualYieldG.set(data.final_weight_g);
+          } else {
+            this.yieldMode.set('raw');
+          }
         },
         error: (err) => {
           this.error.set(err?.message || 'Error al cargar la receta.');
@@ -168,9 +167,7 @@ export class RecipeCreatorModal implements OnInit {
 
           return this.diary.searchFoods(query).pipe(
             catchError(() => {
-              this.searchError.set(
-                'No se pudieron buscar los alimentos. Intentá nuevamente.'
-              );
+              this.searchError.set('No se pudieron buscar los alimentos. Intentá nuevamente.');
               return of([] as FoodItem[]);
             }),
             finalize(() => this.searchLoading.set(false))
@@ -255,7 +252,7 @@ export class RecipeCreatorModal implements OnInit {
           manual_macros: macros
         }
       ],
-      is_cooked: false
+      final_weight_g: 100
     };
 
     this.diary.createRecipe(payload)
@@ -380,7 +377,7 @@ export class RecipeCreatorModal implements OnInit {
           };
         }
       }),
-      is_cooked: this.isCooked()
+      final_weight_g: this.totals().weight
     };
 
     const foodId = this.editFoodId();
@@ -399,9 +396,6 @@ export class RecipeCreatorModal implements OnInit {
         }
       });
   }
-
-
-
 
   resetManualIngredient(): void {
     this.manualName.set('');

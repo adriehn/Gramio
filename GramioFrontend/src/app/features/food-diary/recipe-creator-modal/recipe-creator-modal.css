@@ -121,7 +121,7 @@
 }
 
 /* Inputs de texto generales */
-.recipe-body input:not([type="checkbox"]) {
+.recipe-body input:not([type="checkbox"]):not([type="range"]) {
     display: block;
     width: 100%;
     min-width: 0;
@@ -137,18 +137,18 @@
     transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
-.recipe-body input:not([type="checkbox"])::placeholder {
+.recipe-body input:not([type="checkbox"]):not([type="range"])::placeholder {
     color: #9aa79a;
 }
 
-.recipe-body input:not([type="checkbox"]):focus-visible {
+.recipe-body input:not([type="checkbox"]):not([type="range"]):focus-visible {
     border-color: #57976b;
     background: #fff;
     outline: none;
     box-shadow: 0 0 0 3px rgba(87, 151, 107, 0.12);
 }
 
-.recipe-body input:not([type="checkbox"]):disabled {
+.recipe-body input:not([type="checkbox"]):not([type="range"]):disabled {
     opacity: 0.65;
     cursor: not-allowed;
 }
@@ -376,7 +376,6 @@
     align-items: center;
     justify-content: center;
     min-height: 24px;
-    /* Mismo alto que el input */
     padding: 2px 6px;
     color: #b42318;
     background: transparent;
@@ -461,7 +460,7 @@
     line-height: 1.4;
 }
 
-/* Bloque del Checkbox de evaporación */
+/* Bloque del Rendimiento (Cooking Mode) */
 .recipe-cooking-mode {
     margin-top: 10px;
     padding: 8px 10px;
@@ -470,47 +469,119 @@
     border-radius: 10px;
 }
 
-.recipe-cooking-mode .recipe-checkbox-label {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 8px !important;
-    width: 100%;
-    cursor: pointer;
-    color: #344d39;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.4;
+.recipe-cooking-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.recipe-cooking-header h3 {
     margin: 0;
+    color: #2b4e35;
+    font-size: 12px;
+    font-weight: 800;
 }
 
-.recipe-cooking-mode .recipe-checkbox-label input[type="checkbox"] {
-    display: block !important;
-    position: static !important;
-    float: none !important;
-    flex: 0 0 16px !important;
-    width: 16px !important;
-    height: 16px !important;
-    min-height: 16px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    accent-color: #32764b;
+.info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #edf3e9;
+    border: 1px solid #c2d3c2;
+    color: #32764b;
+    border-radius: 12px;
+    font-size: 10px;
+    padding: 2px 8px;
     cursor: pointer;
+    font-weight: 700;
+    transition: background 150ms ease;
 }
 
-.recipe-cooking-mode .recipe-checkbox-label span {
-    display: block !important;
-    flex: 1 1 auto !important;
-    min-width: 0;
+.info-btn:hover {
+    background: #dce7d8;
 }
 
 .recipe-cooking-mode .recipe-hint {
     font-size: 9.5px;
     line-height: 1.2;
-    margin-top: 6px;
+    margin-top: 2px;
+    margin-bottom: 8px;
     color: #839083;
     letter-spacing: 0.2px;
+}
+
+.yield-control {
+    margin-top: 12px;
+}
+
+.yield-control input[type="range"] {
+    width: 100%;
+    margin-top: 8px;
+    accent-color: #32764b;
+    cursor: pointer;
+}
+
+/* Modal de Guía de Pesaje */
+.info-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(29, 57, 38, 0.4);
+    backdrop-filter: blur(2px);
+    padding: 16px;
+}
+
+.info-modal {
+    background: #fffdf7;
+    border: 1px solid #dce8d8;
+    border-radius: 12px;
+    padding: 18px 20px;
+    width: min(420px, 100%);
+    box-shadow: 0 10px 35px rgba(29, 57, 38, 0.2);
+}
+
+.info-modal h4 {
+    margin: 0 0 12px;
+    color: #2b4e35;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.info-modal ul {
+    padding-left: 18px;
+    margin: 0 0 16px;
+    color: #435746;
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
+.info-modal li {
+    margin-bottom: 10px;
+}
+
+.info-modal strong {
+    color: #2b4e35;
+}
+
+.info-modal-btn {
+    width: 100%;
+    padding: 8px;
+    background: #32764b;
+    color: white;
+    border: 1px solid #32764b;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.info-modal-btn:hover {
+    background: #28643e;
 }
 
 /* Responsive Mobile */
@@ -541,7 +612,6 @@
         grid-template-columns: minmax(0, 1fr) 55px auto;
         gap: 6px;
         align-items: center;
-        /* Centrado vertical */
     }
 
     .preview-macros span {

@@ -72,7 +72,6 @@
           }
         </div>
         }
-
         <p class="recipe-hint">
           La búsqueda incluye los alimentos disponibles para tu cuenta.
         </p>
@@ -103,25 +102,21 @@
             <input id="manual-kcal" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualKcal()"
               (ngModelChange)="manualKcal.set(toNullableNumber($event))" />
           </div>
-
           <div class="recipe-field">
             <label for="manual-protein">Proteínas (g)</label>
             <input id="manual-protein" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualProtein()"
               (ngModelChange)="manualProtein.set(toNullableNumber($event))" />
           </div>
-
           <div class="recipe-field">
             <label for="manual-carbs">Carbs (g)</label>
             <input id="manual-carbs" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualCarbs()"
               (ngModelChange)="manualCarbs.set(toNullableNumber($event))" />
           </div>
-
           <div class="recipe-field">
             <label for="manual-fat">Grasas (g)</label>
             <input id="manual-fat" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualFat()"
               (ngModelChange)="manualFat.set(toNullableNumber($event))" />
           </div>
-
           <div class="recipe-field">
             <label for="manual-fiber">Fibra (g)</label>
             <input id="manual-fiber" type="number" min="0" step="0.1" placeholder="0" [ngModel]="manualFiber()"
@@ -224,14 +219,45 @@
       </section>
 
       <section class="recipe-cooking-mode">
-        <label class="recipe-checkbox-label">
-          <input type="checkbox" [ngModel]="isCooked()" (ngModelChange)="isCooked.set($event)" />
-          <span>La receta se cocina. Marcar esta opción guarda esa condición.</span>
-        </label>
-        <p class="recipe-hint">
-          El cálculo mostrado usa el peso total de los ingredientes ingresados. La pérdida de agua durante la cocción
-          puede aumentar la concentración por 100 g.
-        </p>
+        <div class="recipe-cooking-header">
+          <h3>Rendimiento y cocción</h3>
+          <button type="button" class="info-btn" (click)="showYieldInfo.set(true)" aria-label="Ver guía de pesaje">
+            ⓘ Guía de pesaje
+          </button>
+        </div>
+        
+        <p class="recipe-hint">Ajustá la pérdida de agua durante la cocción para calcular la concentración real por 100g.</p>
+        
+        <div class="recipe-tabs" aria-label="Modo de rendimiento">
+          <button type="button" [class.active]="yieldMode() === 'raw'" (click)="setYieldMode('raw')">
+            Peso Crudo
+          </button>
+          <button type="button" [class.active]="yieldMode() === 'pct'" (click)="setYieldMode('pct')">
+            Reducción %
+          </button>
+          <button type="button" [class.active]="yieldMode() === 'manual'" (click)="setYieldMode('manual')">
+            Peso Final (Manual)
+          </button>
+        </div>
+
+        @if (yieldMode() === 'pct') {
+          <div class="recipe-field yield-control">
+            <label>Reducción por evaporación: {{ evaporationPct() }}%</label>
+            <input type="range" min="0" max="25" step="1" 
+                   [ngModel]="evaporationPct()" 
+                   (ngModelChange)="evaporationPct.set($event)" />
+          </div>
+        }
+
+        @if (yieldMode() === 'manual') {
+          <div class="recipe-field yield-control">
+            <label>Peso final una vez cocinado (g)</label>
+            <input type="number" min="1" step="1"
+                   [ngModel]="manualYieldG()" 
+                   (ngModelChange)="manualYieldG.set(toNullableNumber($event))" 
+                   placeholder="Ej. 450" />
+          </div>
+        }
       </section>
 
       @if (error()) {
@@ -250,4 +276,19 @@
       </button>
     </footer>
   </section>
+
+  <!-- Modal de Guía (Overlay por encima del modal de receta) -->
+  @if (showYieldInfo()) {
+    <div class="info-backdrop" (click)="showYieldInfo.set(false)">
+      <div class="info-modal" (click)="$event.stopPropagation()">
+        <h4>Guía de pesaje y cocción</h4>
+        <ul>
+          <li><strong>Carnes y horneados:</strong> Al cocinarse pierden agua (10-25%). Esto hace que sus nutrientes se <em>concentren</em> por gramo. Usá la opción <strong>Reducción %</strong>, o bien pesá la carne terminada y usá <strong>Peso Final</strong>.</li>
+          <li><strong>Arroz, pastas y legumbres:</strong> Al hervirse absorben agua, por lo que se diluyen y pesan más. La regla de oro es pesarlos siempre <strong>en seco</strong> y dejar la receta en <strong>Peso Crudo</strong>.</li>
+          <li><strong>Guisos, sopas o tartas:</strong> Ingresá todos los ingredientes en crudo. Una vez lista la comida, pesá la olla entera terminada (descontando la tara de la olla vacía) y poné ese valor exacto en <strong>Peso Final (Manual)</strong>. Es el método más exacto.</li>
+        </ul>
+        <button type="button" class="info-modal-btn" (click)="showYieldInfo.set(false)">Entendido</button>
+      </div>
+    </div>
+  }
 </div>
