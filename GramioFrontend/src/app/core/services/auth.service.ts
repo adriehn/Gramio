@@ -211,7 +211,12 @@ export class AuthService implements OnDestroy {
     this.clearError();
 
     try {
-      const { error } = await this.supabase.auth.signUp(credentials);
+      const { error } = await this.supabase.auth.signUp({
+        ...credentials,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`
+        }
+      });
 
       if (error) {
         throw error;
