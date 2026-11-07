@@ -19,7 +19,10 @@ app.use(helmet());
 const allowedOrigins = [
     'http://localhost:4200',
     'https://gramio-web.vercel.app',
+    'https://gramio.com.ar',
+    'https://www.gramio.com.ar',
 ];
+
 app.use(
     cors({
         origin(origin, callback) {
@@ -37,7 +40,6 @@ app.use(
         credentials: true,
     })
 );
-
 // 3. Límite de peticiones
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
