@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   OnDestroy,
@@ -21,10 +22,19 @@ export class AuthService implements OnDestroy {
   private authSubscription: { unsubscribe: () => void } | null = null;
   private authStateVersion = 0;
 
+  private resendCooldownInterval: ReturnType<typeof setInterval> | null = null;
+
   readonly session = signal<Session | null>(null);
   readonly userProfile = signal<UserProfile | null>(null);
   readonly isLoading = signal(true);
   readonly currentError = signal<AppError | null>(null);
+
+  // Verificación de email
+  readonly needsEmailConfirmation = signal(false);
+  readonly isResendingVerification = signal(false);
+  readonly verificationResendSent = signal(false);
+  readonly verificationResendError = signal<string | null>(null);
+  readonly resendCooldown = signal(0);
 
   readonly isAuthenticated = computed(() => this.session() !== null);
   readonly userEmail = computed(() => this.userProfile()?.email ?? '');
@@ -33,9 +43,6 @@ export class AuthService implements OnDestroy {
     void this.initSession();
   }
 
-  /**
-   * Inicializa el estado de autenticación y escucha cambios de Supabase.
-   */
   private async initSession(): Promise<void> {
     this.authSubscription = this.supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -54,13 +61,10 @@ export class AuthService implements OnDestroy {
         throw error;
       }
 
-      // Evita sobrescribir un cambio de autenticación más reciente.
       if (this.authStateVersion === initialVersion) {
         this.updateState(data.session);
       }
     } catch (err) {
-      // No reemplaza el estado si Supabase notificó un cambio mientras
-      // se recuperaba la sesión inicial.
       if (this.authStateVersion === initialVersion) {
         this.currentError.set(
           normalizeAppError(
@@ -76,9 +80,6 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  /**
-   * Mantiene sincronizados la sesión y el perfil del usuario.
-   */
   private updateState(session: Session | null): void {
     this.session.set(session);
 
@@ -113,6 +114,13 @@ export class AuthService implements OnDestroy {
 
       return true;
     } catch (err) {
+      const errorCode = (err as { code?: string })?.code;
+
+      if (errorCode === 'email_not_confirmed') {
+        this.needsEmailConfirmation.set(true);
+        return false;
+      }
+
       this.currentError.set(
         normalizeAppError(
           err,
@@ -125,8 +133,80 @@ export class AuthService implements OnDestroy {
   }
 
   /**
-   * Registra una nueva cuenta.
+   * Reenvía el correo de confirmación de cuenta.
    */
+  async resendVerificationEmail(email: string): Promise<boolean> {
+    if (
+      this.isResendingVerification() ||
+      this.resendCooldown() > 0
+    ) {
+      return false;
+    }
+
+    this.isResendingVerification.set(true);
+    this.verificationResendSent.set(false);
+    this.verificationResendError.set(null);
+
+    try {
+      const { error } = await this.supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      this.verificationResendSent.set(true);
+      this.startResendCooldown();
+
+      return true;
+    } catch (err) {
+      this.verificationResendError.set(
+        normalizeAppError(
+          err,
+          'No se pudo reenviar el correo. Intentá nuevamente más tarde.'
+        ).userMessage
+      );
+
+      return false;
+    } finally {
+      this.isResendingVerification.set(false);
+    }
+  }
+
+  /**
+   * Inicia el tiempo de espera entre reenvíos.
+   */
+  private startResendCooldown(): void {
+    this.clearResendCooldown();
+
+    this.resendCooldown.set(60);
+
+    this.resendCooldownInterval = setInterval(() => {
+      const remaining = this.resendCooldown();
+
+      if (remaining <= 1) {
+        this.clearResendCooldown();
+        return;
+      }
+
+      this.resendCooldown.set(remaining - 1);
+    }, 1000);
+  }
+
+  private clearResendCooldown(): void {
+    if (this.resendCooldownInterval) {
+      clearInterval(this.resendCooldownInterval);
+      this.resendCooldownInterval = null;
+    }
+
+    this.resendCooldown.set(0);
+  }
+
   async signUp(credentials: AuthCredentials): Promise<boolean> {
     this.clearError();
 
@@ -150,9 +230,6 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  /**
-   * Cierra la sesión actual.
-   */
   async signOut(): Promise<void> {
     this.clearError();
 
@@ -172,11 +249,9 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  /**
- * Actualiza datos personales
- */
   async updateAccount(email: string, displayName: string): Promise<boolean> {
     this.clearError();
+
     try {
       const { error } = await this.supabase.auth.updateUser({
         email,
@@ -184,69 +259,77 @@ export class AuthService implements OnDestroy {
       });
 
       if (error) throw error;
+
       return true;
     } catch (err) {
-      this.currentError.set(normalizeAppError(err, 'No se pudieron actualizar los datos de la cuenta.'));
+      this.currentError.set(
+        normalizeAppError(
+          err,
+          'No se pudieron actualizar los datos de la cuenta.'
+        )
+      );
+
       return false;
     }
-  }
-  /**
-* Actualiza email del usuario
-*/
-  async updateEmail(email: string): Promise<boolean> {
-    this.clearError();
-    try {
-      const { error } = await this.supabase.auth.updateUser({ email });
-      if (error) throw error;
-      return true;
-    } catch (err) {
-      this.currentError.set(normalizeAppError(err, 'No se pudo actualizar el email.'));
-      return false;
-    }
-  }
-  /**
-   * Limpia el error mostrado por la interfaz.
-   */
-  clearError(): void {
-    this.currentError.set(null);
   }
 
-  /**
-   * Libera la suscripción al destruirse el servicio.
-   */
+  async updateEmail(email: string): Promise<boolean> {
+    this.clearError();
+
+    try {
+      const { error } = await this.supabase.auth.updateUser({ email });
+
+      if (error) throw error;
+
+      return true;
+    } catch (err) {
+      this.currentError.set(
+        normalizeAppError(err, 'No se pudo actualizar el email.')
+      );
+
+      return false;
+    }
+  }
+
+  clearError(): void {
+    this.currentError.set(null);
+    this.needsEmailConfirmation.set(false);
+    this.verificationResendSent.set(false);
+    this.verificationResendError.set(null);
+  }
+
+  async signInWithGoogle(): Promise<boolean> {
+    this.clearError();
+
+    try {
+      const { error } = await this.supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/registro?google=1`,
+          queryParams: {
+            prompt: 'select_account'
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      return true;
+    } catch (err) {
+      this.currentError.set(
+        normalizeAppError(
+          err,
+          'No fue posible iniciar sesión con Google.'
+        )
+      );
+
+      return false;
+    }
+  }
+
   ngOnDestroy(): void {
     this.authSubscription?.unsubscribe();
     this.authSubscription = null;
+    this.clearResendCooldown();
   }
-
-  //Registro con Google
- async signInWithGoogle(): Promise<boolean> {
-  this.clearError();
-
-  try {
-    const { error } = await this.supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/registro?google=1`,
-        queryParams: {
-          prompt: 'select_account'
-        }
-      }
-    });
-
-    if (error) throw error;
-
-    return true;
-  } catch (err) {
-    this.currentError.set(
-      normalizeAppError(
-        err,
-        'No fue posible iniciar sesión con Google.'
-      )
-    );
-
-    return false;
-  }
-}
-
 }

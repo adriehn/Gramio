@@ -51,7 +51,52 @@
         />
       </div>
 
-      @if (auth.currentError(); as error) {
+      @if (auth.needsEmailConfirmation()) {
+        <div
+          id="login-error"
+          class="feedback error"
+          role="alert"
+          aria-live="polite"
+        >
+          <p>
+            Tu correo electrónico todavía no fue verificado.
+            Revisá tu bandeja de entrada o solicitá un nuevo correo
+            de confirmación.
+          </p>
+
+          <button
+            class="resend-verification-button"
+            type="button"
+            (click)="handleResendVerification()"
+            [disabled]="
+              isSubmitting() ||
+              auth.isResendingVerification() ||
+              auth.resendCooldown() > 0
+            "
+          >
+            @if (auth.isResendingVerification()) {
+              Enviando correo...
+            } @else if (auth.resendCooldown() > 0) {
+              Reenviar en {{ auth.resendCooldown() }} s
+            } @else {
+              Reenviar correo de verificación
+            }
+          </button>
+
+          @if (auth.verificationResendSent()) {
+            <p class="feedback success" role="status">
+              Te enviamos un nuevo correo de verificación.
+              Revisá tu bandeja de entrada.
+            </p>
+          }
+
+          @if (auth.verificationResendError(); as resendError) {
+            <p class="feedback error" role="alert">
+              {{ resendError }}
+            </p>
+          }
+        </div>
+      } @else if (auth.currentError(); as error) {
         <div
           id="login-error"
           class="feedback error"

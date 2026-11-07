@@ -388,6 +388,39 @@
   outline-offset: 3px;
 }
 
+/* Botón de reenvío de verificación */
+
+.resend-verification-button {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 14px;
+  border: 1px solid var(--primary, #23845b);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--primary, #23845b);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.resend-verification-button:hover:not(:disabled) {
+  background: rgba(35, 132, 91, 0.08);
+}
+
+.resend-verification-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.feedback.success {
+  margin-top: 12px;
+  color: #23845b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 /* Animación */
 
 @keyframes login-appear {
